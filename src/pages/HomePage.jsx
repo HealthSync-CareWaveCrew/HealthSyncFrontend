@@ -3,9 +3,11 @@ import ModeNavigation from '../components/ModeNavigation';
 import ImageAnalysis from '../components/ImageAnalysis';
 import ClinicalDataAnalysis from '../components/ClinicalDataAnalysis';
 import ResultsPanel from '../components/ResultsPanel';
+import ChatPanel from '../components/ChatPanel';
 
 function HomePage() {
   const { mode, results } = useSelector((state) => state.analysis);
+  const { isChatEnabled } = useSelector((state) => state.chat);
 
   return (
     <div className="space-y-6">
@@ -20,6 +22,7 @@ function HomePage() {
         {/* Right Column: Results and Chat */}
          <div className="space-y-6">
           {results && <ResultsPanel />}
+          {isChatEnabled && <ChatPanel />}
         </div>
       </div>
     </div>
