@@ -2,6 +2,7 @@ import React from "react";
 
 function AboutSection() {
   return (
+    <div id="about" className="section">
     <div className="section">
       <h2 className="section-title">About HealthSync</h2>
       <p>
@@ -14,6 +15,7 @@ function AboutSection() {
         and predictive analytics to empower users with actionable
         health insights.
       </p>
+    </div>
     </div>
   );
 }

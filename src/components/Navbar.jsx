@@ -13,10 +13,10 @@ function Navbar() {
 
       {/* Navigation Links */}
       <ul className="nav-links">
-        <li>About</li>
-        <li>Services</li>
-        <li>Reviews</li>
-        <li>Contact</li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#reviews">Reviews</a></li>
+        <li><a href="#contact">Contact</a></li>
       </ul>
 
       {/* Search + Contact + CTA */}

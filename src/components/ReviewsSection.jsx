@@ -6,6 +6,7 @@ function ReviewsSection() {
   ];
 
   return (
+    <div id="reviews" className="section section-light" data-aos="zoom-in">
     <div className="section section-light">
       <h2 className="section-title">Inspiring Stories</h2>
       <div className="grid grid-3">
@@ -16,6 +17,7 @@ function ReviewsSection() {
           </div>
         ))}
       </div>
+    </div>
     </div>
   );
 }

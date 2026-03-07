@@ -1,22 +1,22 @@
 import React from "react";
 
 function ServicesSection() {
+  const services = [
+    { title: "Symptom-Based Prediction", desc: "Analyze health symptoms with AI models.", delay: "0" },
+    { title: "Image-Based Diagnosis", desc: "Upload medical images for analysis.", delay: "200" },
+    { title: "Downloadable Reports", desc: "Get structured health reports.", delay: "400" }
+  ];
+
   return (
-    <div className="section section-light">
-      <h2 className="section-title">Our Services</h2>
+    <div id="services" className="section section-light">
+      <h2 className="section-title" data-aos="fade-right">Our Services</h2>
       <div className="grid grid-3">
-        <div className="card">
-          <h3>Symptom-Based Prediction</h3>
-          <p>Analyze health symptoms with AI models.</p>
-        </div>
-        <div className="card">
-          <h3>Image-Based Diagnosis</h3>
-          <p>Upload medical images for predictive analysis.</p>
-        </div>
-        <div className="card">
-          <h3>Downloadable Reports</h3>
-          <p>Get structured health prediction reports.</p>
-        </div>
+        {services.map((s, i) => (
+          <div key={i} className="card" data-aos="fade-up" data-aos-delay={s.delay}>
+            <h3>{s.title}</h3>
+            <p>{s.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
