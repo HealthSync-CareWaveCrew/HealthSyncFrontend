@@ -4,9 +4,9 @@ import * as API from '../Api/api';
 //////////////////////////////Analysis Thunks //////////////////////////////
 export const analyzeImageData = createAsyncThunk(
   'analysis/analyzeImage',
-  async ({ file, diseaseType }, { rejectWithValue }) => {
+  async ({ diseaseId,file, diseaseType }, { rejectWithValue }) => {
     try {
-      const response = await API.analyzeImage(file, diseaseType);
+      const response = await API.analyzeImage(diseaseId,file, diseaseType);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -20,9 +20,9 @@ export const analyzeImageData = createAsyncThunk(
 
 export const analyzeClinicalDataThunk = createAsyncThunk(
   'analysis/analyzeClinicalData',
-  async ({ diseaseType, formData }, { rejectWithValue }) => {
+  async ({ diseaseType, formData, diseaseId }, { rejectWithValue }) => {
     try {
-      const response = await API.analyzeClinicalData(diseaseType, formData);
+      const response = await API.analyzeClinicalData(diseaseType, formData, diseaseId);
       return response.data;
     } catch (error) {
       return rejectWithValue(
