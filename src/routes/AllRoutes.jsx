@@ -4,6 +4,7 @@ import AuthPage from '../pages/AuthPage'; // import your auth page
 import AppShell from '../components/AppShell';
 import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
 import AdminLayoutPage from '../pages/AdminLayoutPage';
+import ReviewsPage from '../pages/review/ReviewsPage';
 
 function AllRoutes() {
   return (
@@ -26,6 +27,7 @@ function AllRoutes() {
               element={<AdminDiseaseManagementPage />}
             />
           </Route>
+          <Route path="/reviews" element={<ReviewsPage />} />
         </Route>
       </Routes>
     </Router>

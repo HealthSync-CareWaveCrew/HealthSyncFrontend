@@ -3,6 +3,7 @@ import analysisReducer from '../Features/analysisSlice';
 import chatReducer from '../Features/chatSlice';
 import authReducer from '../Features/authSlice';
 import diseaseReducer from '../Features/diseaseSlice';
+import reviewReducer from '../Features/reviewSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     chat: chatReducer,
     auth: authReducer,
     disease: diseaseReducer,
+    review: reviewReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
