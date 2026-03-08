@@ -45,7 +45,7 @@ function AboutDiseasePanel({ selectedDisease }) {
 
   // Disease selected with about information
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-6 border border-primary-2/20">
+    <div className="bg-primary-4 rounded-2xl shadow-lg p-6 border border-primary-2/30">
       <div className="flex items-center gap-3 mb-6">
         <div className="bg-primary-1/10 rounded-full p-3">
           <FiInfo className="w-6 h-6 text-primary-1" />

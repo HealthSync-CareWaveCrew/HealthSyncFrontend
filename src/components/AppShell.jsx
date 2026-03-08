@@ -7,8 +7,8 @@ const customerMenu = [
 ];
 
 const adminMenu = [
-  { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
   { label: 'Disease Management', to: '/admin/disease-management', icon: 'DM' },
+  { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
 ];
 
 function AppShell() {

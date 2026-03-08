@@ -1,7 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import AuthPage from '../pages/AuthPage'; // import your auth page
 import AppShell from '../components/AppShell';
+import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
+import AdminLayoutPage from '../pages/AdminLayoutPage';
 
 function AllRoutes() {
   return (
@@ -14,6 +16,16 @@ function AllRoutes() {
         <Route path="/auth" element={<AuthPage />} />
         <Route element={<AppShell />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/admin" element={<AdminLayoutPage />}>
+            <Route
+              index
+              element={<Navigate to="disease-management" replace />}
+            />
+            <Route
+              path="disease-management"
+              element={<AdminDiseaseManagementPage />}
+            />
+          </Route>
         </Route>
       </Routes>
     </Router>
