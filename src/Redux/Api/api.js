@@ -135,12 +135,13 @@ export const deleteUser = async (id) => {
 };
 
 // Existing functions
-export const analyzeImage = async (file, diseaseType) => {
+export const analyzeImage = async (diseaseId, file, diseaseType) => {
   const formData = new FormData();
   formData.append('image', file);
   formData.append('diseaseType', diseaseType);
+  formData.append('diseaseId', diseaseId);
 
-  const response = await api.post('/analyze-image', formData, {
+  const response = await api.post('/api/analyze-image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -148,20 +149,52 @@ export const analyzeImage = async (file, diseaseType) => {
   return response;
 };
 
-export const analyzeClinicalData = async (diseaseType, formData) => {
-  const response = await api.post('/analyze-clinical-data', {
+export const analyzeClinicalData = async (diseaseType, formData, diseaseId) => {
+  const response = await api.post('/api/analyze-clinical-data', {
     diseaseType,
     formData,
+    diseaseId,
   });
   return response;
 };
 
 export const sendChatMessage = async (message, history, systemInstruction) => {
-  const response = await api.post('/chat', {
+  const response = await api.post('/api/chat', {
     message,
     history,
     systemInstruction,
   });
+  return response;
+};
+
+// Disease API endpoints
+export const getAllDiseases = async () => {
+  const response = await api.get('/api/diseases');
+  return response;
+};
+
+export const getDiseasesByType = async (type) => {
+  const response = await api.get(`/api/diseases/type/${type}`);
+  return response;
+};
+
+export const getDiseaseById = async (diseaseId) => {
+  const response = await api.get(`/api/diseases/${diseaseId}`);
+  return response;
+};
+
+export const createDiseaseAPI = async (diseaseData) => {
+  const response = await api.post('/api/diseases', diseaseData);
+  return response;
+};
+
+export const updateDiseaseAPI = async (diseaseId, diseaseData) => {
+  const response = await api.put(`/api/diseases/${diseaseId}`, diseaseData);
+  return response;
+};
+
+export const deleteDiseaseAPI = async (diseaseId) => {
+  const response = await api.delete(`/api/diseases/${diseaseId}`);
   return response;
 };
 
