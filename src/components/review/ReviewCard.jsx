@@ -25,12 +25,12 @@ function ReviewCard({ review, showActions = false, onEdit, onDelete }) {
         <div className="flex items-start gap-4">
           {/* Avatar */}
           <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary-2 to-primary-1 flex items-center justify-center text-white font-bold flex-shrink-0">
-            {getInitials(review.userName)}
+            {getInitials(review.user?.name || 'U')}
           </div>
 
           {/* User Info */}
           <div>
-            <h4 className="font-semibold text-black">{review.userName}</h4>
+            <h4 className="font-semibold text-black">{review.user?.name || 'User'}</h4>
             <div className="flex items-center gap-2 mt-1">
               <StarRating rating={review.rating} readonly size="sm" />
               <span className="text-sm text-black/60">

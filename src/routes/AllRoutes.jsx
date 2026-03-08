@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
 import AuthPage from '../pages/AuthPage'; // import your auth page
 import AppShell from '../components/AppShell';
+import ReviewsPage from '../pages/review/ReviewsPage';
 
 function AllRoutes() {
   return (
@@ -14,6 +15,7 @@ function AllRoutes() {
         <Route path="/auth" element={<AuthPage />} />
         <Route element={<AppShell />}>
           <Route path="/" element={<HomePage />} />
+          <Route path="/reviews" element={<ReviewsPage />} />
         </Route>
       </Routes>
     </Router>

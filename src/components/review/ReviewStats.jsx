@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchReviewStats } from '../Redux/Features/reviewSlice';
+import { fetchReviewStats } from '../../Redux/Features/reviewSlice';
 import StarRating from './StarRating';
 
 function ReviewStats() {
   const dispatch = useDispatch();
-  const { stats, loading } = useSelector((state) => state.review);
+  const { stats, loading } = useSelector((state) => state?.review);
 
   useEffect(() => {
     dispatch(fetchReviewStats());

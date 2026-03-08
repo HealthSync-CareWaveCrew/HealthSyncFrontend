@@ -6,7 +6,7 @@ import {
   deleteReview,
   clearSuccess,
   clearError,
-} from '../Redux/Features/reviewSlice';
+} from '../../Redux/Features/reviewSlice';
 import ReviewCard from './ReviewCard';
 import StarRating from './StarRating';
 import PopupModal from './PopupModal';

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllReviews } from '../Redux/Features/reviewSlice';
+import { fetchAllReviews } from '../../Redux/Features/reviewSlice';
 import ReviewCard from './ReviewCard';
 
 function ReviewList() {
