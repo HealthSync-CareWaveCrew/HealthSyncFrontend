@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDiseaseType,
+  setSelectedDisease as setSelectedDiseaseAction,
   setUploadedFile,
   clearUploadedFile,
   clearError,
@@ -33,6 +34,7 @@ function ImageAnalysis() {
   // Handle disease selection
   const handleDiseaseSelect = (disease) => {
     setSelectedDisease(disease);
+    dispatch(setSelectedDiseaseAction(disease));
     if (disease) {
       dispatch(setDiseaseType(disease.name));
     } else {

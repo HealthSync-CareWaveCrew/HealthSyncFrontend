@@ -37,6 +37,7 @@ export const analyzeClinicalDataThunk = createAsyncThunk(
 const initialState = {
   mode: 'image', // 'image' or 'clinical'
   diseaseType: '',
+  selectedDisease: null,
   uploadedFile: null,
   previewUrl: null,
   results: null,
@@ -55,6 +56,9 @@ const analysisSlice = createSlice({
     },
     setDiseaseType: (state, action) => {
       state.diseaseType = action.payload;
+    },
+    setSelectedDisease: (state, action) => {
+      state.selectedDisease = action.payload;
     },
     setUploadedFile: (state, action) => {
       state.uploadedFile = action.payload.file;
@@ -107,6 +111,7 @@ const analysisSlice = createSlice({
 export const {
   setMode,
   setDiseaseType,
+  setSelectedDisease,
   setUploadedFile,
   clearUploadedFile,
   clearError,
