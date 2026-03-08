@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   setDiseaseType,
+  setSelectedDisease as setSelectedDiseaseAction,
   clearError,
   analyzeClinicalDataThunk,
 } from '../Redux/Features/analysisSlice';
@@ -30,6 +31,7 @@ function ClinicalDataAnalysis() {
   // Handle disease selection
   const handleDiseaseSelect = (disease) => {
     setSelectedDisease(disease);
+    dispatch(setSelectedDiseaseAction(disease));
     setFormData({}); // Reset form when disease changes
     if (disease) {
       dispatch(setDiseaseType(disease.name));

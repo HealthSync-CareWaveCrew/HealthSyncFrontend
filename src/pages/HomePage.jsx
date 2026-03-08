@@ -4,11 +4,14 @@ import ImageAnalysis from '../components/ImageAnalysis';
 import ClinicalDataAnalysis from '../components/ClinicalDataAnalysis';
 import ResultsPanel from '../components/ResultsPanel';
 import ChatPanel from '../components/ChatPanel';
+import AboutDiseasePanel from '../components/AboutDiseasePanel';
 
 function HomePage() {
-  const { mode, results } = useSelector((state) => state.analysis);
+  const { mode, results, selectedDisease } = useSelector((state) => state.analysis);
   const { isChatEnabled } = useSelector((state) => state.chat);
 
+    // Show About Disease panel only when results and chat are not showing
+  const showAboutPanel = !results && !isChatEnabled;
   return (
     <div className="space-y-6">
       <ModeNavigation />
@@ -21,6 +24,7 @@ function HomePage() {
 
         {/* Right Column: Results and Chat */}
          <div className="space-y-6">
+          {showAboutPanel && <AboutDiseasePanel selectedDisease={selectedDisease} />}
           {results && <ResultsPanel />}
           {isChatEnabled && <ChatPanel />}
         </div>
