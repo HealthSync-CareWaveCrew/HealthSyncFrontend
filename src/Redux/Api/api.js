@@ -167,4 +167,42 @@ export const sendChatMessage = async (message, history, systemInstruction) => {
   return response;
 };
 
+
+
+export const createUserByAdmin = async (userData) => {
+  const response = await api.post('/api/users', userData);
+  return response;
+}
+
+// Disease API endpoints
+export const getAllDiseases = async () => {
+  const response = await api.get('/api/diseases');
+  return response;
+};
+
+export const getDiseasesByType = async (type) => {
+  const response = await api.get(`/api/diseases/type/${type}`);
+  return response;
+};
+
+export const getDiseaseById = async (diseaseId) => {
+  const response = await api.get(`/api/diseases/${diseaseId}`);
+  return response;
+};
+
+export const createDiseaseAPI = async (diseaseData) => {
+  const response = await api.post('/api/diseases', diseaseData);
+  return response;
+};
+
+export const updateDiseaseAPI = async (diseaseId, diseaseData) => {
+  const response = await api.put(`/api/diseases/${diseaseId}`, diseaseData);
+  return response;
+};
+
+export const deleteDiseaseAPI = async (diseaseId) => {
+  const response = await api.delete(`/api/diseases/${diseaseId}`);
+  return response;
+};
+
 export default api;
