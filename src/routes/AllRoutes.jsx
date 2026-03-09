@@ -4,6 +4,7 @@ import AuthPage from '../pages/AuthPage'; // import your auth page
 import AppShell from '../components/AppShell';
 import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
 import AdminLayoutPage from '../pages/AdminLayoutPage';
+import ProtectedRoute from './ProtectedRoute';
 import ReviewsPage from '../pages/review/ReviewsPage';
 
 function AllRoutes() {
@@ -16,8 +17,12 @@ function AllRoutes() {
         {/* or if you want both on same page */}
         <Route path="/auth" element={<AuthPage />} />
         <Route element={<AppShell />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/admin" element={<AdminLayoutPage />}>
+          <Route path="/" element={ <ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/admin" element={
+            <ProtectedRoute requireAdmin={true}>
+              <AdminLayoutPage />
+            </ProtectedRoute>
+          }>
             <Route
               index
               element={<Navigate to="disease-management" replace />}
