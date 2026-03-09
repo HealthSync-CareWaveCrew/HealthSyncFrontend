@@ -176,12 +176,16 @@ export const logout = createAsyncThunk(
 );
 
 // User Profile Thunks
+// Get Current User
 export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
-  async (_, { rejectWithValue }) => {
+  async (_, { rejectWithValue, getState }) => {
     try {
       const response = await API.getCurrentUser();
-      return { user: response.data.user };
+      console.log('API Response:', response.data); // Debug log
+      
+      // The response structure is: { status: "success", data: { user: {...} } }
+      return { user: response.data.data.user };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||
@@ -297,6 +301,8 @@ const authSlice = createSlice({
         state.tempEmail = null;
         state.tempName = null;
         state.error = null;
+
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(verifyRegistrationOTP.rejected, (state, action) => {
         state.loading = false;
@@ -333,6 +339,8 @@ const authSlice = createSlice({
         state.otpSent = false;
         state.tempEmail = null;
         state.error = null;
+
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(verifyLoginOTP.rejected, (state, action) => {
         state.loading = false;
