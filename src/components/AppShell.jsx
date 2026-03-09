@@ -4,11 +4,15 @@ import Header from './Header';
 const customerMenu = [
   { label: 'Home', to: '/', icon: 'H' },
   { label: 'Reviews', to: '/reviews', icon: 'R' },
+  { label: 'My Predictions', to: '/my-predictions', icon: 'MP' },
+  { label: 'Payment', to: '/payment', icon: 'P' },
 ];
 
 const adminMenu = [
   { label: 'Disease Management', to: '/admin/disease-management', icon: 'DM' },
   { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
+  { label: 'Predictions', to: '/predictions', icon: 'P' },
+  { label: 'Payment', to: '/payment', icon: 'P' },
 ];
 
 function AppShell() {
