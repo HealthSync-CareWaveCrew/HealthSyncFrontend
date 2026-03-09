@@ -181,7 +181,7 @@ export const getCurrentUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await API.getCurrentUser();
-      return { user: response.data.user };
+      return { user: response.data.data.user };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message ||

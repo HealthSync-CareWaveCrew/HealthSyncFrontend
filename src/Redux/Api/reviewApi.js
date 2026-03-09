@@ -10,6 +10,18 @@ const api = axios.create({
   withCredentials: true // Important for cookies/tokens
 });
 
+// Add token to requests if it exists
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // Review API endpoints
 export const createReviewAPI = async (reviewData) => {
   const response = await api.post('/api/reviews', reviewData);
@@ -30,8 +42,8 @@ export const getAllReviewsAdminAPI = async () => {
   return response;
 };
 
-export const getReviewsByUserAPI = async (email) => {
-  const response = await api.get(`/api/reviews/user/${email}`);
+export const getReviewsByUserAPI = async () => {
+  const response = await api.get(`/api/reviews/user`);
   return response;
 };
 

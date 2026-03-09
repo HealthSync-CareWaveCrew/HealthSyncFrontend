@@ -35,7 +35,7 @@ function AllRoutes() {
               element={<AdminDiseaseManagementPage />}
             />
           </Route>
-          <Route path="/reviews" element={<ReviewsPage />} />
+          <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
         </Route>
       </Routes>
     </Router>
