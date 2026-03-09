@@ -408,7 +408,7 @@ const AuthPage = () => {
       return;
     }
     
-    toast.loading('Verifying OTP...', { id: 'verify' });
+    // toast.loading('Verifying OTP...', { id: 'verify' });
     
     if (otpType === 'login') {
       dispatch(verifyLoginOTP({
