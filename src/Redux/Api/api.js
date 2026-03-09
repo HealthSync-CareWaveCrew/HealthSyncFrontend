@@ -135,12 +135,13 @@ export const deleteUser = async (id) => {
 };
 
 // Existing functions
-export const analyzeImage = async (file, diseaseType) => {
+export const analyzeImage = async (diseaseId, file, diseaseType) => {
   const formData = new FormData();
   formData.append('image', file);
   formData.append('diseaseType', diseaseType);
+  formData.append('diseaseId', diseaseId);
 
-  const response = await api.post('/analyze-image', formData, {
+  const response = await api.post('/api/analyze-image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -148,27 +149,21 @@ export const analyzeImage = async (file, diseaseType) => {
   return response;
 };
 
-export const analyzeClinicalData = async (diseaseType, formData) => {
-  const response = await api.post('/analyze-clinical-data', {
+export const analyzeClinicalData = async (diseaseType, formData, diseaseId) => {
+  const response = await api.post('/api/analyze-clinical-data', {
     diseaseType,
     formData,
+    diseaseId,
   });
   return response;
 };
 
 export const sendChatMessage = async (message, history, systemInstruction) => {
-  const response = await api.post('/chat', {
+  const response = await api.post('/api/chat', {
     message,
     history,
     systemInstruction,
   });
-  return response;
-};
-
-
-
-export const createUserByAdmin = async (userData) => {
-  const response = await api.post('/api/users', userData);
   return response;
 };
 

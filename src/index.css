@@ -4,7 +4,57 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-slate-900 via-white to-slate-900 min-h-screen;
+    @apply bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 min-h-screen;
     font-family: 'Outfit', sans-serif;
+  }
+}
+
+@layer components {
+  /* Markdown Content Styles */
+  .markdown-content {
+    @apply text-sm;
+  }
+  
+  .markdown-content table {
+    @apply w-full border-collapse my-3;
+  }
+  
+  .markdown-content th {
+    @apply font-semibold text-left;
+  }
+  
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply my-2 space-y-1;
+  }
+  
+  .markdown-content li {
+    @apply leading-relaxed;
+  }
+  
+  .markdown-content code {
+    @apply text-sm font-mono;
+  }
+  
+  .markdown-content pre {
+    @apply text-sm font-mono;
+  }
+  
+  .markdown-content a {
+    @apply break-words;
+  }
+  
+  .markdown-content p:first-child {
+    @apply mt-0;
+  }
+  
+  .markdown-content p:last-child {
+    @apply mb-0;
+  }
+  
+  .markdown-content h1:first-child,
+  .markdown-content h2:first-child,
+  .markdown-content h3:first-child {
+    @apply mt-0;
   }
 }
