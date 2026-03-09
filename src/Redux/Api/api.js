@@ -165,4 +165,11 @@ export const sendChatMessage = async (message, history, systemInstruction) => {
   return response;
 };
 
+
+
+export const createUserByAdmin = async (userData) => {
+  const response = await api.post('/api/users', userData);
+  return response;
+};
+
 export default api;
