@@ -7,11 +7,12 @@ import PopupModal from './PopupModal';
 function ReviewForm({ onSuccess }) {
   const dispatch = useDispatch();
   const { loading, error, success } = useSelector((state) => state.review);
+  const { user } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
-    user:"69abdc23509b0aa650eb2ebe",
-    userName: '',
-    userEmail: '',
+    // user:"",
+    userName: user?.name || '',
+    userEmail: user?.email || '',
     rating: 0,
     title: '',
     comment: '',
@@ -27,7 +28,7 @@ function ReviewForm({ onSuccess }) {
         title: '',
         comment: '',
       });
-      
+
       if (onSuccess) {
         setTimeout(() => {
           onSuccess();
@@ -84,7 +85,8 @@ function ReviewForm({ onSuccess }) {
             type="text"
             name="userName"
             value={formData.userName}
-            onChange={handleChange}
+            // onChange={handleChange}
+            disabled
             required
             maxLength={50}
             placeholder="John Doe"
@@ -101,7 +103,8 @@ function ReviewForm({ onSuccess }) {
             type="email"
             name="userEmail"
             value={formData.userEmail}
-            onChange={handleChange}
+            // onChange={handleChange}
+            disabled
             required
             placeholder="john@example.com"
             className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1"

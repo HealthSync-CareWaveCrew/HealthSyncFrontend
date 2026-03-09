@@ -16,6 +16,9 @@ function UserReviews() {
   const { userReviews, loading, error, success } = useSelector(
     (state) => state.review
   );
+    const { user } = useSelector(
+    (state) => state.auth
+  );
 
   const [userEmail, setUserEmail] = useState('');
   const [emailSubmitted, setEmailSubmitted] = useState(false);
@@ -47,13 +50,19 @@ function UserReviews() {
     }
   }, [error, dispatch]);
 
-  const handleEmailSubmit = (e) => {
-    e.preventDefault();
-    if (userEmail.trim()) {
-      dispatch(fetchUserReviews(userEmail));
-      setEmailSubmitted(true);
-    }
-  };
+  // const handleEmailSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (userEmail.trim()) {
+  //     dispatch(fetchUserReviews(userEmail));
+  //     setEmailSubmitted(true);
+  //   }
+  // };
+
+useEffect(() => {
+  if (user?.id) {
+    dispatch(fetchUserReviews());
+  }
+}, [user, dispatch]);
 
   const handleEdit = (review) => {
     setEditingReview(review._id);
@@ -93,36 +102,36 @@ function UserReviews() {
     setEditFormData({ rating: 0, title: '', comment: '' });
   };
 
-  if (!emailSubmitted) {
-    return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-        <h3 className="text-2xl font-bold text-black mb-6">Manage Your Reviews</h3>
+  // if (!emailSubmitted) {
+  //   return (
+  //     <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+  //       <h3 className="text-2xl font-bold text-black mb-6">Manage Your Reviews</h3>
 
-        <form onSubmit={handleEmailSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-black mb-2">
-              Enter your email to view and manage your reviews
-            </label>
-            <input
-              type="email"
-              value={userEmail}
-              onChange={(e) => setUserEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-              className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
-            />
-          </div>
+  //       <form onSubmit={handleEmailSubmit} className="space-y-4">
+  //         <div>
+  //           <label className="block text-sm font-medium text-black mb-2">
+  //             Enter your email to view and manage your reviews
+  //           </label>
+  //           <input
+  //             type="email"
+  //             value={userEmail}
+  //             onChange={(e) => setUserEmail(e.target.value)}
+  //             required
+  //             placeholder="your@email.com"
+  //             className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
+  //           />
+  //         </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 px-6 bg-gradient-to-r from-primary-2 to-primary-1 text-white font-bold rounded-xl hover:from-primary-2/90 hover:to-primary-1/90 transition-all duration-300 shadow-lg"
-          >
-            View My Reviews
-          </button>
-        </form>
-      </div>
-    );
-  }
+  //         <button
+  //           type="submit"
+  //           className="w-full py-3 px-6 bg-gradient-to-r from-primary-2 to-primary-1 text-white font-bold rounded-xl hover:from-primary-2/90 hover:to-primary-1/90 transition-all duration-300 shadow-lg"
+  //         >
+  //           View My Reviews
+  //         </button>
+  //       </form>
+  //     </div>
+  //   );
+  // }
 
   if (loading) {
     return (
@@ -141,7 +150,7 @@ function UserReviews() {
           <h3 className="text-xl font-bold text-black">
             Your Reviews ({userReviews.length})
           </h3>
-          <button
+          {/* <button
             onClick={() => {
               setEmailSubmitted(false);
               setUserEmail('');
@@ -149,7 +158,7 @@ function UserReviews() {
             className="px-4 py-2 bg-primary-3 text-black rounded-lg hover:bg-primary-2/50 transition-colors text-sm"
           >
             Change Email
-          </button>
+          </button> */}
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation, useNavigate } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 import { 
   sendRegistrationOTP,
@@ -14,6 +15,8 @@ import {
 
 const AuthPage = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const navigate = useNavigate();
   const { 
     loading, 
     error: authError, 
@@ -64,6 +67,15 @@ const AuthPage = () => {
     hasSpecial: false
   });
 
+  // Set activeTab based on route
+  useEffect(() => {
+    if (location.pathname === '/login') {
+      setActiveTab('login');
+    } else if (location.pathname === '/register') {
+      setActiveTab('register');
+    }
+  }, [location.pathname]);
+
   // Show toast for auth errors
   useEffect(() => {
     if (authError) {
@@ -110,7 +122,8 @@ const AuthPage = () => {
         }
       });
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        // window.location.href = '/dashboard';
+        navigate('/');
       }, 2000);
     }
   }, [isAuthenticated]);

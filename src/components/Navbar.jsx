@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/landing.css";
 import { FaPhoneAlt, FaSearch } from "react-icons/fa";
 
 function Navbar() {
+  const navigate = useNavigate();
+
   return (
     <nav className="navbar">
       
@@ -32,7 +35,7 @@ function Navbar() {
           <span>24/7 Support: 1111</span>
         </div>
 
-        <button className="btn-primary">Login</button>
+        <button className="btn-primary" onClick={() => navigate('/login')}>Login</button>
       </div>
 
     </nav>
