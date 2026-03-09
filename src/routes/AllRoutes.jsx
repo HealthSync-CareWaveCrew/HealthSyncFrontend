@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import HomePage from '../pages/HomePage';
+import LandingPage from "../pages/LandingPage";
 import AuthPage from '../pages/AuthPage'; // import your auth page
 import AppShell from '../components/AppShell';
 import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
@@ -11,6 +12,8 @@ function AllRoutes() {
   return (
     <Router>
       <Routes>
+        <Route path="/landingPage" element={<LandingPage />} />
+        
         {/* <Route path="/" element={<HomePage />} /> */}
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
