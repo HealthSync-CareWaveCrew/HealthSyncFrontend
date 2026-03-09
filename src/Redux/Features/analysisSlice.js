@@ -4,9 +4,9 @@ import * as API from '../Api/api';
 //////////////////////////////Analysis Thunks //////////////////////////////
 export const analyzeImageData = createAsyncThunk(
   'analysis/analyzeImage',
-  async ({ file, diseaseType }, { rejectWithValue }) => {
+  async ({ diseaseId,file, diseaseType }, { rejectWithValue }) => {
     try {
-      const response = await API.analyzeImage(file, diseaseType);
+      const response = await API.analyzeImage(diseaseId,file, diseaseType);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -20,9 +20,9 @@ export const analyzeImageData = createAsyncThunk(
 
 export const analyzeClinicalDataThunk = createAsyncThunk(
   'analysis/analyzeClinicalData',
-  async ({ diseaseType, formData }, { rejectWithValue }) => {
+  async ({ diseaseType, formData, diseaseId }, { rejectWithValue }) => {
     try {
-      const response = await API.analyzeClinicalData(diseaseType, formData);
+      const response = await API.analyzeClinicalData(diseaseType, formData, diseaseId);
       return response.data;
     } catch (error) {
       return rejectWithValue(
@@ -37,6 +37,7 @@ export const analyzeClinicalDataThunk = createAsyncThunk(
 const initialState = {
   mode: 'image', // 'image' or 'clinical'
   diseaseType: '',
+  selectedDisease: null,
   uploadedFile: null,
   previewUrl: null,
   results: null,
@@ -55,6 +56,9 @@ const analysisSlice = createSlice({
     },
     setDiseaseType: (state, action) => {
       state.diseaseType = action.payload;
+    },
+    setSelectedDisease: (state, action) => {
+      state.selectedDisease = action.payload;
     },
     setUploadedFile: (state, action) => {
       state.uploadedFile = action.payload.file;
@@ -107,6 +111,7 @@ const analysisSlice = createSlice({
 export const {
   setMode,
   setDiseaseType,
+  setSelectedDisease,
   setUploadedFile,
   clearUploadedFile,
   clearError,
