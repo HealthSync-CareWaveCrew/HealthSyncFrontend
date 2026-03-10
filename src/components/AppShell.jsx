@@ -2,6 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Header from './Header';
 
 const customerMenu = [
+  { label: 'Dashboard', to: '/dashboard', icon: 'D' },
   { label: 'Home', to: '/', icon: 'H' },
   { label: 'Reviews', to: '/reviews', icon: 'R' },
   { label: 'My Predictions', to: '/my-predictions', icon: 'MP' },

@@ -1,4 +1,4 @@
-import AdminReviewManagement from '../components/review/AdminReviewManagement';
+import AdminReviewManagement from '../../components/review/AdminReviewManagement';
 
 function AdminReviewsPage() {
   return <AdminReviewManagement />;
