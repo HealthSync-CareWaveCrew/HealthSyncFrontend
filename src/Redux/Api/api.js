@@ -162,6 +162,24 @@ export const createUserByAdmin = async (userData) => {
   return response;
 };
 
+export const getAnalysisHistoryAPI = async (filters = {}) => {
+  const params = new URLSearchParams();
+
+  if (filters.type) params.append('type', filters.type);
+  if (filters.diseaseName) params.append('diseaseName', filters.diseaseName);
+  if (filters.user) params.append('user', filters.user);
+  if (filters.date) params.append('date', filters.date);
+
+  const query = params.toString();
+  const response = await api.get(`/api/analysis-history${query ? `?${query}` : ''}`);
+  return response;
+};
+
+export const deleteAnalysisAPI = async (analysisId) => {
+  const response = await api.delete(`/api/analysis/${analysisId}`);
+  return response;
+};
+
 // Disease API endpoints
 export const getAllDiseases = async () => {
   const response = await api.get('/api/diseases');

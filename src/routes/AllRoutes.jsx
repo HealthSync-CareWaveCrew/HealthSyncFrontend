@@ -9,6 +9,8 @@ import ProtectedRoute from './ProtectedRoute';
 import UserDashboard from '../components/UserDashboard';
 import AdminReviewsPage from '../pages/review/AdminReviewsPage';
 import ReviewsPage from '../pages/review/ReviewsPage';
+import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
+import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
 
 function AllRoutes() {
   return (
@@ -37,12 +39,20 @@ function AllRoutes() {
               path="disease-management"
               element={<AdminDiseaseManagementPage />}
             />
+            <Route
+              path="analysis-history"
+              element={<AdminAnalysisHistoryPage />}
+            />
              <Route
               path="reviews-management"
               element={<AdminReviewsPage />}
             />
           </Route>
           <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+          <Route
+            path="/analysis-history"
+            element={<ProtectedRoute><CustomerAnalysisHistoryPage /></ProtectedRoute>}
+          />
         </Route>
       </Routes>
     </Router>

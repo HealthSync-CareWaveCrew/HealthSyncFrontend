@@ -5,12 +5,14 @@ const customerMenu = [
   { label: 'Dashboard', to: '/dashboard', icon: 'D' },
   { label: 'Home', to: '/', icon: 'H' },
   { label: 'Reviews', to: '/reviews', icon: 'R' },
+  { label: 'My Analysis', to: '/analysis-history', icon: 'AH' },
   { label: 'My Predictions', to: '/my-predictions', icon: 'MP' },
   { label: 'Payment', to: '/payment', icon: 'P' },
 ];
 
 const adminMenu = [
   { label: 'Disease Management', to: '/admin/disease-management', icon: 'DM' },
+  { label: 'Analysis Management', to: '/admin/analysis-history', icon: 'AM' },
   { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
   { label: 'Predictions', to: '/predictions', icon: 'P' },
   { label: 'Payment', to: '/payment', icon: 'P' },

@@ -21,6 +21,8 @@ import './index.css'
 import AllRoutes from './routes/AllRoutes'
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { getCurrentUser } from './Redux/Features/authSlice'
+import { ToastContainer } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 console.log('Google Client ID:', GOOGLE_CLIENT_ID);
@@ -41,11 +43,19 @@ function AppInitializer() {
 }
 
 createRoot(document.getElementById('root')).render(
-  <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-    <StrictMode>
-      <Provider store={store}>
-        <AllRoutes />
-      </Provider>
-    </StrictMode>
-  </GoogleOAuthProvider>
+   <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+  <StrictMode>
+    <Provider store={store}>
+      <AppInitializer />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        draggable
+        pauseOnHover
+      />
+    </Provider>
+  </StrictMode>
+</GoogleOAuthProvider>
 );
