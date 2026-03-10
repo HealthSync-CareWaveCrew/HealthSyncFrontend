@@ -34,6 +34,22 @@ export const analyzeClinicalDataThunk = createAsyncThunk(
   }
 );
 
+export const fetchAnalysisHistoryThunk = createAsyncThunk(
+  'analysis/fetchHistory',
+  async (filters = {}, { rejectWithValue }) => {
+    try {
+      const response = await API.getAnalysisHistoryAPI(filters);
+      return response.data?.data || [];
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to load analysis history.'
+      );
+    }
+  }
+);
+
 const initialState = {
   mode: 'image', // 'image' or 'clinical'
   diseaseType: '',
@@ -43,6 +59,10 @@ const initialState = {
   results: null,
   loading: false,
   error: null,
+  // Analysis History
+  historyList: [],
+  historyLoading: false,
+  historyError: null,
 };
 
 const analysisSlice = createSlice({
@@ -70,6 +90,9 @@ const analysisSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    clearHistoryError: (state) => {
+      state.historyError = null;
     },
     resetAnalysis: (state) => {
       return initialState;
@@ -104,6 +127,21 @@ const analysisSlice = createSlice({
       .addCase(analyzeClinicalDataThunk.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.message;
+      })
+      // Fetch Analysis History
+      .addCase(fetchAnalysisHistoryThunk.pending, (state) => {
+        state.historyLoading = true;
+        state.historyError = null;
+      })
+      .addCase(fetchAnalysisHistoryThunk.fulfilled, (state, action) => {
+        state.historyLoading = false;
+        state.historyList = action.payload;
+        state.historyError = null;
+      })
+      .addCase(fetchAnalysisHistoryThunk.rejected, (state, action) => {
+        state.historyLoading = false;
+        state.historyError = action.payload;
+        state.historyList = [];
       });
   },
 });
@@ -115,6 +153,7 @@ export const {
   setUploadedFile,
   clearUploadedFile,
   clearError,
+  clearHistoryError,
   resetAnalysis,
 } = analysisSlice.actions;
 

@@ -7,6 +7,8 @@ import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
 import AdminLayoutPage from '../pages/AdminLayoutPage';
 import ProtectedRoute from './ProtectedRoute';
 import ReviewsPage from '../pages/review/ReviewsPage';
+import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
+import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
 
 function AllRoutes() {
   return (
@@ -34,8 +36,16 @@ function AllRoutes() {
               path="disease-management"
               element={<AdminDiseaseManagementPage />}
             />
+            <Route
+              path="analysis-history"
+              element={<AdminAnalysisHistoryPage />}
+            />
           </Route>
           <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+          <Route
+            path="/analysis-history"
+            element={<ProtectedRoute><CustomerAnalysisHistoryPage /></ProtectedRoute>}
+          />
         </Route>
       </Routes>
     </Router>

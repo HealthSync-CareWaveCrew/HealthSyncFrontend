@@ -1,0 +1,126 @@
+/* ================================
+   DateRangePicker.css
+   Scoped styles for react-datepicker
+   ================================ */
+
+/* Wrapper so we can reliably position the clear icon */
+.date-range {
+  position: relative;
+  display: inline-block;
+}
+
+/* --- Calendar panel --- */
+.date-range .react-datepicker {
+  border: 1px solid #FFB2B2;             /* primary-2 */
+  box-shadow: 0 8px 20px rgba(227, 106, 106, 0.15);
+  font-size: 14px;
+}
+
+/* Header: no solid background; keep a subtle divider */
+.date-range .react-datepicker__header {
+  background: #FFFBF1;                   /* primary-4 */
+  border-bottom: 1px solid #FFB2B2;      /* primary-2 */
+}
+
+/* Header text colors now on white */
+.date-range .react-datepicker__current-month,
+.date-range .react-datepicker-time__header,
+.date-range .react-datepicker-year-header {
+  color: #111827; /* neutral dark */
+  font-weight: 600;
+}
+
+.date-range .react-datepicker__day-name {
+  color: #4b5563; /* slate-ish */
+  font-weight: 500;
+}
+
+/* Selected / in-range styles */
+.date-range .react-datepicker__day--selected,
+.date-range .react-datepicker__day--keyboard-selected {
+  background-color: #E36A6A;             /* primary-1 */
+  color: #ffffff;
+}
+
+.date-range .react-datepicker__day--in-range,
+.date-range .react-datepicker__day--in-selecting-range {
+  background-color: #FFB2B2;             /* primary-2 */
+  color: #111827;
+}
+
+.date-range .react-datepicker__day--range-start,
+.date-range .react-datepicker__day--range-end {
+  background-color: #E36A6A;             /* primary-1 */
+  color: #ffffff;
+}
+
+/* Hover states */
+.date-range .react-datepicker__day:hover {
+  background-color: #FFF2D0;             /* primary-3 */
+  color: #E36A6A;                        /* primary-1 */
+}
+
+/* Hide triangle (we also set showPopperArrow={false} in JSX) */
+.date-range .react-datepicker__triangle {
+  display: none;
+}
+
+/* --- Input styles --- */
+.drp-input {
+  --drp-clear-size: 22px;                 /* size of the circular clear btn */
+  border: 1px solid #FFB2B2;              /* primary-2 */
+  background: #FFFBF1;                    /* primary-4 */
+  border-radius: 0.375rem;                /* 6px */
+  padding: 0.5rem 0.75rem;
+  padding-right: calc(var(--drp-clear-size) + 12px); /* make room for clear btn */
+  width: 220px;
+  height: 34px;
+  line-height: 1.25rem;
+  position: relative;
+}
+
+/* Ensure the library’s input wrapper is positioned for absolute children */
+.date-range .react-datepicker__input-container {
+  position: relative;
+}
+
+/* Position & size the clear icon container */
+.date-range .react-datepicker__close-icon {
+  position: absolute !important;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--drp-clear-size);
+  height: var(--drp-clear-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  z-index: 1; /* keep above input text */
+}
+
+/* Style the circular close button with a centered × */
+.date-range .react-datepicker__close-icon::after {
+  content: "×";
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  background-color: #E36A6A;              /* primary-1 */
+  color: #ffffff;
+  border-radius: 9999px;
+  font-weight: 700;
+  font-size: 14px;                         /* adjust for larger/smaller X */
+  line-height: 1;                          /* ensure crisp centering */
+}
+
+/* Hover/focus feedback for the close button */
+.date-range .react-datepicker__close-icon:hover::after {
+  filter: brightness(1.1);
+}
+.date-range .react-datepicker__close-icon:focus-visible::after {
+  outline: 2px solid #E36A6A;              /* primary-1 */
+  outline-offset: 2px;
+}
