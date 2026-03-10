@@ -38,9 +38,9 @@ export const fetchReviewStats = createAsyncThunk(
 
 export const fetchUserReviews = createAsyncThunk(
   'review/fetchUserReviews',
-  async (email, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await getReviewsByUserAPI(email);
+      const response = await getReviewsByUserAPI();
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.error || 'Failed to fetch user reviews');
