@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import toast, { Toaster } from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
 import { 
   sendRegistrationOTP,
   verifyRegistrationOTP,
@@ -9,7 +10,8 @@ import {
   forgotPassword,
   resetPassword,
   clearError,
-  resetOTPState
+  resetOTPState,
+  googleLogin
 } from '../Redux/Features/authSlice';
 
 const AuthPage = () => {
@@ -64,6 +66,34 @@ const AuthPage = () => {
     hasSpecial: false
   });
 
+  // Google login handler
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      toast.loading('Signing in with Google...', { id: 'google' });
+      
+      // Dispatch Google login action
+      await dispatch(googleLogin({
+        credential: credentialResponse.credential
+      })).unwrap();
+      
+      toast.success('Google sign-in successful! Redirecting...', {
+        id: 'google',
+        duration: 2000
+      });
+      
+      // The redirect will be handled by the isAuthenticated useEffect
+    } catch (error) {
+      toast.error(error || 'Google sign-in failed', { id: 'google' });
+    }
+  };
+
+  const handleGoogleError = () => {
+    toast.error('Google sign-in failed. Please try again.', {
+      duration: 4000,
+      position: 'top-right'
+    });
+  };
+
   // Show toast for auth errors
   useEffect(() => {
     if (authError) {
@@ -110,7 +140,7 @@ const AuthPage = () => {
         }
       });
       setTimeout(() => {
-        window.location.href = '/dashboard';
+        window.location.href = '/';
       }, 2000);
     }
   }, [isAuthenticated]);
@@ -167,13 +197,6 @@ const AuthPage = () => {
     }
     return () => clearInterval(interval);
   }, [resendTimer, canResend, showOtpInput, forgotPasswordStep]);
-
-  // Remove the redirect from here since we handle it with toast
-  useEffect(() => {
-    if (isAuthenticated) {
-      // We already show toast and redirect in the above useEffect
-    }
-  }, [isAuthenticated]);
 
   const calculatePasswordScore = (password) => {
     let score = 0;
@@ -350,7 +373,6 @@ const AuthPage = () => {
     
     if (Object.keys(newErrors).length === 0) {
       setOtpType('login');
-      //toast.loading('Sending OTP...', { id: 'otp' });
       dispatch(sendLoginOTP({
         email: formData.email,
         password: formData.password
@@ -380,7 +402,6 @@ const AuthPage = () => {
         password: formData.password 
       });
       
-      //toast.loading('Sending OTP...', { id: 'otp' });
       dispatch(sendRegistrationOTP({
         name: formData.name,
         email: formData.email,
@@ -407,8 +428,6 @@ const AuthPage = () => {
       });
       return;
     }
-    
-    // toast.loading('Verifying OTP...', { id: 'verify' });
     
     if (otpType === 'login') {
       dispatch(verifyLoginOTP({
@@ -860,7 +879,7 @@ const AuthPage = () => {
       
       <div className="w-full bg-white flex flex-col md:flex-row overflow-hidden min-h-screen">
         
-        {/* LEFT PANEL - Keep your existing left panel */}
+        {/* LEFT PANEL */}
         <div className="w-full md:w-1/2 bg-gradient-to-br from-primary-1 to-primary-2 p-6 md:p-8 flex flex-col items-center justify-center text-white relative overflow-hidden">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
@@ -909,444 +928,467 @@ const AuthPage = () => {
         </div>
 
         {/* RIGHT PANEL */}
-<div className="w-full md:w-1/2 p-6 md:p-8 lg:p-12 flex items-center justify-center overflow-y-auto">
-  <div className="w-full max-w-md">
-    {/* ALL YOUR EXISTING CONTENT GOES HERE */}
-    
-    {/* Remove the old error displays since we're using toasts now */}
-    
-    {!showForgotPassword ? (
-      !showOtpInput ? (
-        <>
-          {/* tabs */}
-          <div className="flex gap-2 mb-6 md:mb-8">
-            <button
-              onClick={() => {
-                setActiveTab('login');
-                setErrors({});
-                dispatch(clearError());
-              }}
-              disabled={loading}
-              className={`flex-1 py-2.5 md:py-3 rounded-xl font-semibold transition-all text-sm md:text-base ${
-                activeTab === 'login'
-                  ? 'bg-primary-1 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setActiveTab('register');
-                setErrors({});
-                dispatch(clearError());
-              }}
-              disabled={loading}
-              className={`flex-1 py-2.5 md:py-3 rounded-xl font-semibold transition-all text-sm md:text-base ${
-                activeTab === 'register'
-                  ? 'bg-primary-1 text-white shadow-lg'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              Register
-            </button>
-          </div>
-
-          {/* forms */}
-          <div className="flex-1">
-            {activeTab === 'login' ? (
-              <form onSubmit={handleLoginSubmit} className="space-y-4 md:space-y-5">
-                {/* ... keep your existing login form JSX ... */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
-                      errors.email ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                    placeholder="you@example.com"
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showLoginPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      disabled={loading}
-                      className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
-                        errors.password ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                      } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                      placeholder="••••••••"
-                    />
+        <div className="w-full md:w-1/2 p-6 md:p-8 lg:p-12 flex items-center justify-center overflow-y-auto">
+          <div className="w-full max-w-md">
+            
+            {!showForgotPassword ? (
+              !showOtpInput ? (
+                <>
+                  {/* tabs */}
+                  <div className="flex gap-2 mb-6 md:mb-8 mt-16">
                     <button
-                      type="button"
-                      onClick={() => togglePasswordVisibility('login')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
+                      onClick={() => {
+                        setActiveTab('login');
+                        setErrors({});
+                        dispatch(clearError());
+                      }}
                       disabled={loading}
+                      className={`flex-1 py-2.5 md:py-3 rounded-xl font-semibold transition-all text-sm md:text-base ${
+                        activeTab === 'login'
+                          ? 'bg-primary-1 text-white shadow-lg'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      <i className={`fas ${showLoginPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
+                      Login
+                    </button>
+                    <button
+                      onClick={() => {
+                        setActiveTab('register');
+                        setErrors({});
+                        dispatch(clearError());
+                      }}
+                      disabled={loading}
+                      className={`flex-1 py-2.5 md:py-3 rounded-xl font-semibold transition-all text-sm md:text-base ${
+                        activeTab === 'register'
+                          ? 'bg-primary-1 text-white shadow-lg'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    >
+                      Register
                     </button>
                   </div>
-                  {errors.password && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.password}
-                    </p>
-                  )}
-                </div>
 
-                <div className="flex items-center justify-between">
-                  <label className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="rounded w-4 h-4 accent-primary-1"
-                      disabled={loading}
-                    />
-                    <span className="text-xs md:text-sm text-gray-600">Remember me</span>
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowForgotPassword(true);
-                      setForgotPasswordStep('email');
-                    }}
-                    className="text-xs md:text-sm text-primary-1 hover:underline"
-                    disabled={loading}
-                  >
-                    Forgot password?
-                  </button>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-primary-1 text-white py-2.5 md:py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      Sending OTP...
-                    </>
-                  ) : (
-                    'Sign In'
-                  )}
-                </button>
-              </form>
-            ) : (
-              <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                {/* keep your existing registration form JSX */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
-                      errors.name ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                    placeholder="John Doe"
-                  />
-                  {errors.name && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.name}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Email Address
-                  </label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    disabled={loading}
-                    className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
-                      errors.email ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                    } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                    placeholder="you@example.com"
-                  />
-                  {errors.email && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.email}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      disabled={loading}
-                      className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
-                        errors.password ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                      } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                      placeholder="Minimum 8 characters"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => togglePasswordVisibility('register')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
-                      disabled={loading}
-                    >
-                      <i className={`fas ${showPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
-                    </button>
-                  </div>
-                  
-                  {/* Password strength meter */}
-                  {formData.password && !loading && (
-                    <div className="mt-2 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className={`h-full ${getStrengthColor(formData.password)} transition-all duration-300`}
-                            style={{ width: `${(calculatePasswordScore(formData.password) / 4) * 100}%` }}
-                          ></div>
+                  {/* forms */}
+                  <div className="flex-1">
+                    {activeTab === 'login' ? (
+                      <form onSubmit={handleLoginSubmit} className="space-y-4 md:space-y-5">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Email Address
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            disabled={loading}
+                            className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
+                              errors.email ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                            } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                            placeholder="you@example.com"
+                          />
+                          {errors.email && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.email}
+                            </p>
+                          )}
                         </div>
-                        <span className="text-xs font-medium text-gray-600">
-                          {getStrengthText(formData.password)}
-                        </span>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showLoginPassword ? "text" : "password"}
+                              name="password"
+                              value={formData.password}
+                              onChange={handleChange}
+                              disabled={loading}
+                              className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
+                                errors.password ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                              placeholder="••••••••"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => togglePasswordVisibility('login')}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
+                              disabled={loading}
+                            >
+                              <i className={`fas ${showLoginPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
+                            </button>
+                          </div>
+                          {errors.password && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.password}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <label className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              className="rounded w-4 h-4 accent-primary-1"
+                              disabled={loading}
+                            />
+                            <span className="text-xs md:text-sm text-gray-600">Remember me</span>
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setShowForgotPassword(true);
+                              setForgotPasswordStep('email');
+                            }}
+                            className="text-xs md:text-sm text-primary-1 hover:underline"
+                            disabled={loading}
+                          >
+                            Forgot password?
+                          </button>
+                        </div>
+
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full bg-primary-1 text-white py-2.5 md:py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {loading ? (
+                            <>
+                              <i className="fas fa-spinner fa-spin"></i>
+                              Sending OTP...
+                            </>
+                          ) : (
+                            'Sign In'
+                          )}
+                        </button>
+                      </form>
+                    ) : (
+                      <form onSubmit={handleRegisterSubmit} className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Full Name
+                          </label>
+                          <input
+                            type="text"
+                            name="name"
+                            value={formData.name}
+                            onChange={handleChange}
+                            disabled={loading}
+                            className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
+                              errors.name ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                            } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                            placeholder="John Doe"
+                          />
+                          {errors.name && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.name}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Email Address
+                          </label>
+                          <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            disabled={loading}
+                            className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base ${
+                              errors.email ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                            } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                            placeholder="you@example.com"
+                          />
+                          {errors.email && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.email}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              name="password"
+                              value={formData.password}
+                              onChange={handleChange}
+                              disabled={loading}
+                              className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
+                                errors.password ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                              placeholder="Minimum 8 characters"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => togglePasswordVisibility('register')}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
+                              disabled={loading}
+                            >
+                              <i className={`fas ${showPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
+                            </button>
+                          </div>
+                          
+                          {/* Password strength meter */}
+                          {formData.password && !loading && (
+                            <div className="mt-2 space-y-2">
+                              <div className="flex items-center gap-2">
+                                <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div 
+                                    className={`h-full ${getStrengthColor(formData.password)} transition-all duration-300`}
+                                    style={{ width: `${(calculatePasswordScore(formData.password) / 4) * 100}%` }}
+                                  ></div>
+                                </div>
+                                <span className="text-xs font-medium text-gray-600">
+                                  {getStrengthText(formData.password)}
+                                </span>
+                              </div>
+                              
+                              {/* Password requirements checklist */}
+                              <div className="grid grid-cols-2 gap-2 text-xs">
+                                <div className={`flex items-center gap-1 ${passwordStrength.hasLength ? 'text-green-500' : 'text-gray-400'}`}>
+                                  <i className={`fas ${passwordStrength.hasLength ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
+                                  <span>8+ characters</span>
+                                </div>
+                                <div className={`flex items-center gap-1 ${passwordStrength.hasNumber ? 'text-green-500' : 'text-gray-400'}`}>
+                                  <i className={`fas ${passwordStrength.hasNumber ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
+                                  <span>Number</span>
+                                </div>
+                                <div className={`flex items-center gap-1 ${passwordStrength.hasUpper ? 'text-green-500' : 'text-gray-400'}`}>
+                                  <i className={`fas ${passwordStrength.hasUpper ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
+                                  <span>Uppercase</span>
+                                </div>
+                                <div className={`flex items-center gap-1 ${passwordStrength.hasLower ? 'text-green-500' : 'text-gray-400'}`}>
+                                  <i className={`fas ${passwordStrength.hasLower ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
+                                  <span>Lowercase</span>
+                                </div>
+                                <div className={`flex items-center gap-1 ${passwordStrength.hasSpecial ? 'text-green-500' : 'text-gray-400'}`}>
+                                  <i className={`fas ${passwordStrength.hasSpecial ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
+                                  <span>Special char</span>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {errors.password && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.password}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
+                            Confirm Password
+                          </label>
+                          <div className="relative">
+                            <input
+                              type={showConfirmPassword ? "text" : "password"}
+                              name="confirmPassword"
+                              value={formData.confirmPassword}
+                              onChange={handleChange}
+                              disabled={loading}
+                              className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
+                                errors.confirmPassword ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
+                              } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                              placeholder="Re-enter password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => togglePasswordVisibility('confirm')}
+                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
+                              disabled={loading}
+                            >
+                              <i className={`fas ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
+                            </button>
+                          </div>
+                          {errors.confirmPassword && (
+                            <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
+                              <i className="fas fa-exclamation-circle"></i>
+                              {errors.confirmPassword}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={agreeTerms}
+                            onChange={(e) => setAgreeTerms(e.target.checked)}
+                            required
+                            className="rounded w-4 h-4 accent-primary-1"
+                            disabled={loading}
+                          />
+                          <span className="text-xs md:text-sm text-gray-600">
+                            I agree to the <a href="#" className="text-primary-1 hover:underline">Terms</a> and <a href="#" className="text-primary-1 hover:underline">Privacy Policy</a>
+                          </span>
+                        </div>
+                        {errors.terms && (
+                          <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
+                            <i className="fas fa-exclamation-circle"></i>
+                            {errors.terms}
+                          </p>
+                        )}
+
+                        <button
+                          type="submit"
+                          disabled={loading}
+                          className="w-full bg-primary-1 text-white py-2.5 md:py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                          {loading ? (
+                            <>
+                              <i className="fas fa-spinner fa-spin"></i>
+                              Sending OTP...
+                            </>
+                          ) : (
+                            'Register with OTP'
+                          )}
+                        </button>
+                      </form>
+                    )}
+
+                    {/* Divider with "OR" */}
+                    <div className="relative my-6">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-gray-300"></div>
                       </div>
-                      
-                      {/* Password requirements checklist */}
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div className={`flex items-center gap-1 ${passwordStrength.hasLength ? 'text-green-500' : 'text-gray-400'}`}>
-                          <i className={`fas ${passwordStrength.hasLength ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
-                          <span>8+ characters</span>
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.hasNumber ? 'text-green-500' : 'text-gray-400'}`}>
-                          <i className={`fas ${passwordStrength.hasNumber ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
-                          <span>Number</span>
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.hasUpper ? 'text-green-500' : 'text-gray-400'}`}>
-                          <i className={`fas ${passwordStrength.hasUpper ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
-                          <span>Uppercase</span>
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.hasLower ? 'text-green-500' : 'text-gray-400'}`}>
-                          <i className={`fas ${passwordStrength.hasLower ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
-                          <span>Lowercase</span>
-                        </div>
-                        <div className={`flex items-center gap-1 ${passwordStrength.hasSpecial ? 'text-green-500' : 'text-gray-400'}`}>
-                          <i className={`fas ${passwordStrength.hasSpecial ? 'fa-check-circle' : 'fa-circle'} text-xs`}></i>
-                          <span>Special char</span>
-                        </div>
+                      <div className="relative flex justify-center text-sm">
+                        <span className="px-4 bg-white text-gray-500">or continue with</span>
                       </div>
                     </div>
-                  )}
-                  
-                  {errors.password && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.password}
-                    </p>
-                  )}
-                </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 md:mb-2">
-                    Confirm Password
-                  </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      disabled={loading}
-                      className={`w-full px-4 py-2.5 md:py-3 border-2 rounded-xl focus:outline-none transition-colors text-sm md:text-base pr-12 ${
-                        errors.confirmPassword ? 'border-red-400' : 'border-gray-200 focus:border-primary-1'
-                      } ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-                      placeholder="Re-enter password"
-                    />
+                    {/* Google Login Button */}
+                    <div className="w-full flex justify-center">
+                      <GoogleLogin
+                        onSuccess={handleGoogleSuccess}
+                        onError={handleGoogleError}
+                        useOneTap
+                        theme="filled_black"
+                        size="large"
+                        text="continue_with"
+                        shape="pill"
+                        width="full"
+                        containerProps={{
+                          className: "w-full max-w-md"
+                        }}
+                        locale="en"
+                      />
+                    </div>
+                  </div>
+                </>
+              ) : (
+                /* OTP Verification Section for Login/Register */
+                <div className="flex-1 flex flex-col justify-center">
+                  <button
+                    onClick={handleBackToForm}
+                    className="text-primary-1 mb-6 flex items-center gap-2 hover:gap-3 transition-all"
+                  >
+                    <i className="fas fa-arrow-left"></i>
+                    Back
+                  </button>
+
+                  <div className="text-center mb-8">
+                    <div className="w-20 h-20 bg-primary-1/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <i className={`fas ${otpType === 'login' ? 'fa-lock' : 'fa-user-check'} text-3xl text-primary-1`}></i>
+                    </div>
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                      {otpType === 'login' ? 'Two-Factor Authentication' : 'Verify Your Email'}
+                    </h2>
+                    <p className="text-gray-600">
+                      Enter the 6-digit code sent to<br />
+                      <span className="font-semibold text-primary-1">{tempEmail}</span>
+                    </p>
+                  </div>
+
+                  {/* OTP Input Grid */}
+                  <div className="flex justify-between gap-2 mb-6">
+                    {otp.map((digit, index) => (
+                      <input
+                        key={index}
+                        ref={(el) => (otpInputsRef.current[index] = el)}
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        value={digit}
+                        onChange={(e) => handleOtpChange(index, e.target.value)}
+                        onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                        onPaste={handleOtpPaste}
+                        disabled={loading}
+                        className={`w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-semibold 
+                          border-2 rounded-xl focus:border-primary-1 focus:outline-none transition-all
+                          ${authError || errors.otp ? 'border-red-400' : 'border-gray-200'}
+                          ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}
+                          ${digit ? 'bg-primary-1/5 border-primary-1' : ''}`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* Resend Section */}
+                  <div className="flex items-center justify-between text-sm mb-6">
                     <button
                       type="button"
-                      onClick={() => togglePasswordVisibility('confirm')}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1 transition-colors"
-                      disabled={loading}
+                      onClick={handleResendOTP}
+                      disabled={!canResend || loading}
+                      className={`text-primary-1 hover:underline transition-all flex items-center gap-1
+                        ${(!canResend || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                      <i className={`fas ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'} text-lg`}></i>
+                      <i className="fas fa-redo-alt text-xs"></i>
+                      Resend Code
                     </button>
+                    {!canResend && (
+                      <span className="text-gray-500">
+                        Resend in <span className="font-semibold text-primary-1">{resendTimer}s</span>
+                      </span>
+                    )}
                   </div>
-                  {errors.confirmPassword && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1 flex items-center gap-1">
-                      <i className="fas fa-exclamation-circle"></i>
-                      {errors.confirmPassword}
-                    </p>
-                  )}
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
-                    required
-                    className="rounded w-4 h-4 accent-primary-1"
-                    disabled={loading}
-                  />
-                  <span className="text-xs md:text-sm text-gray-600">
-                    I agree to the <a href="#" className="text-primary-1 hover:underline">Terms</a> and <a href="#" className="text-primary-1 hover:underline">Privacy Policy</a>
-                  </span>
-                </div>
-                {errors.terms && (
-                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1">
-                    <i className="fas fa-exclamation-circle"></i>
-                    {errors.terms}
+                  {/* Verify Button */}
+                  <button
+                    onClick={handleVerifyOTP}
+                    disabled={loading || otp.some(digit => !digit)}
+                    className="w-full bg-primary-1 text-white py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <i className="fas fa-spinner fa-spin"></i>
+                        Verifying...
+                      </>
+                    ) : (
+                      'Verify OTP'
+                    )}
+                  </button>
+
+                  <p className="text-xs text-center text-gray-500 mt-4">
+                    <i className="fas fa-shield-alt text-primary-1 mr-1"></i>
+                    {otpType === 'login' ? 'This helps keep your account secure' : "We'll never ask for your password"}
                   </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="w-full bg-primary-1 text-white py-2.5 md:py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {loading ? (
-                    <>
-                      <i className="fas fa-spinner fa-spin"></i>
-                      Sending OTP...
-                    </>
-                  ) : (
-                    'Register with OTP'
-                  )}
-                </button>
-              </form>
-            )}
-          </div>
-        </>
-      ) : (
-        /* OTP Verification Section for Login/Register */
-        <div className="flex-1 flex flex-col justify-center">
-          <button
-            onClick={handleBackToForm}
-            className="text-primary-1 mb-6 flex items-center gap-2 hover:gap-3 transition-all"
-          >
-            <i className="fas fa-arrow-left"></i>
-            Back
-          </button>
-
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-primary-1/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className={`fas ${otpType === 'login' ? 'fa-lock' : 'fa-user-check'} text-3xl text-primary-1`}></i>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              {otpType === 'login' ? 'Two-Factor Authentication' : 'Verify Your Email'}
-            </h2>
-            <p className="text-gray-600">
-              Enter the 6-digit code sent to<br />
-              <span className="font-semibold text-primary-1">{tempEmail}</span>
-            </p>
-          </div>
-
-          {/* OTP Input Grid */}
-          <div className="flex justify-between gap-2 mb-6">
-            {otp.map((digit, index) => (
-              <input
-                key={index}
-                ref={(el) => (otpInputsRef.current[index] = el)}
-                type="text"
-                inputMode="numeric"
-                maxLength={6}
-                value={digit}
-                onChange={(e) => handleOtpChange(index, e.target.value)}
-                onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                onPaste={handleOtpPaste}
-                disabled={loading}
-                className={`w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-semibold 
-                  border-2 rounded-xl focus:border-primary-1 focus:outline-none transition-all
-                  ${authError || errors.otp ? 'border-red-400' : 'border-gray-200'}
-                  ${loading ? 'bg-gray-100 cursor-not-allowed' : ''}
-                  ${digit ? 'bg-primary-1/5 border-primary-1' : ''}`}
-              />
-            ))}
-          </div>
-
-          {/* Resend Section */}
-          <div className="flex items-center justify-between text-sm mb-6">
-            <button
-              type="button"
-              onClick={handleResendOTP}
-              disabled={!canResend || loading}
-              className={`text-primary-1 hover:underline transition-all flex items-center gap-1
-                ${(!canResend || loading) ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <i className="fas fa-redo-alt text-xs"></i>
-              Resend Code
-            </button>
-            {!canResend && (
-              <span className="text-gray-500">
-                Resend in <span className="font-semibold text-primary-1">{resendTimer}s</span>
-              </span>
-            )}
-          </div>
-
-          {/* Verify Button */}
-          <button
-            onClick={handleVerifyOTP}
-            disabled={loading || otp.some(digit => !digit)}
-            className="w-full bg-primary-1 text-white py-3 rounded-xl font-semibold hover:bg-primary-1/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {loading ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                Verifying...
-              </>
+                </div>
+              )
             ) : (
-              'Verify OTP'
+              /* Forgot Password Flow */
+              renderForgotPassword()
             )}
-          </button>
 
-          <p className="text-xs text-center text-gray-500 mt-4">
-            <i className="fas fa-shield-alt text-primary-1 mr-1"></i>
-            {otpType === 'login' ? 'This helps keep your account secure' : "We'll never ask for your password"}
-          </p>
+            {/* footer note - hide when in OTP or forgot password flows */}
+            {!showOtpInput && !showForgotPassword && (
+              <p className="text-center text-gray-500 text-xs md:text-sm mt-4 md:mt-6 border-t border-gray-100 pt-4">
+                <i className="fas fa-shield-alt text-primary-1 mr-1"></i>
+                End-to-end encrypted · 100% secure
+              </p>
+            )}
+          </div>
         </div>
-      )
-    ) : (
-      /* Forgot Password Flow */
-      renderForgotPassword()
-    )}
-
-    {/* footer note - hide when in OTP or forgot password flows */}
-    {!showOtpInput && !showForgotPassword && (
-      <p className="text-center text-gray-500 text-xs md:text-sm mt-4 md:mt-6 border-t border-gray-100 pt-4">
-        <i className="fas fa-shield-alt text-primary-1 mr-1"></i>
-        End-to-end encrypted · 100% secure
-      </p>
-    )}
-  </div>
-</div>
       </div>
 
       {/* animations */}
