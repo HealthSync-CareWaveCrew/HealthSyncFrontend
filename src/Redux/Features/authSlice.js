@@ -108,6 +108,34 @@ export const verifyLoginOTP = createAsyncThunk(
   }
 );
 
+// Google Login Thunk
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ credential }, { rejectWithValue }) => {
+    try {
+      const response = await API.googleLogin({ credential });
+      
+      // Store token
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
+      return {
+        user: response.data.user,
+        token: response.data.token,
+        message: response.data.message
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message ||
+        'Google login failed'
+      );
+    }
+  }
+);
+
 // Password Reset Thunks
 export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
@@ -170,6 +198,7 @@ export const logout = createAsyncThunk(
       console.error('Logout error:', error);
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return {};
     }
   }
@@ -236,6 +265,7 @@ export const deleteAccount = createAsyncThunk(
     try {
       const response = await API.deleteAccount();
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return { message: response.data.message };
     } catch (error) {
       return rejectWithValue(
@@ -347,6 +377,25 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
       
+      // Google Login
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+        
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
       // Forgot Password
       .addCase(forgotPassword.pending, (state) => {
         state.loading = true;
@@ -393,6 +442,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
       
       // Logout
@@ -426,6 +476,7 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
       
       // Update Profile
@@ -437,6 +488,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.error = null;
+        
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
