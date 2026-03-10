@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { updateProfile, changePassword, sendEmailChangeOTP, verifyEmailChangeOTP } from '../../Redux/Api/api';
 import toast, { Toaster } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [resendTimer, setResendTimer] = useState(30);
   const [canResend, setCanResend] = useState(false);
-  const [otpInputsRef] = useState([]);
+  const otpInputsRef = useRef([]);
   const [pendingEmail, setPendingEmail] = useState('');
   
   // Detect if user is from Google
@@ -53,34 +53,39 @@ function EditProfileModal({ isOpen, onClose, user, onUpdate }) {
   const [hasChanges, setHasChanges] = useState(false);
   const [emailChangePending, setEmailChangePending] = useState(false);
 
-// Add this right after your state declarations
-console.log('EditProfileModal rendered, isOpen:', isOpen, 'user:', user);
+  // Use a ref to track if this is the first render with user data
+  const initializedRef = useRef(false);
 
-useEffect(() => {
-  console.log('useEffect triggered with user:', user);
-  
-  if (user) {
-    console.log('User data available:', user);
-    setProfileData({
-      name: user.name || '',
-      email: user.email || '',
-    });
-    setOriginalData({
-      name: user.name || '',
-      email: user.email || '',
-    });
-    
-    // Check if user is from Google
-    setIsGoogleUser(
-      user.provider === 'google' || 
-      user.googleId || 
-      user.isGoogleUser || 
-      false
-    );
-  } else {
-    console.log('User is null or undefined');
-  }
-}, [user]);
+  // Add console logs only when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      console.log('EditProfileModal opened with user:', user);
+    }
+  }, [isOpen, user]);
+
+  // Initialize form with user data - only when modal opens and user exists
+  useEffect(() => {
+    // Only run if modal is open and user exists
+    if (isOpen && user && user.id) {
+      console.log('Initializing profile data with user:', user);
+      
+      setProfileData({
+        name: user.name || '',
+        email: user.email || '',
+      });
+      setOriginalData({
+        name: user.name || '',
+        email: user.email || '',
+      });
+      
+      // Check if user is from Google
+      const isGoogle = !!(user.googleId || user.provider === 'google' || user.isGoogleUser);
+      console.log('Is Google User:', isGoogle);
+      setIsGoogleUser(isGoogle);
+      
+      initializedRef.current = true;
+    }
+  }, [isOpen, user]);
 
   // Track if there are any changes
   useEffect(() => {
@@ -95,6 +100,7 @@ useEffect(() => {
   // Reset form when modal closes
   useEffect(() => {
     if (!isOpen) {
+      console.log('Resetting modal state');
       setPasswordData({
         currentPassword: '',
         newPassword: '',
@@ -105,6 +111,7 @@ useEffect(() => {
       setExpandedSection(null);
       setPendingEmail('');
       setEmailChangePending(false);
+      initializedRef.current = false;
     }
   }, [isOpen]);
 
@@ -140,12 +147,14 @@ useEffect(() => {
   useEffect(() => {
     if (showOtpInput) {
       setTimeout(() => {
-        otpInputsRef[0]?.focus();
+        if (otpInputsRef.current[0]) {
+          otpInputsRef.current[0].focus();
+        }
       }, 100);
     }
   }, [showOtpInput]);
 
-  const calculatePasswordScore = (password) => {
+  const calculatePasswordScore = useCallback((password) => {
     let score = 0;
     if (password.length >= 8) score++;
     if (password.length >= 10) score++;
@@ -153,26 +162,26 @@ useEffect(() => {
     if (/[0-9]/.test(password)) score++;
     if (/[^A-Za-z0-9]/.test(password)) score++;
     return Math.min(score, 4);
-  };
+  }, []);
 
-  const getStrengthColor = (password) => {
+  const getStrengthColor = useCallback((password) => {
     if (!password) return 'bg-gray-200';
     const score = calculatePasswordScore(password);
     if (score <= 2) return 'bg-red-500';
     if (score <= 3) return 'bg-yellow-500';
     return 'bg-green-500';
-  };
+  }, [calculatePasswordScore]);
 
-  const getStrengthText = (password) => {
+  const getStrengthText = useCallback((password) => {
     if (!password) return 'Enter password';
     const score = calculatePasswordScore(password);
     if (score <= 2) return 'Weak';
     if (score <= 3) return 'Medium';
     return 'Strong';
-  };
+  }, [calculatePasswordScore]);
 
   // OTP input handlers
-  const handleOtpChange = (index, value) => {
+  const handleOtpChange = useCallback((index, value) => {
     if (value.length > 1) {
       const pastedValue = value.slice(0, 6).split('');
       const newOtp = [...otp];
@@ -185,7 +194,7 @@ useEffect(() => {
 
       const lastFilledIndex = Math.min(index + pastedValue.length - 1, 5);
       if (lastFilledIndex < 5 && newOtp[lastFilledIndex]) {
-        otpInputsRef[lastFilledIndex + 1]?.focus();
+        otpInputsRef.current[lastFilledIndex + 1]?.focus();
       }
     } else if (/^\d*$/.test(value)) {
       const newOtp = [...otp];
@@ -193,19 +202,19 @@ useEffect(() => {
       setOtp(newOtp);
 
       if (value && index < 5) {
-        otpInputsRef[index + 1]?.focus();
+        otpInputsRef.current[index + 1]?.focus();
       }
     }
-  };
+  }, [otp]);
 
-  const handleOtpKeyDown = (index, e) => {
+  const handleOtpKeyDown = useCallback((index, e) => {
     if (e.key === 'Backspace') {
       e.preventDefault();
       if (!otp[index] && index > 0) {
         const newOtp = [...otp];
         newOtp[index - 1] = '';
         setOtp(newOtp);
-        otpInputsRef[index - 1]?.focus();
+        otpInputsRef.current[index - 1]?.focus();
       } else if (otp[index]) {
         const newOtp = [...otp];
         newOtp[index] = '';
@@ -215,16 +224,16 @@ useEffect(() => {
     
     if (e.key === 'ArrowLeft' && index > 0) {
       e.preventDefault();
-      otpInputsRef[index - 1]?.focus();
+      otpInputsRef.current[index - 1]?.focus();
     }
     
     if (e.key === 'ArrowRight' && index < 5) {
       e.preventDefault();
-      otpInputsRef[index + 1]?.focus();
+      otpInputsRef.current[index + 1]?.focus();
     }
-  };
+  }, [otp]);
 
-  const handleOtpPaste = (e) => {
+  const handleOtpPaste = useCallback((e) => {
     e.preventDefault();
     const pastedData = e.clipboardData.getData('text/plain').slice(0, 6);
     if (/^\d+$/.test(pastedData)) {
@@ -238,12 +247,12 @@ useEffect(() => {
       setOtp(newOtp);
 
       const focusIndex = Math.min(pastedArray.length, 5);
-      otpInputsRef[focusIndex]?.focus();
+      otpInputsRef.current[focusIndex]?.focus();
     }
-  };
+  }, [otp]);
 
   // Validate password fields (only for non-Google users)
-  const validatePassword = () => {
+  const validatePassword = useCallback(() => {
     // Skip password validation for Google users
     if (isGoogleUser) {
       return true;
@@ -275,9 +284,9 @@ useEffect(() => {
       }
     }
     return true;
-  };
+  }, [isGoogleUser, passwordData]);
 
-  const handleEmailChangeRequest = async () => {
+  const handleEmailChangeRequest = useCallback(async () => {
     if (profileData.email === originalData.email) {
       toast.error('Email is unchanged', {
         duration: 3000,
@@ -321,9 +330,9 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profileData.email, originalData.email, isGoogleUser]);
 
-  const handleResendOTP = async () => {
+  const handleResendOTP = useCallback(async () => {
     if (!canResend) return;
     
     setLoading(true);
@@ -346,9 +355,9 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [canResend, pendingEmail]);
 
-  const handleSaveChanges = async () => {
+  const handleSaveChanges = useCallback(async () => {
     // First check if email is being changed - if yes, trigger OTP flow
     if (profileData.email !== originalData.email && !emailChangePending) {
       await handleEmailChangeRequest();
@@ -412,9 +421,9 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [profileData, originalData, emailChangePending, isGoogleUser, passwordData, handleEmailChangeRequest, validatePassword, onUpdate, onClose]);
 
-  const handleVerifyEmailOTP = async () => {
+  const handleVerifyEmailOTP = useCallback(async () => {
     const otpCode = otp.join('');
     if (otpCode.length !== 6) {
       toast.error('Please enter complete 6-digit OTP', {
@@ -458,17 +467,17 @@ useEffect(() => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [otp, pendingEmail, originalData, onUpdate, onClose]);
 
-  const handleBackFromOTP = () => {
+  const handleBackFromOTP = useCallback(() => {
     setShowOtpInput(false);
     setOtp(['', '', '', '', '', '']);
     setEmailChangePending(false);
-  };
+  }, []);
 
-  const toggleSection = (section) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
+  const toggleSection = useCallback((section) => {
+    setExpandedSection(prev => prev === section ? null : section);
+  }, []);
 
   // Font Awesome CDN
   useEffect(() => {
@@ -476,8 +485,16 @@ useEffect(() => {
     link.rel = 'stylesheet';
     link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
     document.head.appendChild(link);
+    
+    return () => {
+      // Clean up if needed
+      if (document.head.contains(link)) {
+        document.head.removeChild(link);
+      }
+    };
   }, []);
 
+  // Don't render anything if modal is not open
   if (!isOpen) return null;
 
   return (
@@ -550,7 +567,7 @@ useEffect(() => {
                     <input
                       type="text"
                       value={profileData.name}
-                      onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                      onChange={(e) => setProfileData(prev => ({ ...prev, name: e.target.value }))}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-1/20 focus:border-primary-1 transition-colors"
                       placeholder="Enter your full name"
                     />
@@ -564,7 +581,7 @@ useEffect(() => {
                     <input
                       type="email"
                       value={profileData.email}
-                      onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                      onChange={(e) => setProfileData(prev => ({ ...prev, email: e.target.value }))}
                       className={`w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-1/20 focus:border-primary-1 transition-colors ${
                         isGoogleUser ? 'bg-gray-100 cursor-not-allowed' : ''
                       }`}
@@ -603,7 +620,7 @@ useEffect(() => {
                     
                     {expandedSection === 'password' && (
                       <div className="p-4 space-y-4 border-t border-gray-200">
-                        {/* Current Password */}
+                        {/* Password fields remain the same */}
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-1">
                             Current Password
@@ -612,13 +629,13 @@ useEffect(() => {
                             <input
                               type={showCurrentPassword ? "text" : "password"}
                               value={passwordData.currentPassword}
-                              onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                              onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-1/20 focus:border-primary-1 transition-colors pr-10"
                               placeholder="Enter current password"
                             />
                             <button
                               type="button"
-                              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                              onClick={() => setShowCurrentPassword(prev => !prev)}
                               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1"
                             >
                               <i className={`fas ${showCurrentPassword ? 'fa-eye' : 'fa-eye-slash'}`}></i>
@@ -635,13 +652,13 @@ useEffect(() => {
                             <input
                               type={showNewPassword ? "text" : "password"}
                               value={passwordData.newPassword}
-                              onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                              onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-1/20 focus:border-primary-1 transition-colors pr-10"
                               placeholder="Enter new password"
                             />
                             <button
                               type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              onClick={() => setShowNewPassword(prev => !prev)}
                               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1"
                             >
                               <i className={`fas ${showNewPassword ? 'fa-eye' : 'fa-eye-slash'}`}></i>
@@ -699,13 +716,13 @@ useEffect(() => {
                             <input
                               type={showConfirmPassword ? "text" : "password"}
                               value={passwordData.confirmPassword}
-                              onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                              onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
                               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-1/20 focus:border-primary-1 transition-colors pr-10"
                               placeholder="Confirm new password"
                             />
                             <button
                               type="button"
-                              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                              onClick={() => setShowConfirmPassword(prev => !prev)}
                               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-primary-1"
                             >
                               <i className={`fas ${showConfirmPassword ? 'fa-eye' : 'fa-eye-slash'}`}></i>
@@ -744,7 +761,7 @@ useEffect(() => {
                   {otp.map((digit, index) => (
                     <input
                       key={index}
-                      ref={(el) => (otpInputsRef[index] = el)}
+                      ref={(el) => (otpInputsRef.current[index] = el)}
                       type="text"
                       inputMode="numeric"
                       maxLength={6}
