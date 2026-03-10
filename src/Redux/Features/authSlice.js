@@ -42,7 +42,6 @@ export const verifyRegistrationOTP = createAsyncThunk(
   async (otpData, { rejectWithValue }) => {
     try {
       const response = await API.verifyRegistrationOTP(otpData);
-      // Store token
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -88,7 +87,6 @@ export const verifyLoginOTP = createAsyncThunk(
   async (otpData, { rejectWithValue }) => {
     try {
       const response = await API.verifyLoginOTP(otpData);
-      // Store token
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -115,7 +113,6 @@ export const googleLogin = createAsyncThunk(
     try {
       const response = await API.googleLogin({ credential });
       
-      // Store token
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -154,7 +151,6 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
-// Reset Password
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async ({ email, otp, newPassword }, { rejectWithValue }) => {
@@ -195,25 +191,22 @@ export const logout = createAsyncThunk(
     try {
       await API.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Logout API error:', error);
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      sessionStorage.clear();
       return {};
     }
   }
 );
 
 // User Profile Thunks
-// Get Current User
 export const getCurrentUser = createAsyncThunk(
   'auth/getCurrentUser',
-  async (_, { rejectWithValue, getState }) => {
+  async (_, { rejectWithValue }) => {
     try {
       const response = await API.getCurrentUser();
-      console.log('API Response:', response.data); // Debug log
-      
-      // The response structure is: { status: "success", data: { user: {...} } }
       return { user: response.data.data.user };
     } catch (error) {
       return rejectWithValue(
@@ -294,6 +287,22 @@ const authSlice = createSlice({
     },
     setAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload;
+    },
+    forceLogout: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.otpSent = false;
+      state.otpVerified = false;
+      state.tempEmail = null;
+      state.tempName = null;
+      state.tempData = null;
+      state.error = null;
+      state.loading = false;
+      
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
     },
   },
   extraReducers: (builder) => {
@@ -437,7 +446,6 @@ const authSlice = createSlice({
       .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // If refresh fails, logout user
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
@@ -446,6 +454,9 @@ const authSlice = createSlice({
       })
       
       // Logout
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
@@ -454,7 +465,29 @@ const authSlice = createSlice({
         state.otpVerified = false;
         state.tempEmail = null;
         state.tempName = null;
+        state.tempData = null;
         state.error = null;
+        state.loading = false;
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+      })
+      .addCase(logout.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.otpSent = false;
+        state.otpVerified = false;
+        state.tempEmail = null;
+        state.tempName = null;
+        state.tempData = null;
+        state.error = null;
+        state.loading = false;
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear();
       })
       
       // Get Current User
@@ -471,7 +504,6 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // If token is invalid, logout
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
@@ -529,6 +561,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, resetOTPState, setAuthenticated } = authSlice.actions;
+export const { clearError, resetOTPState, setAuthenticated, forceLogout } = authSlice.actions;
 
 export default authSlice.reducer;
