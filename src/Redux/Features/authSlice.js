@@ -42,7 +42,6 @@ export const verifyRegistrationOTP = createAsyncThunk(
   async (otpData, { rejectWithValue }) => {
     try {
       const response = await API.verifyRegistrationOTP(otpData);
-      // Store token
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -88,7 +87,6 @@ export const verifyLoginOTP = createAsyncThunk(
   async (otpData, { rejectWithValue }) => {
     try {
       const response = await API.verifyLoginOTP(otpData);
-      // Store token
       if (response.data.token) {
         localStorage.setItem('token', response.data.token);
       }
@@ -103,6 +101,33 @@ export const verifyLoginOTP = createAsyncThunk(
         error.response?.data?.errors?.[0]?.msg ||
         error.message ||
         'Failed to verify OTP'
+      );
+    }
+  }
+);
+
+// Google Login Thunk
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async ({ credential }, { rejectWithValue }) => {
+    try {
+      const response = await API.googleLogin({ credential });
+      
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+      }
+      
+      return {
+        user: response.data.user,
+        token: response.data.token,
+        message: response.data.message
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message ||
+        error.response?.data?.errors?.[0]?.msg ||
+        error.message ||
+        'Google login failed'
       );
     }
   }
@@ -126,7 +151,6 @@ export const forgotPassword = createAsyncThunk(
   }
 );
 
-// Reset Password
 export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async ({ email, otp, newPassword }, { rejectWithValue }) => {
@@ -167,9 +191,11 @@ export const logout = createAsyncThunk(
     try {
       await API.logout();
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Logout API error:', error);
     } finally {
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
       return {};
     }
   }
@@ -232,6 +258,7 @@ export const deleteAccount = createAsyncThunk(
     try {
       const response = await API.deleteAccount();
       localStorage.removeItem('token');
+      localStorage.removeItem('user');
       return { message: response.data.message };
     } catch (error) {
       return rejectWithValue(
@@ -260,6 +287,22 @@ const authSlice = createSlice({
     },
     setAuthenticated: (state, action) => {
       state.isAuthenticated = action.payload;
+    },
+    forceLogout: (state) => {
+      state.user = null;
+      state.token = null;
+      state.isAuthenticated = false;
+      state.otpSent = false;
+      state.otpVerified = false;
+      state.tempEmail = null;
+      state.tempName = null;
+      state.tempData = null;
+      state.error = null;
+      state.loading = false;
+      
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      sessionStorage.clear();
     },
   },
   extraReducers: (builder) => {
@@ -297,6 +340,8 @@ const authSlice = createSlice({
         state.tempEmail = null;
         state.tempName = null;
         state.error = null;
+
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(verifyRegistrationOTP.rejected, (state, action) => {
         state.loading = false;
@@ -333,8 +378,29 @@ const authSlice = createSlice({
         state.otpSent = false;
         state.tempEmail = null;
         state.error = null;
+
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(verifyLoginOTP.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      
+      // Google Login
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isAuthenticated = true;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        state.error = null;
+        
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -380,14 +446,17 @@ const authSlice = createSlice({
       .addCase(refreshToken.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // If refresh fails, logout user
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
       
       // Logout
+      .addCase(logout.pending, (state) => {
+        state.loading = true;
+      })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
@@ -396,7 +465,29 @@ const authSlice = createSlice({
         state.otpVerified = false;
         state.tempEmail = null;
         state.tempName = null;
+        state.tempData = null;
         state.error = null;
+        state.loading = false;
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear();
+      })
+      .addCase(logout.rejected, (state) => {
+        state.user = null;
+        state.token = null;
+        state.isAuthenticated = false;
+        state.otpSent = false;
+        state.otpVerified = false;
+        state.tempEmail = null;
+        state.tempName = null;
+        state.tempData = null;
+        state.error = null;
+        state.loading = false;
+        
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        sessionStorage.clear();
       })
       
       // Get Current User
@@ -413,11 +504,11 @@ const authSlice = createSlice({
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // If token is invalid, logout
         state.isAuthenticated = false;
         state.user = null;
         state.token = null;
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
       })
       
       // Update Profile
@@ -429,6 +520,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.user = action.payload.user;
         state.error = null;
+        
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.loading = false;
@@ -468,6 +561,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, resetOTPState, setAuthenticated } = authSlice.actions;
+export const { clearError, resetOTPState, setAuthenticated, forceLogout } = authSlice.actions;
 
 export default authSlice.reducer;

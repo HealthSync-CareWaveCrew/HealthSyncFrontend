@@ -54,6 +54,16 @@ export const verifyLoginOTP = async (otpData) => {
   return response;
 };
 
+// Google Login
+export const googleLogin = async (data) => {
+  const response = await api.post('/api/auth/google', data);
+  // Store token if returned
+  if (response.data.token) {
+    localStorage.setItem('token', response.data.token);
+  }
+  return response;
+};
+
 // Password reset with OTP
 export const forgotPassword = async (email) => {
   const response = await api.post('/api/auth/forgot-password', { email });
@@ -84,6 +94,7 @@ export const logout = async () => {
     await api.post('/api/auth/logout');
   } finally {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   }
 };
 
@@ -105,6 +116,18 @@ export const changePassword = async (passwordData) => {
 
 export const deleteAccount = async () => {
   const response = await api.delete('/api/users/delete-account');
+  return response;
+};
+
+// Email change with OTP
+export const sendEmailChangeOTP = async (newEmail) => {
+  const response = await api.post('/api/users/send-email-change-otp', { newEmail });
+  return response;
+};
+
+// Verify OTP and update email
+export const verifyEmailChangeOTP = async (otpData) => {
+  const response = await api.post('/api/users/verify-email-change-otp', otpData);
   return response;
 };
 
@@ -134,36 +157,8 @@ export const deleteUser = async (id) => {
   return response;
 };
 
-// Existing functions
-export const analyzeImage = async (diseaseId, file, diseaseType) => {
-  const formData = new FormData();
-  formData.append('image', file);
-  formData.append('diseaseType', diseaseType);
-  formData.append('diseaseId', diseaseId);
-
-  const response = await api.post('/api/analyze-image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response;
-};
-
-export const analyzeClinicalData = async (diseaseType, formData, diseaseId) => {
-  const response = await api.post('/api/analyze-clinical-data', {
-    diseaseType,
-    formData,
-    diseaseId,
-  });
-  return response;
-};
-
-export const sendChatMessage = async (message, history, systemInstruction) => {
-  const response = await api.post('/api/chat', {
-    message,
-    history,
-    systemInstruction,
-  });
+export const createUserByAdmin = async (userData) => {
+  const response = await api.post('/api/users', userData);
   return response;
 };
 
@@ -213,6 +208,39 @@ export const updateDiseaseAPI = async (diseaseId, diseaseData) => {
 
 export const deleteDiseaseAPI = async (diseaseId) => {
   const response = await api.delete(`/api/diseases/${diseaseId}`);
+  return response;
+};
+
+// Analysis functions
+export const analyzeImage = async (diseaseId, file, diseaseType) => {
+  const formData = new FormData();
+  formData.append('image', file);
+  formData.append('diseaseType', diseaseType);
+  formData.append('diseaseId', diseaseId);
+
+  const response = await api.post('/api/analyze-image', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response;
+};
+
+export const analyzeClinicalData = async (diseaseType, formData, diseaseId) => {
+  const response = await api.post('/api/analyze-clinical-data', {
+    diseaseType,
+    formData,
+    diseaseId,
+  });
+  return response;
+};
+
+export const sendChatMessage = async (message, history, systemInstruction) => {
+  const response = await api.post('/api/chat', {
+    message,
+    history,
+    systemInstruction,
+  });
   return response;
 };
 

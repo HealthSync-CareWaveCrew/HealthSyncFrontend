@@ -2,6 +2,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Header from './Header';
 
 const customerMenu = [
+  { label: 'Dashboard', to: '/dashboard', icon: 'D' },
   { label: 'Home', to: '/', icon: 'H' },
   { label: 'Reviews', to: '/reviews', icon: 'R' },
   { label: 'My Analysis', to: '/analysis-history', icon: 'AH' },
@@ -62,7 +63,7 @@ function AppShell() {
                   ))}
                 </nav>
 
-                  <button
+                  {/* <button
                     onClick={() => navigate('/')}
                     className="mt-3 flex items-center gap-3 h-12 px-3 rounded-xl font-semibold text-red-700 hover:bg-red-100 transition-all duration-300"
                   >
@@ -72,7 +73,7 @@ function AppShell() {
                     <span className="whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                       Logout
                     </span>
-                  </button>
+                  </button> */}
               </div>
             </div>
           </aside>
@@ -95,14 +96,14 @@ function AppShell() {
                   {item.label}
                 </NavLink>
               ))}
-              {isAdminSection && (
+              {/* {isAdminSection && (
                 <button
                   onClick={() => navigate('/')}
                   className="px-4 py-2 rounded-xl font-semibold whitespace-nowrap text-red-700 hover:bg-red-100 transition-all duration-300"
                 >
                   Logout
                 </button>
-              )}
+              )} */}
             </nav>
           </aside>
 

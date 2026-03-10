@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import analysisReducer from '../Features/analysisSlice';
 import chatReducer from '../Features/chatSlice';
 import authReducer from '../Features/authSlice';
+import adminReducer from '../Features/adminSlice';
 import diseaseReducer from '../Features/diseaseSlice';
 import reviewReducer from '../Features/reviewSlice';
 
@@ -10,6 +11,7 @@ export const store = configureStore({
     analysis: analysisReducer,
     chat: chatReducer,
     auth: authReducer,
+    admin: adminReducer,
     disease: diseaseReducer,
     review: reviewReducer,
   },
