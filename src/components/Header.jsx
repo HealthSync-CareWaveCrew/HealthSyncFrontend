@@ -5,6 +5,7 @@ import { getCurrentUser, logout as logoutApi } from '../Redux/Api/api';
 import { forceLogout } from '../Redux/Features/authSlice'; // Import forceLogout
 import EditProfileModal from '../components/User/EditProfileModal';
 import toast from 'react-hot-toast';
+import { FaHandHoldingHeart } from 'react-icons/fa';
 
 function Header() {
   const [user, setUser] = useState(null);
@@ -144,10 +145,10 @@ function Header() {
               to="/"
               className="flex items-center gap-4 hover:opacity-80 transition-opacity"
             >
-              <span className="text-5xl">⚕️</span>
+              <span className="text-5xl"><FaHandHoldingHeart className='text-primary-1' /></span>
               <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-black">
-                  Health Sync
+                <h1 className="text-2xl md:text-3xl font-bold text-primary-1">
+                  Health<span className="text-black">Sync</span>
                 </h1>
                 <p className="text-primary-1 mt-1 text-xs md:text-base">
                   Advanced Medical Imaging & Analysis System
