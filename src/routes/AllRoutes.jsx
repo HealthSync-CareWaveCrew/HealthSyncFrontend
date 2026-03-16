@@ -11,6 +11,7 @@ import AdminReviewsPage from '../pages/review/AdminReviewsPage';
 import ReviewsPage from '../pages/review/ReviewsPage';
 import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
 import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
+import CustomerAnalysisDetailsPage from '../pages/CustomerAnalysisDetailsPage';
 
 function AllRoutes() {
   return (
@@ -52,6 +53,10 @@ function AllRoutes() {
           <Route
             path="/analysis-history"
             element={<ProtectedRoute><CustomerAnalysisHistoryPage /></ProtectedRoute>}
+          />
+           <Route
+            path="/customer/analysis/:id"
+            element={<ProtectedRoute><CustomerAnalysisDetailsPage /></ProtectedRoute>}
           />
         </Route>
       </Routes>
