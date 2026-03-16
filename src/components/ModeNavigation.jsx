@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { setMode } from '../Redux/Features/analysisSlice';
+import { setMode, setSelectedDisease } from '../Redux/Features/analysisSlice';
 import { disableChat } from '../Redux/Features/chatSlice';
 
 function ModeNavigation() {
@@ -9,6 +9,7 @@ function ModeNavigation() {
   const handleModeChange = (newMode) => {
     dispatch(setMode(newMode));
     dispatch(disableChat());
+    dispatch(setSelectedDisease(null)); // Clear selected disease when mode changes
   };
 
   return (

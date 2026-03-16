@@ -180,6 +180,11 @@ export const deleteAnalysisAPI = async (analysisId) => {
   return response;
 };
 
+export const getAnalysisByIdAPI = async (analysisId) => {
+  const response = await api.get(`/api/analysis/${analysisId}`);
+  return response;
+};
+
 // Disease API endpoints
 export const getAllDiseases = async () => {
   const response = await api.get('/api/diseases');

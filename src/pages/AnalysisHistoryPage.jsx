@@ -1,17 +1,26 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteAnalysisAPI } from '../Redux/Api/api';
-import { fetchAnalysisHistoryThunk } from '../Redux/Features/analysisSlice';
+import { useNavigate } from 'react-router-dom';
+import PopupModal from '../components/PopupModal';
+import { generateAnalysisReportPdf } from '../libraries/analysisReportPdf';
+import {
+  clearDeleteError,
+  deleteAnalysisThunk,
+  fetchAnalysisHistoryThunk,
+} from '../Redux/Features/analysisSlice';
 import TableGrid from '../libraries/TableGrid';
 import { IoEye } from 'react-icons/io5';
-import { MdDownload } from 'react-icons/md';
+import { MdDelete, MdPictureAsPdf } from 'react-icons/md';
 
 export default function AnalysisHistoryPage({ isAdmin = false }) {
   const dispatch = useDispatch();
-  const { historyList, historyLoading, historyError } = useSelector((state) => state.analysis);
+  const navigate = useNavigate();
+  const { historyList, historyLoading, historyError, deleteLoading } = useSelector(
+    (state) => state.analysis
+  );
   
   const [actionMessage, setActionMessage] = useState('');
-  const [selectedAnalysis, setSelectedAnalysis] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const pageTitle = useMemo(
     () => (isAdmin ? 'Analysis Management' : 'My Analysis History'),
@@ -48,25 +57,46 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
     fetchAnalysisHistory();
   }, []);
 
-  const handleDelete = async (rowData) => {
-    const shouldDelete = window.confirm('Delete this analysis record?');
-    if (!shouldDelete) return;
+  const handleDelete = (rowData) => {
+    setActionMessage('');
+    dispatch(clearDeleteError());
+    setDeleteTarget(rowData);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget?._id) return;
 
     try {
-      await deleteAnalysisAPI(rowData._id);
+      await dispatch(deleteAnalysisThunk(deleteTarget._id)).unwrap();
       setActionMessage('Analysis deleted successfully.');
-      fetchAnalysisHistory();
+      setDeleteTarget(null);
     } catch (deleteError) {
       const errorMsg =
-        deleteError.response?.data?.message ||
+        deleteError?.message ||
         deleteError.message ||
         'Failed to delete analysis.';
       alert(errorMsg);
     }
   };
 
+  const handleCloseDeletePopup = () => {
+    if (deleteLoading) return;
+    setDeleteTarget(null);
+  };
+
   const handleViewDetails = (rowData) => {
-    setSelectedAnalysis(rowData);
+    if (!rowData?._id) return;
+    const basePath = isAdmin ? '/admin' : '/customer';
+    navigate(`${basePath}/analysis/${rowData._id}`);
+  };
+
+  const handleGenerateReport = async (rowData) => {
+    try {
+      await generateAnalysisReportPdf(rowData, { isAdmin });
+    } catch (reportError) {
+      const errorMsg = reportError?.message || 'Failed to generate report.';
+      alert(errorMsg);
+    }
   };
 
   // Define columns for TableGrid
@@ -190,17 +220,22 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
       {
         name: 'View Details',
         icon: IoEye,
-        handler: handleViewDetails,
-        color: 'blue',
+        onClick: (row) => handleViewDetails(row),
+        // color: 'blue',
+      },
+      {
+        name: 'Report',
+        icon: MdPictureAsPdf,
+        onClick: (row) => handleGenerateReport(row),
       },
     ];
 
     // if (isAdmin) {
       actions.push({
         name: 'Delete',
-        icon: MdDownload,
-        handler: handleDelete,
-        color: 'red',
+        icon: MdDelete,
+        onClick: (row) => handleDelete(row),
+        // color: 'red',
       });
     // }
 
@@ -208,8 +243,9 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
   }, [isAdmin]);
 
     const rowMenuActions = (row) => [
-    { label: "View", icon: <IoEye />, onClick: () => alert(`View`) },
-    { label: "Download", icon: <MdDownload />, onClick: () => alert(`Download`) },
+      { label: 'View', icon: <IoEye />, onClick: () => handleViewDetails(row) },
+      { label: 'Report', icon: <MdPictureAsPdf />, onClick: () => handleGenerateReport(row) },
+      { label: 'Delete', icon: <MdDelete />, onClick: () => handleDelete(row) },
   ];
 
   return (
@@ -254,130 +290,16 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         </div>
       )}
 
-      {/* Details Drawer */}
-      {selectedAnalysis && (
-        <div className="fixed inset-0 z-50 backdrop-blur-sm">
-          <div className="fixed right-0 top-0 bottom-0 w-full sm:w-96 bg-white shadow-2xl overflow-y-auto">
-            {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-primary-2 to-primary-1 text-white p-6 border-b border-primary-2/30">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xl font-bold">Analysis Details</h3>
-                <button
-                  onClick={() => setSelectedAnalysis(null)}
-                  className="text-2xl leading-none hover:opacity-70 transition"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-6 space-y-6">
-              {/* Type & Disease */}
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-semibold text-black/70">Analysis Type</label>
-                  <p className="text-black capitalize mt-1">{selectedAnalysis.type}</p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-black/70">Disease</label>
-                  <p className="text-black mt-1">
-                    {selectedAnalysis.diseaseType || selectedAnalysis.disease?.name || '-'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Match Status */}
-              <div className="bg-primary-4 rounded-lg p-4">
-                <label className="text-sm font-semibold text-black/70">Match Status</label>
-                <p className="mt-2">
-                  <span
-                    className={`px-3 py-1 rounded text-sm font-semibold inline-block ${
-                      selectedAnalysis.results?.match
-                        ? 'bg-green-200 text-green-800'
-                        : 'bg-red-200 text-red-800'
-                    }`}
-                  >
-                    {selectedAnalysis.results?.match ? 'Match Found' : 'No Match'}
-                  </span>
-                </p>
-              </div>
-
-              {/* Prediction Results */}
-              <div className="space-y-3">
-                <div>
-                  <label className="text-sm font-semibold text-black/70">Predicted Disease</label>
-                  <p className="text-black mt-1 font-medium">
-                    {selectedAnalysis.results?.disease || '-'}
-                  </p>
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-black/70">Confidence</label>
-                  <p className="mt-1 text-lg font-semibold text-primary-1">
-                    {selectedAnalysis.results?.confidence || '-'}
-                  </p>
-                </div>
-              </div>
-
-              {/* Description */}
-              {selectedAnalysis.results?.description && (
-                <div>
-                  <label className="text-sm font-semibold text-black/70">Description</label>
-                  <p className="text-black mt-2 text-sm leading-relaxed whitespace-pre-wrap">
-                    {selectedAnalysis.results.description}
-                  </p>
-                </div>
-              )}
-
-              {/* Reason (for mismatch) */}
-              {selectedAnalysis.results?.reason && (
-                <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
-                  <label className="text-sm font-semibold text-yellow-900/70">Reason</label>
-                  <p className="text-yellow-900 mt-2 text-sm">
-                    {selectedAnalysis.results.reason}
-                  </p>
-                </div>
-              )}
-
-              {/* Form Data (for clinical) */}
-              {selectedAnalysis.formData &&
-                selectedAnalysis.type === 'clinical' &&
-                Object.keys(selectedAnalysis.formData).length > 0 && (
-                  <div>
-                    <label className="text-sm font-semibold text-black/70">Clinical Data</label>
-                    <div className="mt-2 space-y-2 bg-primary-4 rounded-lg p-4">
-                      {Object.entries(selectedAnalysis.formData).map(([key, value]) => (
-                        <div key={key} className="flex justify-between text-sm">
-                          <span className="text-black/70 capitalize">{key}:</span>
-                          <span className="text-black font-medium">{String(value)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-              {/* User Info (admin view) */}
-              {isAdmin && selectedAnalysis.user && (
-                <div className="bg-primary-4 rounded-lg p-4">
-                  <label className="text-sm font-semibold text-black/70">User</label>
-                  <div className="mt-2 space-y-1 text-sm">
-                    <p className="text-black font-medium">{selectedAnalysis.user.name}</p>
-                    <p className="text-black/70">{selectedAnalysis.user.email}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Date */}
-              <div className="text-xs text-black/50 border-t border-primary-2/30 pt-4">
-                <p>Created: {new Date(selectedAnalysis.createdAt).toLocaleString()}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Overlay click to close */}
-          <div className="absolute inset-0 z-40" onClick={() => setSelectedAnalysis(null)} />
-        </div>
-      )}
+      <PopupModal
+        isOpen={Boolean(deleteTarget)}
+        type="confirm"
+        title="Delete Analysis"
+        message="Are you sure you want to delete this analysis record?"
+        onClose={handleCloseDeletePopup}
+        onConfirm={handleConfirmDelete}
+        confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+      />
     </div>
   );
 }

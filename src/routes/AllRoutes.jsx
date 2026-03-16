@@ -11,21 +11,23 @@ import AdminReviewsPage from '../pages/review/AdminReviewsPage';
 import ReviewsPage from '../pages/review/ReviewsPage';
 import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
 import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
+import CustomerAnalysisDetailsPage from '../pages/CustomerAnalysisDetailsPage';
+import AdminAnalysisDetailsPage from '../pages/AdminAnalysisDetailsPage';
 
 function AllRoutes() {
   return (
     <Router>
       <Routes>
         <Route path="/landingPage" element={<LandingPage />} />
-        
+
         {/* <Route path="/" element={<HomePage />} /> */}
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
         {/* or if you want both on same page */}
         <Route path="/auth" element={<AuthPage />} />
         <Route element={<AppShell />}>
-          <Route path="/dashboard" element={ <ProtectedRoute><UserDashboard /></ProtectedRoute>} />
-          <Route path="/" element={ <ProtectedRoute><HomePage /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/admin" element={
             <ProtectedRoute requireAdmin={true}>
               <AdminLayoutPage />
@@ -43,7 +45,11 @@ function AllRoutes() {
               path="analysis-history"
               element={<AdminAnalysisHistoryPage />}
             />
-             <Route
+            <Route
+              path="analysis/:id"
+              element={<AdminAnalysisDetailsPage />}
+            />
+            <Route
               path="reviews-management"
               element={<AdminReviewsPage />}
             />
@@ -52,6 +58,10 @@ function AllRoutes() {
           <Route
             path="/analysis-history"
             element={<ProtectedRoute><CustomerAnalysisHistoryPage /></ProtectedRoute>}
+          />
+          <Route
+            path="/customer/analysis/:id"
+            element={<ProtectedRoute><CustomerAnalysisDetailsPage /></ProtectedRoute>}
           />
         </Route>
       </Routes>
