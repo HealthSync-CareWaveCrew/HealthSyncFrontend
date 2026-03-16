@@ -79,7 +79,7 @@ function AppShell() {
           </aside>
 
           <aside className="md:hidden fixed top-24 left-2 right-2 z-40 bg-primary-4/95 backdrop-blur-md rounded-2xl p-3 shadow-2xl border border-primary-2/30">
-            <nav className="flex gap-2 overflow-auto">
+            <nav className="flex gap-2 overflow-auto hide-scrollbar">
               {menuItems.map((item) => (
                 <NavLink
                   key={item.to}
