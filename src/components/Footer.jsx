@@ -1,25 +1,69 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { subscribeNewsletter } from "../Redux/Api/api"; 
 
 function Footer() {
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | success | error
+  const [msg, setMsg] = useState("");
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setStatus("loading");
+    setMsg("");
+
+    try {
+      const response = await subscribeNewsletter(email);
+      if (response.data.status === "success") {
+        setStatus("success");
+        setMsg("Welcome! Check your inbox for verification.");
+        setEmail("");
+        // Reset message after 5 seconds
+        setTimeout(() => {
+          setStatus("idle");
+          setMsg("");
+        }, 5000);
+      }
+    } catch (error) {
+      setStatus("error");
+      setMsg(error.response?.data?.message || "Subscription failed. Try again.");
+    }
+  };
+
   return (
     <footer className="main-footer">
-      {/* Newsletter Section */}
       <div className="footer-newsletter">
         <div className="newsletter-content">
           <h3>Stay ahead with Health AI</h3>
           <p>Get the latest insights on predictive healthcare once a week.</p>
         </div>
-        <div className="newsletter-form">
-          <input type="email" placeholder="Enter your email" />
-          <button className="btn-primary">Subscribe</button>
-        </div>
+        <form className="newsletter-form" onSubmit={handleSubscribe}>
+          <input
+            type="email"
+            placeholder="Enter your email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            disabled={status === "loading"}
+          />
+          <button 
+            type="submit" 
+            className="btn-primary" 
+            disabled={status === "loading" || status === "success"}
+          >
+            {status === "loading" ? "..." : status === "success" ? "Subscribed!" : "Subscribe"}
+          </button>
+        </form>
+        {msg && (
+          <p className={`status-msg ${status === "success" ? "success" : "error"}`}>
+            {msg}
+          </p>
+        )}
       </div>
 
       <div className="footer-container">
         <div className="footer-grid">
-          
-          {/* Brand Column */}
           <div className="footer-col brand-col">
             <h2 className="footer-logo">Health<span>Sync</span></h2>
             <p>
@@ -33,7 +77,6 @@ function Footer() {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div className="footer-col">
             <h4>Platform</h4>
             <ul>
@@ -44,7 +87,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Resources */}
           <div className="footer-col">
             <h4>Resources</h4>
             <ul>
@@ -55,7 +97,6 @@ function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
           <div className="footer-col contact-col">
             <h4>Contact</h4>
             <div className="contact-item">
@@ -71,7 +112,6 @@ function Footer() {
               <p>+1 (555) 000-HEALTH</p>
             </div>
           </div>
-
         </div>
       </div>
 

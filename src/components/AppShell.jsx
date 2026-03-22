@@ -11,6 +11,7 @@ const customerMenu = [
 ];
 
 const adminMenu = [
+  { label: 'User Management', to: '/admin/user-management', icon: 'UM' },
   { label: 'Disease Management', to: '/admin/disease-management', icon: 'DM' },
   { label: 'Analysis Management', to: '/admin/analysis-history', icon: 'AM' },
   { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
@@ -21,7 +22,7 @@ const adminMenu = [
 function AppShell() {
   const location = useLocation();
   const navigate = useNavigate();
-  const isAdminSection = location.pathname.startsWith('/admin');
+  const isAdminSection =location.pathname.startsWith('/admin');
   const menuItems = isAdminSection ? adminMenu : customerMenu;
 
   return (

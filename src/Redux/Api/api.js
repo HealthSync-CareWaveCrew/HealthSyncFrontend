@@ -249,4 +249,10 @@ export const sendChatMessage = async (message, history, systemInstruction) => {
   return response;
 };
 
+
+export const subscribeNewsletter = async (email) => {
+  const response = await api.post('/api/subscribe', { email });
+  return response;
+};
+
 export default api;
