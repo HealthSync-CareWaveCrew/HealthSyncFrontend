@@ -1,21 +1,23 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import Header from './Header';
+import { MdDashboard, MdRateReview } from 'react-icons/md';
+import { FaHeartbeat, FaHistory, FaMoneyCheck, FaUsers } from 'react-icons/fa';
 
 const customerMenu = [
-  { label: 'Dashboard', to: '/dashboard', icon: 'D' },
-  { label: 'Home', to: '/', icon: 'H' },
-  { label: 'Reviews', to: '/reviews', icon: 'R' },
-  { label: 'My Analysis', to: '/analysis-history', icon: 'AH' },
-  { label: 'My Predictions', to: '/my-predictions', icon: 'MP' },
-  { label: 'Payment', to: '/payment', icon: 'P' },
+  { label: 'Dashboard', to: '/dashboard', icon: <MdDashboard /> },
+  { label: 'Home', to: '/', icon: <FaHeartbeat /> },
+  { label: 'Reviews', to: '/reviews', icon: <MdRateReview /> },
+  { label: 'My Analysis', to: '/analysis-history', icon: <FaHistory /> },
+  { label: 'Payment', to: '/payment', icon: <FaMoneyCheck /> },
 ];
 
-const adminMenu = [
-  { label: 'Disease Management', to: '/admin/disease-management', icon: 'DM' },
-  { label: 'Analysis Management', to: '/admin/analysis-history', icon: 'AM' },
-  { label: 'Reviews Management', to: '/admin/reviews-management', icon: 'RM' },
-  { label: 'Predictions', to: '/predictions', icon: 'P' },
-  { label: 'Payment', to: '/payment', icon: 'P' },
+const adminMenu = [ 
+  { label: 'Dashboard', to: '/admin/dashboard', icon: <MdDashboard /> },
+  { label: 'Disease Management', to: '/admin/disease-management', icon: <FaHeartbeat /> },
+  { label: 'Analysis Management', to: '/admin/analysis-history', icon: <FaHistory /> },
+  { label: 'Reviews Management', to: '/admin/reviews-management', icon: <MdRateReview /> },
+  { label: 'Users Management', to: '/admin/users-management', icon: <FaUsers /> },
+  { label: 'Payments Management', to: '/admin/payments-management', icon: <FaMoneyCheck /> },
 ];
 
 function AppShell() {
