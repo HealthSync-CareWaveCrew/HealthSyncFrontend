@@ -107,7 +107,16 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         header: 'Type',
         type: 'status',
         width: 100,
-        options:["image","clinical"],
+        options: ["image", "clinical"],
+        render: (row) => (
+          <span className={`px-2 py-1 rounded text-xs font-medium ${
+            row.type === 'image' 
+              ? 'bg-primary-1/10 text-primary-1' 
+              : 'bg-primary-2/10 text-primary-2'
+          }`}>
+            {row.type === 'image' ? 'Image' : 'Clinical'}
+          </span>
+        ),
       },
       {
         field: 'diseaseType',
@@ -127,8 +136,8 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
           <span
             className={`px-2 py-1 rounded text-xs font-semibold ${
               row.match
-                ? 'bg-green-200 text-green-800'
-                : 'bg-red-200 text-red-800'
+                ? 'bg-green-100 text-green-700'
+                : 'bg-red-100 text-red-700'
             }`}
           >
             {row.matchStatus}
@@ -141,7 +150,9 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         type: 'text',
         filterType: 'text',
         width: 150,
-        render: (row) => row.predictedDisease,
+        render: (row) => (
+          <span className="font-medium text-gray-700">{row.predictedDisease}</span>
+        ),
       },
       {
         field: 'confidence',
@@ -150,7 +161,7 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         filterType: 'text',
         width: 140,
         render: (row) => (
-          <span className="font-semibold">{row.confidence}</span>
+          <span className="font-semibold text-primary-1">{row.confidence}</span>
         ),
       },
     ];
@@ -164,8 +175,8 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         width: 180,
         render: (row) => (
           <div>
-            <div className="text-sm">{row.userName}</div>
-            <div className="text-xs text-black/60">{row.userEmail}</div>
+            <div className="text-sm font-medium text-gray-800">{row.userName}</div>
+            <div className="text-xs text-gray-400">{row.userEmail}</div>
           </div>
         ),
       });
@@ -178,7 +189,7 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
       filterType: 'date',
       width: 200,
       render: (row) => (
-        <span className="text-xs">{new Date(row.createdAt).toLocaleString()}</span>
+        <span className="text-sm text-gray-500">{new Date(row.createdAt).toLocaleString()}</span>
       ),
     });
 
@@ -221,60 +232,59 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         name: 'View Details',
         icon: IoEye,
         onClick: (row) => handleViewDetails(row),
-        // color: 'blue',
       },
       {
         name: 'Report',
         icon: MdPictureAsPdf,
         onClick: (row) => handleGenerateReport(row),
       },
-    ];
-
-    // if (isAdmin) {
-      actions.push({
+      {
         name: 'Delete',
         icon: MdDelete,
         onClick: (row) => handleDelete(row),
-        // color: 'red',
-      });
-    // }
+      },
+    ];
 
     return actions;
   }, [isAdmin]);
 
-    const rowMenuActions = (row) => [
-      { label: 'View', icon: <IoEye />, onClick: () => handleViewDetails(row) },
-      { label: 'Report', icon: <MdPictureAsPdf />, onClick: () => handleGenerateReport(row) },
-      { label: 'Delete', icon: <MdDelete />, onClick: () => handleDelete(row) },
+  const rowMenuActions = (row) => [
+    { label: 'View', icon: <IoEye className="text-primary-1" />, onClick: () => handleViewDetails(row) },
+    { label: 'Report', icon: <MdPictureAsPdf className="text-primary-1" />, onClick: () => handleGenerateReport(row) },
+    { label: 'Delete', icon: <MdDelete className="text-red-500" />, onClick: () => handleDelete(row) },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-        <h2 className="text-3xl font-bold text-black mb-2">{pageTitle}</h2>
-        <p className="text-black/70">{pageDescription}</p>
+      {/* Page Header */}
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+        <h2 className="text-2xl font-bold text-gray-800 mb-2">{pageTitle}</h2>
+        <p className="text-gray-500">{pageDescription}</p>
       </div>
 
+      {/* Success Message */}
       {actionMessage && (
-        <div className="bg-green-500/20 border border-green-500 text-black px-4 py-3 rounded-xl">
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
           {actionMessage}
         </div>
       )}
 
+      {/* Error Message */}
       {historyError && (
-        <div className="bg-red-500/20 border border-red-500 text-black px-4 py-3 rounded-xl">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           {historyError}
         </div>
       )}
 
+      {/* Table Section */}
       {historyLoading ? (
-        <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="flex justify-center items-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
           </div>
         </div>
       ) : (
-        <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+        <div className="bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden">
           <TableGrid
             columns={columns}
             data={analyses}
@@ -290,11 +300,12 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       <PopupModal
         isOpen={Boolean(deleteTarget)}
         type="confirm"
         title="Delete Analysis"
-        message="Are you sure you want to delete this analysis record?"
+        message="Are you sure you want to delete this analysis record? This action cannot be undone."
         onClose={handleCloseDeletePopup}
         onConfirm={handleConfirmDelete}
         confirmText={deleteLoading ? 'Deleting...' : 'Delete'}

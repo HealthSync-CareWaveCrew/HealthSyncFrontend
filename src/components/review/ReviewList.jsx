@@ -49,7 +49,7 @@ function ReviewList() {
 
   if (loading) {
     return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
         </div>
@@ -59,8 +59,8 @@ function ReviewList() {
 
   if (error) {
     return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-        <div className="bg-red-500/20 border border-red-500 text-black px-4 py-3 rounded-xl">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           {error}
         </div>
       </div>
@@ -69,9 +69,9 @@ function ReviewList() {
 
   if (reviews.length === 0) {
     return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <div className="text-center py-12">
-          <p className="text-black/60 text-lg">No reviews yet. Be the first to review!</p>
+          <p className="text-gray-500 text-lg">No reviews yet. Be the first to review!</p>
         </div>
       </div>
     );
@@ -80,19 +80,19 @@ function ReviewList() {
   return (
     <div className="space-y-4">
       {/* Search and Sort Controls */}
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-primary-2/30">
-        <div className="flex flex-col md:flex-row gap-4">
+      <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+        <div className="flex flex-col md:flex-row gap-3">
           <input
             type="text"
             placeholder="Search by name, email, or comment..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="flex-1 px-4 py-2 rounded-lg border border-primary-2/30 bg-white/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
+            className="flex-1 px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1 transition-colors"
           />
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-primary-2/30 bg-white/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
+            className="px-4 py-2 rounded-lg border border-gray-200 bg-white focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1 transition-colors"
           >
             <option value="latest">Latest First</option>
             <option value="oldest">Oldest First</option>
@@ -101,8 +101,8 @@ function ReviewList() {
       </div>
 
       {/* Reviews Header */}
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-primary-2/30">
-        <h3 className="text-xl font-bold text-black">
+      <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-800">
           All Reviews ({sortedReviews.length})
         </h3>
       </div>
@@ -116,21 +116,21 @@ function ReviewList() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center mt-4">
+        <div className="flex justify-center items-center gap-2 mt-4">
           <button
             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 mx-1 bg-primary-1 text-white rounded-lg disabled:opacity-50 hover:bg-primary-2 transition-colors"
+            className="px-4 py-2 bg-primary-1 text-white rounded-lg hover:bg-primary-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             Previous
           </button>
-          <span className="px-4 py-2 mx-1 text-black">
+          <span className="px-4 py-2 text-gray-600">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 mx-1 bg-primary-1 text-white rounded-lg disabled:opacity-50 hover:bg-primary-2 transition-colors"
+            className="px-4 py-2 bg-primary-1 text-white rounded-lg hover:bg-primary-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
           >
             Next
           </button>
