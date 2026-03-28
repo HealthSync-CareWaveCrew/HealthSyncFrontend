@@ -1,4 +1,6 @@
+// ReviewCard.jsx
 import StarRating from './StarRating';
+import { FaTrash, FaEdit, FaUser } from 'react-icons/fa';
 
 function ReviewCard({ review, showActions = false, onEdit, onDelete }) {
   const formatDate = (dateString) => {
@@ -10,70 +12,52 @@ function ReviewCard({ review, showActions = false, onEdit, onDelete }) {
     });
   };
 
-  const getInitials = (name) => {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
   return (
-    <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start gap-4">
-          {/* Avatar */}
-          <div className="w-12 h-12 rounded-full bg-gradient-to-r from-primary-2 to-primary-1 flex items-center justify-center text-white font-bold flex-shrink-0">
-            {getInitials(review.user?.name || 'U')}
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-5 border border-gray-100">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-primary-1/10 flex items-center justify-center">
+            <FaUser className="text-primary-1" />
           </div>
-
-          {/* User Info */}
           <div>
-            <h4 className="font-semibold text-black">{review.user?.name || 'User'}</h4>
-            <div className="flex items-center gap-2 mt-1">
-              <StarRating rating={review.rating} readonly size="sm" />
-              <span className="text-sm text-black/60">
-                {formatDate(review.createdAt)}
-              </span>
-            </div>
+            <h4 className="font-semibold text-gray-800">{review.user?.name || 'Anonymous'}</h4>
+            <p className="text-xs text-gray-500">{review.user?.email}</p>
           </div>
         </div>
-
-        {/* Actions */}
-        {showActions && (
-          <div className="flex gap-2">
-            <button
-              onClick={() => onEdit && onEdit(review)}
-              className="px-3 py-1 bg-primary-3 text-black rounded-lg hover:bg-primary-2/50 transition-colors text-sm"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => onDelete && onDelete(review._id)}
-              className="px-3 py-1 bg-red-500/20 text-red-600 rounded-lg hover:bg-red-500/30 transition-colors text-sm"
-            >
-              Delete
-            </button>
-          </div>
-        )}
+        <div className="text-right">
+          <StarRating rating={review.rating} readonly size="sm" />
+          <p className="text-xs text-gray-400 mt-1">{formatDate(review.createdAt)}</p>
+        </div>
       </div>
 
-      {/* Review Title */}
-      <h3 className="text-lg font-bold text-black mb-2">{review.title}</h3>
+      {/* Content */}
+      <div className="mb-3">
+        <h3 className="text-md font-semibold text-gray-800 mb-2">{review.title}</h3>
+        <p className="text-gray-600 leading-relaxed">{review.comment}</p>
+      </div>
 
-      {/* Review Comment */}
-      <p className="text-black/80 leading-relaxed">{review.comment}</p>
-
-      {/* Admin indicators */}
-      {!review.isVisible && (
-        <div className="mt-3 inline-block px-3 py-1 bg-yellow-500/20 text-yellow-700 rounded-lg text-sm">
-          Hidden by Admin
-        </div>
-      )}
-      {!review.isApproved && (
-        <div className="mt-3 inline-block px-3 py-1 bg-red-500/20 text-red-600 rounded-lg text-sm ml-2">
-          Pending Approval
+      {/* Actions */}
+      {showActions && (
+        <div className="flex justify-end gap-2 pt-3 border-t border-gray-100">
+          {onEdit && (
+            <button
+              onClick={() => onEdit(review)}
+              className="px-3 py-1.5 text-sm text-primary-1 hover:text-primary-2 transition-colors flex items-center gap-1"
+            >
+              <FaEdit className="w-3 h-3" />
+              Edit
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={() => onDelete(review._id)}
+              className="px-3 py-1.5 text-sm text-red-500 hover:text-red-600 transition-colors flex items-center gap-1"
+            >
+              <FaTrash className="w-3 h-3" />
+              Delete
+            </button>
+          )}
         </div>
       )}
     </div>

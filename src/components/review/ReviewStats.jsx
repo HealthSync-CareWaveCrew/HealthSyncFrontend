@@ -1,3 +1,4 @@
+// ReviewStats.jsx
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchReviewStats } from '../../Redux/Features/reviewSlice';
@@ -13,7 +14,7 @@ function ReviewStats() {
 
   if (loading || !stats) {
     return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-1"></div>
         </div>
@@ -29,12 +30,12 @@ function ReviewStats() {
   };
 
   return (
-    <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-      <h3 className="text-2xl font-bold text-black mb-6">Customer Reviews</h3>
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
+      <h3 className="text-xl font-bold text-gray-800 mb-6">Customer Reviews</h3>
 
       {totalReviews === 0 ? (
         <div className="text-center py-8">
-          <p className="text-black/60">No reviews yet</p>
+          <p className="text-gray-500">No reviews yet</p>
         </div>
       ) : (
         <>
@@ -44,7 +45,7 @@ function ReviewStats() {
               {averageRating}
             </div>
             <StarRating rating={Math.round(averageRating)} readonly size="lg" />
-            <p className="text-black/60 mt-2">
+            <p className="text-gray-500 mt-2">
               Based on {totalReviews} {totalReviews === 1 ? 'review' : 'reviews'}
             </p>
           </div>
@@ -67,8 +68,8 @@ function ReviewStats() {
 
               return (
                 <div key={star} className="flex items-center gap-3">
-                  <div className="flex items-center gap-1 w-16">
-                    <span className="text-sm text-black font-medium">{star}</span>
+                  <div className="flex items-center gap-1 w-14">
+                    <span className="text-sm text-gray-700 font-medium">{star}</span>
                     <svg
                       className="w-4 h-4 fill-primary-1"
                       xmlns="http://www.w3.org/2000/svg"
@@ -78,14 +79,14 @@ function ReviewStats() {
                     </svg>
                   </div>
 
-                  <div className="flex-1 h-3 bg-primary-3/50 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-primary-2 to-primary-1 transition-all duration-500"
+                      className="h-full bg-primary-1 transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     ></div>
                   </div>
 
-                  <span className="text-sm text-black/60 w-12 text-right">
+                  <span className="text-sm text-gray-500 w-12 text-right">
                     {percentage}%
                   </span>
                 </div>

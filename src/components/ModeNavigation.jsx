@@ -1,3 +1,4 @@
+// ModeNavigation.jsx
 import { useDispatch, useSelector } from 'react-redux';
 import { setMode, setSelectedDisease } from '../Redux/Features/analysisSlice';
 import { disableChat } from '../Redux/Features/chatSlice';
@@ -9,32 +10,32 @@ function ModeNavigation() {
   const handleModeChange = (newMode) => {
     dispatch(setMode(newMode));
     dispatch(disableChat());
-    dispatch(setSelectedDisease(null)); // Clear selected disease when mode changes
+    dispatch(setSelectedDisease(null));
   };
 
   return (
-    <nav className="bg-primary-4 backdrop-blur-md rounded-2xl p-2 shadow-xl border border-primary-2/30 flex gap-2">
+    <div className="bg-white rounded-lg border border-gray-200 p-1 flex gap-1">
       <button
         onClick={() => handleModeChange('image')}
-        className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+        className={`flex-1 py-2 px-4 rounded font-medium transition ${
           mode === 'image'
-            ? 'bg-gradient-to-r from-primary-2 to-primary-1 text-white shadow-lg'
-            : 'text-black hover:bg-primary-3/50'
+            ? 'bg-primary-1 text-white'
+            : 'text-gray-700 hover:bg-gray-50'
         }`}
       >
         Image Analysis
       </button>
       <button
         onClick={() => handleModeChange('clinical')}
-        className={`flex-1 py-3 px-6 rounded-xl font-semibold transition-all duration-300 ${
+        className={`flex-1 py-2 px-4 rounded font-medium transition ${
           mode === 'clinical'
-            ? 'bg-gradient-to-r from-primary-2 to-primary-1 text-white shadow-lg'
-            : 'text-black hover:bg-primary-3/50'
+            ? 'bg-primary-1 text-white'
+            : 'text-gray-700 hover:bg-gray-50'
         }`}
       >
         Clinical Data
       </button>
-    </nav>
+    </div>
   );
 }
 
