@@ -23,26 +23,49 @@ const extractAmount = (entry) => {
   const rawAmount =
     entry?.amount ??
     entry?.amount_paid ??
+    entry?.amount_total ??
+    entry?.amount_due ??
+    entry?.amount_subtotal ??
     entry?.total_amount ??
     entry?.total ??
+    entry?.amountTotal ??
+    entry?.amountDue ??
+    entry?.amountSubtotal ??
     entry?.unit_amount ??
     entry?.amount_cents ??
     entry?.amountCents ??
+    entry?.amount_total_cents ??
+    entry?.amountTotalCents ??
     entry?.price ??
-    entry?.cost;
+    entry?.cost ??
+    entry?.plan?.cost ??
+    entry?.plan?.price;
   if (rawAmount === null || rawAmount === undefined) {
-    return { amount: null, currency: entry?.currency };
+    return {
+      amount: null,
+      currency:
+        entry?.currency ||
+        entry?.currency_code ||
+        entry?.currencyCode ||
+        entry?.plan?.currency,
+    };
   }
 
   const numeric = Number(rawAmount);
   const shouldConvert =
     entry?.amount_cents !== undefined ||
     entry?.amountCents !== undefined ||
+    entry?.amount_total_cents !== undefined ||
+    entry?.amountTotalCents !== undefined ||
     entry?.unit_amount !== undefined;
 
   return {
     amount: shouldConvert ? numeric / 100 : numeric,
-    currency: entry?.currency || entry?.currency_code || entry?.currencyCode,
+    currency:
+      entry?.currency ||
+      entry?.currency_code ||
+      entry?.currencyCode ||
+      entry?.plan?.currency,
   };
 };
 
@@ -50,11 +73,23 @@ const formatAmount = (amount, currency = "usd") => {
   if (amount === null || amount === undefined) return "—";
   const numeric = Number(amount);
   if (!Number.isFinite(numeric)) return amount;
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-    minimumFractionDigits: 0,
-  }).format(numeric);
+  const resolvedCurrency =
+    typeof currency === "string" && currency.trim().length === 3
+      ? currency.trim().toUpperCase()
+      : "USD";
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: resolvedCurrency,
+      minimumFractionDigits: 0,
+    }).format(numeric);
+  } catch (error) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+    }).format(numeric);
+  }
 };
 
 const PaymentHistory = () => {
@@ -115,6 +150,7 @@ const PaymentHistory = () => {
                 entry.plan_name ||
                 entry.plan?.plan_name ||
                 entry.plan?.name ||
+                entry.plan?.label ||
                 entry.plan ||
                 "—";
               return (
