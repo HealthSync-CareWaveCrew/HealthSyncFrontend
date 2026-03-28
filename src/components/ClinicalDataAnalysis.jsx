@@ -53,7 +53,20 @@ function ClinicalDataAnalysis() {
     if (analyzeClinicalDataThunk.fulfilled.match(resultAction)) {
       const result = resultAction.payload.data;
 
-      const instruction = `You are a medical AI assistant. Analysis Result: ${result.disease}. Confidence: ${result.confidence}. Findings: ${result.description || 'No additional findings.'}. Always advise consulting a real doctor.`;
+      const contextType = `${diseaseType} clinical data`;
+      const instruction = `You are an advanced medical AI assistant.
+Context: The user provided data/image for ${contextType}.
+Analysis Result: ${result.disease}.
+Confidence: ${result.confidence}.
+Findings: ${result.description || 'No additional findings provided.'}.
+
+Your goal is to answer the user's questions based on this diagnosis. Be professional, empathetic, and clear.
+
+IMPORTANT RULES:
+1. Only answer questions related to medical topics, health, care, diagnosis, or the specific analysis provided.
+2. If the user asks about anything unrelated (e.g., coding, general knowledge, sports, entertainment), politely refuse.
+   Response for unrelated topics: "I am designed to assist with medical and health-related inquiries only. Please ask a question related to medical care or diagnosis."
+3. Always advise consulting a real doctor for final confirmation.`;
 
       dispatch(clearChat());
       dispatch(setSystemInstruction(instruction));
