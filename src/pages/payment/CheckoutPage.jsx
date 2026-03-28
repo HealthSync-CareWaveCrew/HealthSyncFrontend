@@ -21,12 +21,16 @@ const cardElementOptions = {
   },
 };
 
-const formatPrice = (amount, currency = "usd") =>
-  new Intl.NumberFormat("en-US", {
+const formatPrice = (amount, currency = "usd") => {
+  if (amount === null || amount === undefined || Number.isNaN(Number(amount))) {
+    return "—";
+  }
+  return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: currency.toUpperCase(),
     minimumFractionDigits: 0,
-  }).format(amount);
+  }).format(Number(amount));
+};
 
 const normalizePlan = (plan) => {
   const rawAmount =
@@ -34,6 +38,7 @@ const normalizePlan = (plan) => {
     plan?.unit_amount ??
     plan?.amount ??
     plan?.price ??
+    plan?.cost ??
     plan?.unitAmount ??
     0;
   const amount =
@@ -41,13 +46,15 @@ const normalizePlan = (plan) => {
       ? rawAmount / 100
       : Number(rawAmount);
   return {
-    id: plan?.id || plan?.plan_id || plan?.planId || plan?.price_id,
+    id: plan?._id || plan?.id || plan?.plan_id || plan?.planId || plan?.price_id,
     name: plan?.name || plan?.plan_name || plan?.nickname,
     interval:
       plan?.interval ||
       plan?.billingCycle ||
       plan?.billing_cycle ||
       plan?.recurring_interval ||
+      plan?.feature_limits?.billing_cycle ||
+      plan?.feature_limits?.billingCycle ||
       (plan?.isOneTime ? "one_time" : undefined),
     amount,
     currency: plan?.currency || "usd",
@@ -108,7 +115,9 @@ const CheckoutPage = () => {
     loadMethods();
   }, []);
 
-  const selectedPlan = plans.find((plan) => plan.id === planId);
+  const selectedPlan = plans.find(
+    (plan) => String(plan.id) === String(planId),
+  );
 
   const handleAddCard = async () => {
     if (!stripe || !elements) return;
@@ -226,11 +235,13 @@ const CheckoutPage = () => {
                 <p className="text-sm text-gray-500">Billing</p>
                 <p className="text-lg font-semibold text-gray-900">
                   {formatPrice(selectedPlan.amount, selectedPlan.currency)}
-                  <span className="text-xs text-gray-500">
-                    {selectedPlan.interval === "one_time"
-                      ? " one-time"
-                      : ` / ${selectedPlan.interval}`}
-                  </span>
+                  {selectedPlan.interval && (
+                    <span className="text-xs text-gray-500">
+                      {selectedPlan.interval === "one_time"
+                        ? " one-time"
+                        : ` / ${selectedPlan.interval}`}
+                    </span>
+                  )}
                 </p>
               </div>
             </div>

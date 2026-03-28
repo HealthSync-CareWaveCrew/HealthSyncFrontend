@@ -19,6 +19,33 @@ const formatDate = (value) => {
   return date.toLocaleDateString();
 };
 
+const extractAmount = (entry) => {
+  const rawAmount =
+    entry?.amount ??
+    entry?.amount_paid ??
+    entry?.total_amount ??
+    entry?.total ??
+    entry?.unit_amount ??
+    entry?.amount_cents ??
+    entry?.amountCents ??
+    entry?.price ??
+    entry?.cost;
+  if (rawAmount === null || rawAmount === undefined) {
+    return { amount: null, currency: entry?.currency };
+  }
+
+  const numeric = Number(rawAmount);
+  const shouldConvert =
+    entry?.amount_cents !== undefined ||
+    entry?.amountCents !== undefined ||
+    entry?.unit_amount !== undefined;
+
+  return {
+    amount: shouldConvert ? numeric / 100 : numeric,
+    currency: entry?.currency || entry?.currency_code || entry?.currencyCode,
+  };
+};
+
 const formatAmount = (amount, currency = "usd") => {
   if (amount === null || amount === undefined) return "—";
   const numeric = Number(amount);
@@ -83,16 +110,23 @@ const PaymentHistory = () => {
             {items.map((entry) => {
               const status = (entry.status || "—").toLowerCase();
               const badge = statusStyles[status] || "bg-gray-100 text-gray-700";
+              const { amount, currency } = extractAmount(entry);
+              const planLabel =
+                entry.plan_name ||
+                entry.plan?.plan_name ||
+                entry.plan?.name ||
+                entry.plan ||
+                "—";
               return (
                 <tr key={entry.id}>
                   <td className="px-4 py-3 text-gray-600">
                     {formatDate(entry.date || entry.created_at)}
                   </td>
                   <td className="px-4 py-3 font-semibold text-gray-800">
-                    {entry.plan_name || entry.plan || "—"}
+                    {planLabel}
                   </td>
                   <td className="px-4 py-3 text-gray-600">
-                    {formatAmount(entry.amount, entry.currency)}
+                    {formatAmount(amount, currency)}
                   </td>
                   <td className="px-4 py-3">
                     <span
