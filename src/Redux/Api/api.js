@@ -133,7 +133,7 @@ export const verifyEmailChangeOTP = async (otpData) => {
 
 // Admin functions
 export const getAllUsers = async () => {
-  const response = await api.get('/api/users');
+  const response = await api.get('/api/admin/users');
   return response;
 };
 

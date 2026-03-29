@@ -17,7 +17,7 @@ const adminMenu = [
   { label: 'Disease Management', to: '/admin/disease-management', icon: <FaHeartbeat /> },
   { label: 'Analysis Management', to: '/admin/analysis-history', icon: <FaHistory /> },
   { label: 'Reviews Management', to: '/admin/reviews-management', icon: <MdRateReview /> },
-  { label: 'Users Management', to: '/admin/users-management', icon: <FaUsers /> },
+  { label: 'Users Management', to: '/admin/user-management', icon: <FaUsers /> },
   { label: 'Payments Management', to: '/admin/payments-management', icon: <FaMoneyCheck /> },
 ];
 
