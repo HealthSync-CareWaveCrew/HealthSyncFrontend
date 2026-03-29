@@ -1,3 +1,4 @@
+// UserReviews.jsx
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -16,12 +17,8 @@ function UserReviews() {
   const { userReviews, loading, error, success } = useSelector(
     (state) => state.review
   );
-    const { user } = useSelector(
-    (state) => state.auth
-  );
+  const { user } = useSelector((state) => state.auth);
 
-  const [userEmail, setUserEmail] = useState('');
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
   const [editingReview, setEditingReview] = useState(null);
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState(null);
@@ -30,6 +27,12 @@ function UserReviews() {
     title: '',
     comment: '',
   });
+
+  useEffect(() => {
+    if (user?.id) {
+      dispatch(fetchUserReviews());
+    }
+  }, [user, dispatch]);
 
   useEffect(() => {
     if (success) {
@@ -50,20 +53,6 @@ function UserReviews() {
     }
   }, [error, dispatch]);
 
-  // const handleEmailSubmit = (e) => {
-  //   e.preventDefault();
-  //   if (userEmail.trim()) {
-  //     dispatch(fetchUserReviews(userEmail));
-  //     setEmailSubmitted(true);
-  //   }
-  // };
-
-useEffect(() => {
-  if (user?.id) {
-    dispatch(fetchUserReviews());
-  }
-}, [user, dispatch]);
-
   const handleEdit = (review) => {
     setEditingReview(review._id);
     setEditFormData({
@@ -78,7 +67,7 @@ useEffect(() => {
     dispatch(
       updateReview({
         id: editingReview,
-        updateData: { ...editFormData, userEmail },
+        updateData: editFormData,
       })
     );
   };
@@ -90,9 +79,8 @@ useEffect(() => {
 
   const handleConfirmDelete = () => {
     if (deleteTargetId) {
-      dispatch(deleteReview({ id: deleteTargetId, userEmail }));
+      dispatch(deleteReview({ id: deleteTargetId }));
     }
-
     setDeleteTargetId(null);
     setIsDeletePopupOpen(false);
   };
@@ -102,40 +90,9 @@ useEffect(() => {
     setEditFormData({ rating: 0, title: '', comment: '' });
   };
 
-  // if (!emailSubmitted) {
-  //   return (
-  //     <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-  //       <h3 className="text-2xl font-bold text-black mb-6">Manage Your Reviews</h3>
-
-  //       <form onSubmit={handleEmailSubmit} className="space-y-4">
-  //         <div>
-  //           <label className="block text-sm font-medium text-black mb-2">
-  //             Enter your email to view and manage your reviews
-  //           </label>
-  //           <input
-  //             type="email"
-  //             value={userEmail}
-  //             onChange={(e) => setUserEmail(e.target.value)}
-  //             required
-  //             placeholder="your@email.com"
-  //             className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
-  //           />
-  //         </div>
-
-  //         <button
-  //           type="submit"
-  //           className="w-full py-3 px-6 bg-gradient-to-r from-primary-2 to-primary-1 text-white font-bold rounded-xl hover:from-primary-2/90 hover:to-primary-1/90 transition-all duration-300 shadow-lg"
-  //         >
-  //           View My Reviews
-  //         </button>
-  //       </form>
-  //     </div>
-  //   );
-  // }
-
   if (loading) {
     return (
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
         <div className="flex justify-center items-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-1"></div>
         </div>
@@ -145,40 +102,31 @@ useEffect(() => {
 
   return (
     <div className="space-y-4">
-      <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-primary-2/30">
+      <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
         <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-black">
+          <h3 className="text-lg font-semibold text-gray-800">
             Your Reviews ({userReviews.length})
           </h3>
-          {/* <button
-            onClick={() => {
-              setEmailSubmitted(false);
-              setUserEmail('');
-            }}
-            className="px-4 py-2 bg-primary-3 text-black rounded-lg hover:bg-primary-2/50 transition-colors text-sm"
-          >
-            Change Email
-          </button> */}
         </div>
       </div>
 
       {/* Success/Error Messages */}
       {success && (
-        <div className="bg-green-500/20 border border-green-500 text-black px-4 py-3 rounded-xl">
+        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">
           {success}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-500/20 border border-red-500 text-black px-4 py-3 rounded-xl">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
       {userReviews.length === 0 ? (
-        <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
+        <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
           <div className="text-center py-12">
-            <p className="text-black/60 text-lg">
+            <p className="text-gray-500 text-lg">
               You haven't written any reviews yet.
             </p>
           </div>
@@ -188,15 +136,15 @@ useEffect(() => {
           {userReviews.map((review) => (
             <div key={review._id}>
               {editingReview === review._id ? (
-                <div className="bg-primary-4 backdrop-blur-md rounded-2xl p-6 shadow-2xl border border-primary-2/30">
-                  <h4 className="text-lg font-bold text-black mb-4">
+                <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+                  <h4 className="text-lg font-semibold text-gray-800 mb-4">
                     Edit Review
                   </h4>
 
                   <form onSubmit={handleUpdateSubmit} className="space-y-4">
                     {/* Rating */}
                     <div>
-                      <label className="block text-sm font-medium text-black mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Rating
                       </label>
                       <StarRating
@@ -210,7 +158,7 @@ useEffect(() => {
 
                     {/* Title */}
                     <div>
-                      <label className="block text-sm font-medium text-black mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Title
                       </label>
                       <input
@@ -224,13 +172,13 @@ useEffect(() => {
                         }
                         required
                         maxLength={100}
-                        className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1"
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
                       />
                     </div>
 
                     {/* Comment */}
                     <div>
-                      <label className="block text-sm font-medium text-black mb-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
                         Review
                       </label>
                       <textarea
@@ -244,7 +192,7 @@ useEffect(() => {
                         required
                         maxLength={1000}
                         rows={5}
-                        className="w-full px-4 py-3 bg-white border border-primary-2/30 rounded-xl text-black placeholder-black/50 focus:outline-none focus:ring-2 focus:ring-primary-1 resize-none"
+                        className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-gray-700 focus:outline-none focus:border-primary-1 focus:ring-1 focus:ring-primary-1 resize-none"
                       />
                     </div>
 
@@ -252,14 +200,14 @@ useEffect(() => {
                     <div className="flex gap-2">
                       <button
                         type="submit"
-                        className="flex-1 py-3 px-6 bg-gradient-to-r from-primary-2 to-primary-1 text-white font-bold rounded-xl hover:from-primary-2/90 hover:to-primary-1/90 transition-all duration-300 shadow-lg"
+                        className="flex-1 py-2.5 px-4 bg-primary-1 text-white font-semibold rounded-lg hover:bg-primary-2 transition-all duration-300 shadow-sm"
                       >
                         Save Changes
                       </button>
                       <button
                         type="button"
                         onClick={handleCancelEdit}
-                        className="px-6 py-3 bg-primary-3 text-black rounded-xl hover:bg-primary-2/50 transition-colors"
+                        className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                       >
                         Cancel
                       </button>

@@ -31,7 +31,6 @@ function ChatPanel() {
       parts: msg.parts,
     }));
 
-    // Dispatch the thunk - it will handle loading, success, and error states
     await dispatch(
       sendChatMessageThunk({
         message: input,

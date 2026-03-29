@@ -1,18 +1,26 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import HomePage from "../pages/HomePage";
 import LandingPage from "../pages/LandingPage";
-import AuthPage from '../pages/AuthPage';
-import AppShell from '../components/AppShell';
-import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
-import AdminLayoutPage from '../pages/AdminLayoutPage';
-import ProtectedRoute from './ProtectedRoute';
-import UserDashboard from '../components/UserDashboard';
-import AdminReviewsPage from '../pages/review/AdminReviewsPage';
-import ReviewsPage from '../pages/review/ReviewsPage';
-import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
-import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
-import CustomerAnalysisDetailsPage from '../pages/CustomerAnalysisDetailsPage';
-import AdminAnalysisDetailsPage from '../pages/AdminAnalysisDetailsPage';
+import AuthPage from "../pages/AuthPage"; // import your auth page
+import AppShell from "../components/AppShell";
+import AdminDiseaseManagementPage from "../pages/AdminDiseaseManagementPage";
+import AdminLayoutPage from "../pages/AdminLayoutPage";
+import ProtectedRoute from "./ProtectedRoute";
+import UserDashboard from "../components/UserDashboard";
+import AdminReviewsPage from "../pages/review/AdminReviewsPage";
+import ReviewsPage from "../pages/review/ReviewsPage";
+import AdminAnalysisHistoryPage from "../pages/AdminAnalysisHistoryPage";
+import CustomerAnalysisHistoryPage from "../pages/CustomerAnalysisHistoryPage";
+import CustomerAnalysisDetailsPage from "../pages/CustomerAnalysisDetailsPage";
+import AdminAnalysisDetailsPage from "../pages/AdminAnalysisDetailsPage";
+import PaymentLayout from "../pages/payment/PaymentLayout";
+import PaymentPage from "../pages/payment/PaymentPage";
+import CheckoutPage from "../pages/payment/CheckoutPage";
 import AdminUserManagementPage from '../pages/AdminUserManagementPage';
 
 function AllRoutes() {
@@ -27,8 +35,6 @@ function AllRoutes() {
         <Route path="/auth" element={<AuthPage />} />
 
         <Route element={<AppShell />}>
-
-          {/* User Routes */}
           <Route
             path="/dashboard"
             element={
@@ -37,7 +43,6 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/"
             element={
@@ -46,8 +51,6 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           />
-
-          {/* Admin Routes */}
           <Route
             path="/admin"
             element={
@@ -56,7 +59,6 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           >
-            {/* Default redirect */}
             <Route
               index
               element={<Navigate to="disease-management" replace />}
@@ -98,7 +100,6 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/analysis-history"
             element={
@@ -116,7 +117,27 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           />
-
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <PaymentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PaymentPage />} />
+            <Route path="checkout" element={<CheckoutPage />} />
+          </Route>
+          <Route
+            path="/pricing"
+            element={
+              <ProtectedRoute>
+                <PaymentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PaymentPage />} />
+          </Route>
         </Route>
       </Routes>
     </Router>

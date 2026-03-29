@@ -168,7 +168,7 @@ export const AdvancedPagination = ({
                 "border-2 rounded hidden sm:inline-flex justify-center items-center font-medium transition-all",
                 currentPage === p
                   ? "bg-primary-1 text-white border-primary-1"
-                  : "bg-primary-3 text-black/80 border-primary-2 hover:bg-primary-2/60"
+                  : "bg-white text-black/80 border-primary-2 hover:bg-primary-2/60"
               )}
               style={{ height, width }}
             >
