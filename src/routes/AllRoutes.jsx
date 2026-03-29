@@ -21,6 +21,7 @@ import AdminAnalysisDetailsPage from "../pages/AdminAnalysisDetailsPage";
 import PaymentLayout from "../pages/payment/PaymentLayout";
 import PaymentPage from "../pages/payment/PaymentPage";
 import CheckoutPage from "../pages/payment/CheckoutPage";
+import AdminUserManagementPage from '../pages/AdminUserManagementPage';
 
 function AllRoutes() {
   return (
@@ -28,11 +29,11 @@ function AllRoutes() {
       <Routes>
         <Route path="/landingPage" element={<LandingPage />} />
 
-        {/* <Route path="/" element={<HomePage />} /> */}
+        {/* Auth Routes */}
         <Route path="/login" element={<AuthPage />} />
         <Route path="/register" element={<AuthPage />} />
-        {/* or if you want both on same page */}
         <Route path="/auth" element={<AuthPage />} />
+
         <Route element={<AppShell />}>
           <Route
             path="/dashboard"
@@ -62,17 +63,35 @@ function AllRoutes() {
               index
               element={<Navigate to="disease-management" replace />}
             />
+
+            {/* ✅ USER MANAGEMENT (FINAL CORRECT ONE) */}
+            <Route
+              path="user-management"
+              element={<AdminUserManagementPage />}
+            />
+
             <Route
               path="disease-management"
               element={<AdminDiseaseManagementPage />}
             />
+
             <Route
               path="analysis-history"
               element={<AdminAnalysisHistoryPage />}
             />
-            <Route path="analysis/:id" element={<AdminAnalysisDetailsPage />} />
-            <Route path="reviews-management" element={<AdminReviewsPage />} />
+
+            <Route
+              path="analysis/:id"
+              element={<AdminAnalysisDetailsPage />}
+            />
+
+            <Route
+              path="reviews-management"
+              element={<AdminReviewsPage />}
+            />
           </Route>
+
+          {/* Customer Routes */}
           <Route
             path="/reviews"
             element={
@@ -89,6 +108,7 @@ function AllRoutes() {
               </ProtectedRoute>
             }
           />
+
           <Route
             path="/customer/analysis/:id"
             element={
