@@ -82,10 +82,10 @@ function ImageAnalysis() {
         diseaseId: selectedDisease._id,
       })
     );
+    
 
     if (analyzeImageData.fulfilled.match(resultAction)) {
-      const result = resultAction.payload;
-      
+      const result = resultAction.payload?.data;
       const contextType = `${diseaseType} image`;
       const instruction = `You are an advanced medical AI assistant.
 Context: The user provided data/image for ${contextType}.
