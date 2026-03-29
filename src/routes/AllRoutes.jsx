@@ -1,18 +1,26 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from '../pages/HomePage';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import HomePage from "../pages/HomePage";
 import LandingPage from "../pages/LandingPage";
-import AuthPage from '../pages/AuthPage'; // import your auth page
-import AppShell from '../components/AppShell';
-import AdminDiseaseManagementPage from '../pages/AdminDiseaseManagementPage';
-import AdminLayoutPage from '../pages/AdminLayoutPage';
-import ProtectedRoute from './ProtectedRoute';
-import UserDashboard from '../components/UserDashboard';
-import AdminReviewsPage from '../pages/review/AdminReviewsPage';
-import ReviewsPage from '../pages/review/ReviewsPage';
-import AdminAnalysisHistoryPage from '../pages/AdminAnalysisHistoryPage';
-import CustomerAnalysisHistoryPage from '../pages/CustomerAnalysisHistoryPage';
-import CustomerAnalysisDetailsPage from '../pages/CustomerAnalysisDetailsPage';
-import AdminAnalysisDetailsPage from '../pages/AdminAnalysisDetailsPage';
+import AuthPage from "../pages/AuthPage"; // import your auth page
+import AppShell from "../components/AppShell";
+import AdminDiseaseManagementPage from "../pages/AdminDiseaseManagementPage";
+import AdminLayoutPage from "../pages/AdminLayoutPage";
+import ProtectedRoute from "./ProtectedRoute";
+import UserDashboard from "../components/UserDashboard";
+import AdminReviewsPage from "../pages/review/AdminReviewsPage";
+import ReviewsPage from "../pages/review/ReviewsPage";
+import AdminAnalysisHistoryPage from "../pages/AdminAnalysisHistoryPage";
+import CustomerAnalysisHistoryPage from "../pages/CustomerAnalysisHistoryPage";
+import CustomerAnalysisDetailsPage from "../pages/CustomerAnalysisDetailsPage";
+import AdminAnalysisDetailsPage from "../pages/AdminAnalysisDetailsPage";
+import PaymentLayout from "../pages/payment/PaymentLayout";
+import PaymentPage from "../pages/payment/PaymentPage";
+import CheckoutPage from "../pages/payment/CheckoutPage";
 
 function AllRoutes() {
   return (
@@ -26,13 +34,30 @@ function AllRoutes() {
         {/* or if you want both on same page */}
         <Route path="/auth" element={<AuthPage />} />
         <Route element={<AppShell />}>
-          <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
-          <Route path="/" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
-          <Route path="/admin" element={
-            <ProtectedRoute requireAdmin={true}>
-              <AdminLayoutPage />
-            </ProtectedRoute>
-          }>
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <HomePage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <AdminLayoutPage />
+              </ProtectedRoute>
+            }
+          >
             <Route
               index
               element={<Navigate to="disease-management" replace />}
@@ -45,24 +70,54 @@ function AllRoutes() {
               path="analysis-history"
               element={<AdminAnalysisHistoryPage />}
             />
-            <Route
-              path="analysis/:id"
-              element={<AdminAnalysisDetailsPage />}
-            />
-            <Route
-              path="reviews-management"
-              element={<AdminReviewsPage />}
-            />
+            <Route path="analysis/:id" element={<AdminAnalysisDetailsPage />} />
+            <Route path="reviews-management" element={<AdminReviewsPage />} />
           </Route>
-          <Route path="/reviews" element={<ProtectedRoute><ReviewsPage /></ProtectedRoute>} />
+          <Route
+            path="/reviews"
+            element={
+              <ProtectedRoute>
+                <ReviewsPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/analysis-history"
-            element={<ProtectedRoute><CustomerAnalysisHistoryPage /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <CustomerAnalysisHistoryPage />
+              </ProtectedRoute>
+            }
           />
           <Route
             path="/customer/analysis/:id"
-            element={<ProtectedRoute><CustomerAnalysisDetailsPage /></ProtectedRoute>}
+            element={
+              <ProtectedRoute>
+                <CustomerAnalysisDetailsPage />
+              </ProtectedRoute>
+            }
           />
+          <Route
+            path="/payment"
+            element={
+              <ProtectedRoute>
+                <PaymentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PaymentPage />} />
+            <Route path="checkout" element={<CheckoutPage />} />
+          </Route>
+          <Route
+            path="/pricing"
+            element={
+              <ProtectedRoute>
+                <PaymentLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<PaymentPage />} />
+          </Route>
         </Route>
       </Routes>
     </Router>
