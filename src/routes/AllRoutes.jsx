@@ -10,6 +10,7 @@ import AuthPage from "../pages/AuthPage"; // import your auth page
 import AppShell from "../components/AppShell";
 import AdminDiseaseManagementPage from "../pages/AdminDiseaseManagementPage";
 import AdminLayoutPage from "../pages/AdminLayoutPage";
+import AdminDashboardPage from "../pages/AdminDashboardPage";
 import ProtectedRoute from "./ProtectedRoute";
 import UserDashboard from "../components/UserDashboard";
 import AdminReviewsPage from "../pages/review/AdminReviewsPage";
@@ -65,6 +66,11 @@ function AllRoutes() {
             />
 
             {/* ✅ USER MANAGEMENT (FINAL CORRECT ONE) */}
+            <Route
+              path="dashboard"
+              element={<AdminDashboardPage />}
+            />
+
             <Route
               path="user-management"
               element={<AdminUserManagementPage />}
