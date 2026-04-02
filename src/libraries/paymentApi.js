@@ -5,8 +5,10 @@ export const getPaymentPlans = async () => {
   return response;
 };
 
-export const getSubscriptionStatus = async () => {
-  const response = await api.get("/api/payment/subscription-status");
+export const getSubscriptionStatus = async (feature) => {
+  const response = await api.get("/api/payment/subscription-status", {
+    params: feature ? { feature } : undefined,
+  });
   return response;
 };
 

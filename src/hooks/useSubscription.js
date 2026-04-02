@@ -8,20 +8,41 @@ const normalizeNumber = (value, fallback = 0) => {
 
 const normalizeSubscription = (data) => {
   if (!data) return null;
-  return data.subscription || data;
+  return data.subscription || data.data || data;
+};
+
+const normalizeSubscriptions = (data) => {
+  const source = data?.subscriptions || data?.data?.subscriptions || {};
+  return {
+    text: source?.text || null,
+    image: source?.image || null,
+  };
 };
 
 const extractTrialUsage = (data) => {
+  const source = data?.data || data;
   const freeTrialsUsed = normalizeNumber(
-    data?.freeTrialsUsed ?? data?.free_trials_used ?? data?.trialUsage?.used,
+    source?.freeTrialsUsed ??
+      source?.free_trials_used ??
+      source?.trialUsage?.used ??
+      data?.freeTrialsUsed ??
+      data?.free_trials_used ??
+      data?.trialUsage?.used,
     0,
   );
   const freeTrialsTotal = normalizeNumber(
-    data?.freeTrialsTotal ?? data?.free_trials_total ?? data?.trialUsage?.total,
+    source?.freeTrialsTotal ??
+      source?.free_trials_total ??
+      source?.trialUsage?.total ??
+      data?.freeTrialsTotal ??
+      data?.free_trials_total ??
+      data?.trialUsage?.total,
     3,
   );
   const freeTrialsRemaining = normalizeNumber(
-    data?.freeTrialsRemaining ??
+    source?.freeTrialsRemaining ??
+      source?.free_trials_remaining ??
+      data?.freeTrialsRemaining ??
       data?.free_trials_remaining ??
       freeTrialsTotal - freeTrialsUsed,
     Math.max(0, freeTrialsTotal - freeTrialsUsed),
@@ -29,8 +50,12 @@ const extractTrialUsage = (data) => {
   return { freeTrialsUsed, freeTrialsRemaining };
 };
 
-const useSubscription = () => {
+const useSubscription = (feature) => {
   const [subscription, setSubscription] = useState(null);
+  const [subscriptions, setSubscriptions] = useState({
+    text: null,
+    image: null,
+  });
   const [loading, setLoading] = useState(true);
   const [freeTrialsUsed, setFreeTrialsUsed] = useState(0);
   const [freeTrialsRemaining, setFreeTrialsRemaining] = useState(3);
@@ -41,19 +66,25 @@ const useSubscription = () => {
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        const response = await getSubscriptionStatus();
+        const response = await getSubscriptionStatus(feature);
         const payload = response?.data || {};
-        const normalized = normalizeSubscription(payload);
+        const normalizedByType = normalizeSubscriptions(payload);
+        const normalized =
+          feature && normalizedByType[feature] !== undefined
+            ? normalizedByType[feature]
+            : normalizeSubscription(payload);
         const { freeTrialsUsed: used, freeTrialsRemaining: remaining } =
           extractTrialUsage(payload);
 
         if (isMounted) {
+          setSubscriptions(normalizedByType);
           setSubscription(normalized);
           setFreeTrialsUsed(used);
           setFreeTrialsRemaining(remaining);
         }
       } catch (error) {
         if (isMounted) {
+          setSubscriptions({ text: null, image: null });
           setSubscription(null);
         }
       } finally {
@@ -68,7 +99,7 @@ const useSubscription = () => {
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [feature]);
 
   const status = subscription?.status || subscription?.subscriptionStatus;
   const isActive = status === "active";
@@ -76,6 +107,7 @@ const useSubscription = () => {
 
   return {
     subscription,
+    subscriptions,
     isActive,
     isTrial,
     freeTrialsUsed,

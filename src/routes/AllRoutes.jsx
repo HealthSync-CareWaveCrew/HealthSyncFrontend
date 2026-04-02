@@ -18,6 +18,9 @@ import AdminAnalysisHistoryPage from "../pages/AdminAnalysisHistoryPage";
 import CustomerAnalysisHistoryPage from "../pages/CustomerAnalysisHistoryPage";
 import CustomerAnalysisDetailsPage from "../pages/CustomerAnalysisDetailsPage";
 import AdminAnalysisDetailsPage from "../pages/AdminAnalysisDetailsPage";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
+import PaymentsManagementPage from "../pages/admin/PaymentsManagementPage";
+import UsersManagementPage from "../pages/admin/UsersManagementPage";
 import PaymentLayout from "../pages/payment/PaymentLayout";
 import PaymentPage from "../pages/payment/PaymentPage";
 import CheckoutPage from "../pages/payment/CheckoutPage";
@@ -60,8 +63,9 @@ function AllRoutes() {
           >
             <Route
               index
-              element={<Navigate to="disease-management" replace />}
+              element={<Navigate to="dashboard" replace />}
             />
+            <Route path="dashboard" element={<AdminDashboardPage />} />
             <Route
               path="disease-management"
               element={<AdminDiseaseManagementPage />}
@@ -72,6 +76,14 @@ function AllRoutes() {
             />
             <Route path="analysis/:id" element={<AdminAnalysisDetailsPage />} />
             <Route path="reviews-management" element={<AdminReviewsPage />} />
+            <Route
+              path="users-management"
+              element={<UsersManagementPage />}
+            />
+            <Route
+              path="payments-management"
+              element={<PaymentsManagementPage />}
+            />
           </Route>
           <Route
             path="/reviews"
@@ -118,6 +130,14 @@ function AllRoutes() {
           >
             <Route index element={<PaymentPage />} />
           </Route>
+          <Route
+            path="/payments-management"
+            element={
+              <ProtectedRoute requireAdmin={true}>
+                <Navigate to="/admin/payments-management" replace />
+              </ProtectedRoute>
+            }
+          />
         </Route>
       </Routes>
     </Router>

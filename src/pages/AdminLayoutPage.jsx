@@ -73,7 +73,7 @@ function AdminLayoutPage() {
         <div>
           <h2 className="text-3xl font-bold text-black mb-2">Admin Dashboard</h2>
           <p className="text-black/70">
-            Manage diseases, reviews, and system configuration
+            Monitor subscriptions, manage diseases, and review system activity
           </p>
         </div>
       </div>

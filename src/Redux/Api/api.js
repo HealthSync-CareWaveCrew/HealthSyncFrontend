@@ -133,32 +133,32 @@ export const verifyEmailChangeOTP = async (otpData) => {
 
 // Admin functions
 export const getAllUsers = async () => {
-  const response = await api.get('/api/users');
+  const response = await api.get('/api/admin/users');
   return response;
 };
 
 export const getUserById = async (id) => {
-  const response = await api.get(`/api/users/${id}`);
+  const response = await api.get(`/api/admin/users/${id}`);
   return response;
 };
 
 export const updateUserRole = async (id, role) => {
-  const response = await api.patch(`/api/users/${id}/role`, { role });
+  const response = await api.patch(`/api/admin/users/${id}/role`, { role });
   return response;
 };
 
 export const toggleUserStatus = async (id) => {
-  const response = await api.patch(`/api/users/${id}/toggle-status`);
+  const response = await api.patch(`/api/admin/users/${id}/toggle-status`);
   return response;
 };
 
 export const deleteUser = async (id) => {
-  const response = await api.delete(`/api/users/${id}`);
+  const response = await api.delete(`/api/admin/users/${id}`);
   return response;
 };
 
 export const createUserByAdmin = async (userData) => {
-  const response = await api.post('/api/users', userData);
+  const response = await api.post('/api/admin/users', userData);
   return response;
 };
 
@@ -237,6 +237,36 @@ export const analyzeClinicalData = async (diseaseType, formData, diseaseId) => {
     formData,
     diseaseId,
   });
+  return response;
+};
+
+// Payment plan admin APIs
+export const getAdminPaymentPlans = async (includeInactive = true) => {
+  const response = await api.get('/api/payment/admin/plans', {
+    params: { includeInactive },
+  });
+  return response;
+};
+
+export const getAdminSubscriptions = async ({ page = 1, limit = 10, status, type } = {}) => {
+  const response = await api.get('/api/payment/admin/subscriptions', {
+    params: { page, limit, status, type },
+  });
+  return response;
+};
+
+export const createPaymentPlan = async (planData) => {
+  const response = await api.post('/api/payment/admin/plans', planData);
+  return response;
+};
+
+export const updatePaymentPlan = async (planId, planData) => {
+  const response = await api.put(`/api/payment/admin/plans/${planId}`, planData);
+  return response;
+};
+
+export const deactivatePaymentPlan = async (planId) => {
+  const response = await api.delete(`/api/payment/admin/plans/${planId}`);
   return response;
 };
 

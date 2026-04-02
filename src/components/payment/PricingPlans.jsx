@@ -81,7 +81,7 @@ const formatPrice = (amount, currency = "usd", options = {}) => {
 
 const PricingPlans = () => {
   const navigate = useNavigate();
-  const { subscription } = useSubscription();
+  const { subscriptions } = useSubscription();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState("monthly");
@@ -151,16 +151,33 @@ const PricingPlans = () => {
     };
   }, [plans]);
 
-  const activeStatus = subscription?.status;
-  const hasSubscription = subscription && activeStatus !== "canceled";
-  const currentPlanId =
-    subscription?.plan_id ||
-    subscription?.planId ||
-    subscription?.plan?.id ||
-    subscription?.plan?.plan_id;
+  const textSubscription = subscriptions?.text;
+  const imageSubscription = subscriptions?.image;
+  const hasTextSubscription =
+    textSubscription &&
+    textSubscription.status !== "canceled" &&
+    textSubscription.status !== "inactive";
+  const hasImageSubscription =
+    imageSubscription &&
+    imageSubscription.status !== "canceled" &&
+    imageSubscription.status !== "inactive";
+  const currentTextPlanId =
+    textSubscription?.plan_id ||
+    textSubscription?.planId ||
+    textSubscription?.plan?._id ||
+    textSubscription?.plan?.id ||
+    textSubscription?.plan?.plan_id;
+  const currentImagePlanId =
+    imageSubscription?.plan_id ||
+    imageSubscription?.planId ||
+    imageSubscription?.plan?._id ||
+    imageSubscription?.plan?.id ||
+    imageSubscription?.plan?.plan_id;
 
-  const isCurrentPlan = (planId) =>
-    planId && currentPlanId && planId === currentPlanId;
+  const isCurrentPlan = (planId, type) => {
+    const currentPlanId = type === "image" ? currentImagePlanId : currentTextPlanId;
+    return planId && currentPlanId && planId === currentPlanId;
+  };
 
   const handleNavigate = (planId) => {
     if (!planId) return;
@@ -173,20 +190,20 @@ const PricingPlans = () => {
   };
 
   const textBasicCta = (planId) => {
-    if (!hasSubscription) return "Start for Free";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasTextSubscription) return "Start for Free";
+    if (isCurrentPlan(planId, "text")) return "Current Plan";
     return "Switch Plan";
   };
 
   const textProCta = (planId) => {
-    if (!hasSubscription) return "Start Free Trial";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasTextSubscription) return "Start Free Trial";
+    if (isCurrentPlan(planId, "text")) return "Current Plan";
     return "Switch to Pro";
   };
 
   const imageCta = (planId) => {
-    if (!hasSubscription) return "Subscribe Now";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasImageSubscription) return "Subscribe Now";
+    if (isCurrentPlan(planId, "image")) return "Current Plan";
     return "Switch Plan";
   };
 
@@ -325,10 +342,12 @@ const PricingPlans = () => {
             type="button"
             onClick={() => handleNavigate(selectedTextProPlan?.id)}
             disabled={
-              !selectedTextProPlan?.id || isCurrentPlan(selectedTextProPlan?.id)
+              !selectedTextProPlan?.id ||
+              isCurrentPlan(selectedTextProPlan?.id, "text")
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
-              !selectedTextProPlan?.id || isCurrentPlan(selectedTextProPlan?.id)
+              !selectedTextProPlan?.id ||
+              isCurrentPlan(selectedTextProPlan?.id, "text")
                 ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
@@ -411,10 +430,12 @@ const PricingPlans = () => {
             type="button"
             onClick={() => handleNavigate(selectedImagePlan?.id)}
             disabled={
-              !selectedImagePlan?.id || isCurrentPlan(selectedImagePlan?.id)
+              !selectedImagePlan?.id ||
+              isCurrentPlan(selectedImagePlan?.id, "image")
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
-              !selectedImagePlan?.id || isCurrentPlan(selectedImagePlan?.id)
+              !selectedImagePlan?.id ||
+              isCurrentPlan(selectedImagePlan?.id, "image")
                 ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
