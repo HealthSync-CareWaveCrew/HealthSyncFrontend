@@ -206,7 +206,7 @@ const CheckoutPage = () => {
 
   if (!planId) {
     return (
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 text-center text-sm text-gray-600">
+      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 text-center text-sm text-black/60 shadow-2xl backdrop-blur-md">
         Select a plan to continue.
       </div>
     );
@@ -214,29 +214,29 @@ const CheckoutPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900">Checkout</h2>
-        <p className="text-sm text-gray-600">
+      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+        <h2 className="text-2xl font-bold text-black">Checkout</h2>
+        <p className="text-sm text-black/60">
           Confirm your plan and payment method.
         </p>
 
-        <div className="mt-4 rounded-xl border border-gray-100 bg-gray-50 p-4">
+        <div className="mt-4 rounded-xl border border-primary-2/20 bg-primary-4/60 p-4">
           {loadingPlans ? (
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-2 border-t-transparent" />
           ) : selectedPlan ? (
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm text-gray-500">Plan</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-black/60">Plan</p>
+                <p className="text-lg font-semibold text-black">
                   {selectedPlan.name}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-gray-500">Billing</p>
-                <p className="text-lg font-semibold text-gray-900">
+                <p className="text-sm text-black/60">Billing</p>
+                <p className="text-lg font-semibold text-black">
                   {formatPrice(selectedPlan.amount, selectedPlan.currency)}
                   {selectedPlan.interval && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-black/60">
                       {selectedPlan.interval === "one_time"
                         ? " one-time"
                         : ` / ${selectedPlan.interval}`}
@@ -246,18 +246,18 @@ const CheckoutPage = () => {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-600">Plan details unavailable.</p>
+            <p className="text-sm text-black/60">Plan details unavailable.</p>
           )}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
-        <h3 className="text-lg font-bold text-gray-900">Payment Method</h3>
+      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+        <h3 className="text-lg font-bold text-black">Payment Method</h3>
 
         {loadingMethods ? (
           <div className="mt-4 h-8 w-8 animate-spin rounded-full border-2 border-primary-2 border-t-transparent" />
         ) : methods.length === 0 ? (
-          <p className="mt-4 text-sm text-gray-500">
+          <p className="mt-4 text-sm text-black/60">
             No saved payment methods.
           </p>
         ) : (
@@ -268,14 +268,14 @@ const CheckoutPage = () => {
                 className={`flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 text-sm ${
                   selectedMethod === method.id
                     ? "border-primary-2 bg-primary-4"
-                    : "border-gray-200 bg-white"
+                    : "border-primary-2/20 bg-primary-4/40"
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-gray-800">
+                  <p className="font-semibold text-black">
                     {method.brand?.toUpperCase() || "Card"} •••• {method.last4}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-black/60">
                     Expires {method.exp_month}/{method.exp_year}
                   </p>
                 </div>
@@ -301,7 +301,7 @@ const CheckoutPage = () => {
           </button>
           {showNewCard && (
             <div className="mt-4 space-y-3">
-              <div className="rounded-xl border border-gray-200 p-3">
+              <div className="rounded-xl border border-primary-2/30 bg-white/70 p-3">
                 <CardElement options={cardElementOptions} />
               </div>
               <button

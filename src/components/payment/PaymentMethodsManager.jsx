@@ -122,11 +122,11 @@ const PaymentMethodsManager = () => {
   };
 
   return (
-    <section className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+    <section className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">Payment Methods</h3>
-          <p className="text-sm text-gray-600">Manage saved cards.</p>
+          <h3 className="text-lg font-bold text-black">Payment Methods</h3>
+          <p className="text-sm text-black/60">Manage saved cards.</p>
         </div>
         <button
           type="button"
@@ -142,7 +142,7 @@ const PaymentMethodsManager = () => {
           <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-2 border-t-transparent" />
         </div>
       ) : methods.length === 0 ? (
-        <p className="mt-6 text-sm text-gray-500">
+        <p className="mt-6 text-sm text-black/60">
           No cards saved yet. Add a card to subscribe to a plan.
         </p>
       ) : (
@@ -150,15 +150,15 @@ const PaymentMethodsManager = () => {
           {methods.map((method) => (
             <div
               key={method.id}
-              className="flex flex-col gap-3 rounded-xl border border-gray-100 bg-gray-50 p-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 rounded-xl border border-primary-2/20 bg-primary-4/60 p-4 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
                 <div className="text-2xl">{brandIcon(method.brand)}</div>
-                <div className="text-sm text-gray-700">
+                <div className="text-sm text-black/70">
                   <p className="font-semibold">
                     {method.brand?.toUpperCase() || "Card"} **** {method.last4}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-black/60">
                     Expires {method.exp_month}/{method.exp_year}
                   </p>
                 </div>
@@ -174,7 +174,7 @@ const PaymentMethodsManager = () => {
                     type="button"
                     onClick={() => handleSetDefault(method.id)}
                     disabled={processing}
-                    className="rounded-full border border-gray-300 px-3 py-1 text-xs font-semibold text-gray-600 hover:border-gray-400"
+                    className="rounded-full border border-primary-2/40 px-3 py-1 text-xs font-semibold text-black/60 hover:border-primary-2"
                   >
                     Set default
                   </button>
@@ -195,16 +195,16 @@ const PaymentMethodsManager = () => {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h4 className="text-lg font-bold text-gray-900">Add new card</h4>
-            <div className="mt-4 rounded-xl border border-gray-200 p-3">
+          <div className="w-full max-w-md rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+            <h4 className="text-lg font-bold text-black">Add new card</h4>
+            <div className="mt-4 rounded-xl border border-primary-2/30 bg-white/70 p-3">
               <CardElement options={cardElementOptions} />
             </div>
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-600"
+                className="flex-1 rounded-xl border border-primary-2/40 px-4 py-2 text-sm font-semibold text-black/60"
               >
                 Cancel
               </button>

@@ -199,27 +199,27 @@ const PricingPlans = () => {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Pricing Plans</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-2xl font-bold text-black">Pricing Plans</h2>
+          <p className="text-sm text-black/60">
             Choose the plan that fits you.
           </p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
               TEXT BASIC
             </p>
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-black">
               Get Started Free
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-black/60">
               Perfect for trying out HealthSync. No credit card required.
             </p>
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(catalog.textBasic?.features || defaultFeatures.textBasic).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -235,21 +235,21 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
                   TEXT PRO
                 </p>
-                <span className="rounded-full bg-primary-1/10 px-2 py-1 text-[10px] font-semibold uppercase text-primary-1">
+                <span className="rounded-full bg-primary-1/15 px-2 py-1 text-[10px] font-semibold uppercase text-primary-1">
                   Most Popular
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-black">
                 Unlimited Predictions
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black/60">
                 For users who want full access to AI health insights, every day.
               </p>
             </div>
@@ -259,8 +259,8 @@ const PricingPlans = () => {
                 onClick={() => setBillingCycle("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "monthly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-black shadow"
+                    : "text-black/60"
                 }`}
               >
                 Monthly
@@ -270,8 +270,8 @@ const PricingPlans = () => {
                 onClick={() => setBillingCycle("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "yearly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-black shadow"
+                    : "text-black/60"
                 }`}
               >
                 Yearly
@@ -280,24 +280,24 @@ const PricingPlans = () => {
           </div>
           <div className="mt-4 space-y-2">
             {loading ? (
-              <p className="text-2xl font-bold text-gray-900 animate-pulse">
+              <p className="text-2xl font-bold text-black animate-pulse">
                 Loading...
               </p>
             ) : !selectedTextProPlan ? (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 -
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {billingCycle === "yearly" ? " / year" : " / month"}
                 </span>
               </p>
             ) : (
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-black">
                   {formatPrice(
                     selectedTextProPlan?.amount ?? 0,
                     selectedTextProPlan?.currency,
                   ) || "-"}
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-black/60">
                     {billingCycle === "yearly" ? " / year" : " / month"}
                   </span>
                 </p>
@@ -309,12 +309,12 @@ const PricingPlans = () => {
               </div>
             )}
             {selectedTextProPlan?.raw?.secondary_price && !loading && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-black/60">
                 Also available monthly or yearly.
               </p>
             )}
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(selectedTextProPlan?.features || defaultFeatures.textPro).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -329,7 +329,7 @@ const PricingPlans = () => {
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
               !selectedTextProPlan?.id || isCurrentPlan(selectedTextProPlan?.id)
-                ? "cursor-not-allowed bg-gray-200 text-gray-500"
+                ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
           >
@@ -337,16 +337,16 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
                 IMAGE ANALYSIS
               </p>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-black">
                 Advanced Imaging AI
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black/60">
                 Upload medical images and get instant AI-powered analysis and
                 insights.
               </p>
@@ -357,8 +357,8 @@ const PricingPlans = () => {
                 onClick={() => setImageBilling("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "monthly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-black shadow"
+                    : "text-black/60"
                 }`}
               >
                 Monthly
@@ -368,8 +368,8 @@ const PricingPlans = () => {
                 onClick={() => setImageBilling("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "yearly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-black shadow"
+                    : "text-black/60"
                 }`}
               >
                 Yearly
@@ -378,29 +378,29 @@ const PricingPlans = () => {
           </div>
           <div className="mt-4 space-y-2">
             {loading ? (
-              <p className="text-2xl font-bold text-gray-900 animate-pulse">
+              <p className="text-2xl font-bold text-black animate-pulse">
                 Loading...
               </p>
             ) : !selectedImagePlan ? (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 -
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {imageBilling === "monthly" ? " / month" : " / year"}
                 </span>
               </p>
             ) : (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 {formatPrice(
                   selectedImagePlan?.amount ?? 0,
                   selectedImagePlan?.currency,
                 ) || "-"}
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {imageBilling === "monthly" ? " / month" : " / year"}
                 </span>
               </p>
             )}
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(selectedImagePlan?.features || defaultFeatures.image).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -415,7 +415,7 @@ const PricingPlans = () => {
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
               !selectedImagePlan?.id || isCurrentPlan(selectedImagePlan?.id)
-                ? "cursor-not-allowed bg-gray-200 text-gray-500"
+                ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
           >

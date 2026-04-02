@@ -85,13 +85,13 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
   })();
 
   return (
-    <section className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+    <section className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-bold text-gray-900">
+          <h3 className="text-lg font-bold text-black">
             Subscription Status
           </h3>
-          <p className="text-sm text-gray-600">Manage your active plan.</p>
+          <p className="text-sm text-black/60">Manage your active plan.</p>
         </div>
         {loading ? (
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-2 border-t-transparent" />
@@ -105,17 +105,17 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
       </div>
 
       {status === "inactive" ? (
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-4 text-sm text-black/60">
           You have no active plan. Choose a plan above to get started.
         </p>
       ) : (
-        <div className="mt-4 grid gap-2 text-sm text-gray-700">
+        <div className="mt-4 grid gap-2 text-sm text-black/70">
           <div className="flex items-center justify-between">
-            <span className="text-gray-500">Plan</span>
+            <span className="text-black/60">Plan</span>
             <span className="font-semibold">{planName}</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-gray-500">Date</span>
+            <span className="text-black/60">Date</span>
             <span className="font-semibold">{formatDate(new Date())}</span>
           </div>
           {/*<div className="flex items-center justify-between border-t border-gray-100 pt-2">*/}
@@ -146,7 +146,7 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
           disabled={processing || isCanceled || loading}
           className={`mt-5 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
             isCanceled || loading
-              ? "cursor-not-allowed bg-gray-200 text-gray-500"
+              ? "cursor-not-allowed bg-primary-2/30 text-black/60"
               : "border border-red-200 text-red-600 hover:bg-red-50"
           }`}
         >
@@ -156,18 +156,18 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <h4 className="text-lg font-bold text-gray-900">
+          <div className="w-full max-w-md rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+            <h4 className="text-lg font-bold text-black">
               Cancel Subscription?
             </h4>
-            <p className="mt-2 text-sm text-gray-600">
+            <p className="mt-2 text-sm text-black/60">
               You will keep access until the end of your billing period.
             </p>
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
                 onClick={() => setShowConfirm(false)}
-                className="flex-1 rounded-xl border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-600"
+                className="flex-1 rounded-xl border border-primary-2/40 px-4 py-2 text-sm font-semibold text-black/60"
               >
                 Keep Plan
               </button>
