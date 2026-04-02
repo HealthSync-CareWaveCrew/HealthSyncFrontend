@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
 import { SpinnerLoading } from "../libraries/CommonLoading";
+import CustomerLayoutPage from "../pages/CustomerLayoutPage";
 
 const HomePage = lazy(() => import("../pages/HomePage"));
 const LandingPage = lazy(() => import("../pages/LandingPage"));
@@ -54,22 +55,71 @@ function AllRoutes() {
           <Route path="/auth" element={<AuthPage />} />
 
           <Route element={<AppShell />}>
-            <Route
+            {/* <Route
               path="/dashboard"
               element={
                 <ProtectedRoute>
                   <UserDashboard />
                 </ProtectedRoute>
               }
-            />
-            <Route
+            /> */}
+            {/* <Route
               path="/prediction"
               element={
                 <ProtectedRoute>
                   <HomePage />
                 </ProtectedRoute>
               }
-            />
+            /> */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <CustomerLayoutPage />
+                </ProtectedRoute>
+              }
+            >
+              <Route
+                index
+                element={<Navigate to="dashboard" replace />}
+              />
+              <Route
+                path="dashboard"
+                element={<UserDashboard />}
+              />
+              <Route
+                path="prediction"
+                element={<HomePage />}
+              />
+              <Route
+                path="reviews"
+                element={<ReviewsPage />}
+              />
+              <Route
+                path="analysis-history"
+                element={<CustomerAnalysisHistoryPage />
+                }
+              />
+              <Route
+                path="customer/analysis/:id"
+                element={<CustomerAnalysisDetailsPage />}
+              />
+              <Route
+                path="payment"
+                element={<PaymentLayout />
+                }
+              >
+                <Route index element={<PaymentPage />} />
+                <Route path="checkout" element={<CheckoutPage />} />
+              </Route>
+              <Route
+                path="pricing"
+                element={<PaymentLayout />}
+              >
+                <Route index element={<PaymentPage />} />
+              </Route>
+            </Route>
+
             <Route
               path="/admin"
               element={
@@ -116,32 +166,32 @@ function AllRoutes() {
             </Route>
 
             {/* Customer Routes */}
-            <Route
+            {/* <Route
               path="/reviews"
               element={
                 <ProtectedRoute>
                   <ReviewsPage />
                 </ProtectedRoute>
               }
-            />
-            <Route
+            /> */}
+            {/* <Route
               path="/analysis-history"
               element={
                 <ProtectedRoute>
                   <CustomerAnalysisHistoryPage />
                 </ProtectedRoute>
               }
-            />
+            /> */}
 
-            <Route
+            {/* <Route
               path="/customer/analysis/:id"
               element={
                 <ProtectedRoute>
                   <CustomerAnalysisDetailsPage />
                 </ProtectedRoute>
               }
-            />
-            <Route
+            /> */}
+            {/* <Route
               path="/payment"
               element={
                 <ProtectedRoute>
@@ -151,8 +201,8 @@ function AllRoutes() {
             >
               <Route index element={<PaymentPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
-            </Route>
-            <Route
+            </Route> */}
+            {/* <Route
               path="/pricing"
               element={
                 <ProtectedRoute>
@@ -161,7 +211,7 @@ function AllRoutes() {
               }
             >
               <Route index element={<PaymentPage />} />
-            </Route>
+            </Route> */}
           </Route>
         </Routes>
       </Suspense>
