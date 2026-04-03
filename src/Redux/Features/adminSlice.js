@@ -119,8 +119,17 @@ const adminSlice = createSlice({
       })
       .addCase(getAllUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.users || [];
-        state.totalCount = action.payload.total || state.users.length;
+
+        // ✅ FIXED: handle both possible backend response structures
+        state.users =
+          action.payload.data?.users ||
+          action.payload.users ||
+          [];
+
+        state.totalCount =
+          action.payload.total ||
+          // action.payload.data?.total ||
+          state.users.length;
       })
       .addCase(getAllUsers.rejected, (state, action) => {
         state.loading = false;
@@ -149,7 +158,9 @@ const adminSlice = createSlice({
       // Update User Role
       .addCase(updateUserRole.fulfilled, (state, action) => {
         const updatedUser = action.payload.user;
-        const index = state.users.findIndex(u => u._id === updatedUser._id);
+        const index = state.users.findIndex(
+          (u) => u._id === updatedUser._id
+        );
         if (index !== -1) {
           state.users[index] = updatedUser;
         }
@@ -158,7 +169,9 @@ const adminSlice = createSlice({
       // Toggle User Status
       .addCase(toggleUserStatus.fulfilled, (state, action) => {
         const updatedUser = action.payload.user;
-        const index = state.users.findIndex(u => u._id === updatedUser._id);
+        const index = state.users.findIndex(
+          (u) => u._id === updatedUser._id
+        );
         if (index !== -1) {
           state.users[index] = updatedUser;
         }
@@ -166,10 +179,14 @@ const adminSlice = createSlice({
 
       // Delete User
       .addCase(deleteUser.fulfilled, (state, action) => {
-        state.users = state.users.filter(u => u._id !== action.payload.id);
+        state.users = state.users.filter(
+          (u) => u._id !== action.payload.id
+        );
       });
   }
 });
 
-export const { clearError, clearSuccess, setSelectedUser } = adminSlice.actions;
+export const { clearError, clearSuccess, setSelectedUser } =
+  adminSlice.actions;
+
 export default adminSlice.reducer;

@@ -1,145 +1,137 @@
+import { lazy, Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import HomePage from "../pages/HomePage";
-import LandingPage from "../pages/LandingPage";
-import AuthPage from "../pages/AuthPage"; // import your auth page
-import AppShell from "../components/AppShell";
-import AdminDiseaseManagementPage from "../pages/AdminDiseaseManagementPage";
-import AdminLayoutPage from "../pages/AdminLayoutPage";
 import ProtectedRoute from "./ProtectedRoute";
-import UserDashboard from "../components/UserDashboard";
-import AdminReviewsPage from "../pages/review/AdminReviewsPage";
-import ReviewsPage from "../pages/review/ReviewsPage";
-import AdminAnalysisHistoryPage from "../pages/AdminAnalysisHistoryPage";
-import CustomerAnalysisHistoryPage from "../pages/CustomerAnalysisHistoryPage";
-import CustomerAnalysisDetailsPage from "../pages/CustomerAnalysisDetailsPage";
-import AdminAnalysisDetailsPage from "../pages/AdminAnalysisDetailsPage";
-import AdminDashboardPage from "../pages/admin/AdminDashboardPage";
-import PaymentsManagementPage from "../pages/admin/PaymentsManagementPage";
-import UsersManagementPage from "../pages/admin/UsersManagementPage";
-import PaymentLayout from "../pages/payment/PaymentLayout";
-import PaymentPage from "../pages/payment/PaymentPage";
-import CheckoutPage from "../pages/payment/CheckoutPage";
+import { SpinnerLoading } from "../libraries/CommonLoading";
+import CustomerLayoutPage from "../pages/CustomerLayoutPage";
+
+const HomePage = lazy(() => import("../pages/HomePage"));
+const LandingPage = lazy(() => import("../pages/LandingPage"));
+const AuthPage = lazy(() => import("../pages/AuthPage"));
+const AppShell = lazy(() => import("../components/AppShell"));
+const AdminDiseaseManagementPage = lazy(
+  () => import("../pages/AdminDiseaseManagementPage")
+);
+const AdminLayoutPage = lazy(() => import("../pages/AdminLayoutPage"));
+const AdminDashboardPage = lazy(() => import("../pages/AdminDashboardPage"));
+const UserDashboard = lazy(() => import("../components/UserDashboard"));
+const AdminReviewsPage = lazy(() => import("../pages/review/AdminReviewsPage"));
+const ReviewsPage = lazy(() => import("../pages/review/ReviewsPage"));
+const AdminAnalysisHistoryPage = lazy(
+  () => import("../pages/AdminAnalysisHistoryPage")
+);
+const CustomerAnalysisHistoryPage = lazy(
+  () => import("../pages/CustomerAnalysisHistoryPage")
+);
+const CustomerAnalysisDetailsPage = lazy(
+  () => import("../pages/CustomerAnalysisDetailsPage")
+);
+const AdminAnalysisDetailsPage = lazy(
+  () => import("../pages/AdminAnalysisDetailsPage")
+);
+const PaymentLayout = lazy(() => import("../pages/payment/PaymentLayout"));
+const PaymentPage = lazy(() => import("../pages/payment/PaymentPage"));
+const CheckoutPage = lazy(() => import("../pages/payment/CheckoutPage"));
+const AdminUserManagementPage = lazy(
+  () => import("../pages/AdminUserManagementPage")
+);
+const PaymentsManagementPage = lazy(
+  () => import("../pages/admin/PaymentsManagementPage")
+);
 
 function AllRoutes() {
   return (
     <Router>
-      <Routes>
-        <Route path="/landingPage" element={<LandingPage />} />
+      <Suspense
+        fallback={<SpinnerLoading fullscreen={true} message="Loading page..." />}
+      >
+        <Routes>
+          <Route path="/landingPage" element={<LandingPage />} />
+          <Route path="/login" element={<AuthPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/auth" element={<AuthPage />} />
 
-        {/* <Route path="/" element={<HomePage />} /> */}
-        <Route path="/login" element={<AuthPage />} />
-        <Route path="/register" element={<AuthPage />} />
-        {/* or if you want both on same page */}
-        <Route path="/auth" element={<AuthPage />} />
-        <Route element={<AppShell />}>
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <UserDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <AdminLayoutPage />
-              </ProtectedRoute>
-            }
-          >
+          <Route element={<AppShell />}>
             <Route
-              index
-              element={<Navigate to="dashboard" replace />}
-            />
-            <Route path="dashboard" element={<AdminDashboardPage />} />
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <CustomerLayoutPage />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<UserDashboard />} />
+              <Route path="prediction" element={<HomePage />} />
+              <Route path="reviews" element={<ReviewsPage />} />
+              <Route
+                path="analysis-history"
+                element={<CustomerAnalysisHistoryPage />}
+              />
+              <Route
+                path="customer/analysis/:id"
+                element={<CustomerAnalysisDetailsPage />}
+              />
+              <Route path="payment" element={<PaymentLayout />}>
+                <Route index element={<PaymentPage />} />
+                <Route path="checkout" element={<CheckoutPage />} />
+              </Route>
+              <Route path="pricing" element={<PaymentLayout />}>
+                <Route index element={<PaymentPage />} />
+              </Route>
+            </Route>
+
             <Route
-              path="disease-management"
-              element={<AdminDiseaseManagementPage />}
-            />
+              path="/admin"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <AdminLayoutPage />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboardPage />} />
+              <Route
+                path="user-management"
+                element={<AdminUserManagementPage />}
+              />
+              <Route
+                path="disease-management"
+                element={<AdminDiseaseManagementPage />}
+              />
+              <Route
+                path="analysis-history"
+                element={<AdminAnalysisHistoryPage />}
+              />
+              <Route
+                path="analysis/:id"
+                element={<AdminAnalysisDetailsPage />}
+              />
+              <Route
+                path="reviews-management"
+                element={<AdminReviewsPage />}
+              />
+              <Route
+                path="payments-management"
+                element={<PaymentsManagementPage />}
+              />
+            </Route>
+
             <Route
-              path="analysis-history"
-              element={<AdminAnalysisHistoryPage />}
-            />
-            <Route path="analysis/:id" element={<AdminAnalysisDetailsPage />} />
-            <Route path="reviews-management" element={<AdminReviewsPage />} />
-            <Route
-              path="users-management"
-              element={<UsersManagementPage />}
-            />
-            <Route
-              path="payments-management"
-              element={<PaymentsManagementPage />}
+              path="/payments-management"
+              element={
+                <ProtectedRoute requireAdmin={true}>
+                  <Navigate to="/admin/payments-management" replace />
+                </ProtectedRoute>
+              }
             />
           </Route>
-          <Route
-            path="/reviews"
-            element={
-              <ProtectedRoute>
-                <ReviewsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/analysis-history"
-            element={
-              <ProtectedRoute>
-                <CustomerAnalysisHistoryPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/customer/analysis/:id"
-            element={
-              <ProtectedRoute>
-                <CustomerAnalysisDetailsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/payment"
-            element={
-              <ProtectedRoute>
-                <PaymentLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<PaymentPage />} />
-            <Route path="checkout" element={<CheckoutPage />} />
-          </Route>
-          <Route
-            path="/pricing"
-            element={
-              <ProtectedRoute>
-                <PaymentLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<PaymentPage />} />
-          </Route>
-          <Route
-            path="/payments-management"
-            element={
-              <ProtectedRoute requireAdmin={true}>
-                <Navigate to="/admin/payments-management" replace />
-              </ProtectedRoute>
-            }
-          />
-        </Route>
-      </Routes>
+        </Routes>
+      </Suspense>
     </Router>
   );
 }

@@ -30,11 +30,24 @@ import {
 
 import { DownloadPopup } from "./DownloadFilePopup";
 import DateRangePicker from "./DateRange/DateRangePicker";
-
-// ✅ your common buttons
 import { GhostButton, Button as CommonButton } from "./Buttons.jsx";
+import { MultiselectDropdown, SearchableDropdown } from "./DropDowns.jsx";
+import { AdvancedPagination } from "./Pagination.jsx";
+import { TableGridCard } from "./Cards.jsx";
+import { TableExport } from "./TableExport.jsx";
 
-// ✅ Custom Popover Components (replacing Material Tailwind)
+const ACTIONS_COL_W = 160;
+const MENU_COL_W = 48;
+const DEFAULT_MIN_ROWS = 10;
+
+// Header Filter Sizing
+const HF_POPOVER_W = 230;
+const HF_CONTROL_W = 210;
+const HF_DATE_POPOVER_W = 480;
+const HF_ZINDEX = 10000;
+const HF_DATE_ZINDEX = 10020;
+
+/* Popover Components */
 const Popover = ({ children, placement = "bottom" }) => {
   const [open, setOpen] = React.useState(false);
   const wrapperRef = React.useRef(null);
@@ -43,7 +56,6 @@ const Popover = ({ children, placement = "bottom" }) => {
 
   React.useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if click is outside both the trigger and content
       if (
         wrapperRef.current && 
         !wrapperRef.current.contains(event.target) &&
@@ -95,7 +107,6 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
 
   React.useLayoutEffect(() => {
     if (triggerRef?.current && localRef.current && open) {
-      // Find the actual button element (the icon button)
       const buttonElement = triggerRef.current.querySelector('button') || triggerRef.current;
       const rect = buttonElement.getBoundingClientRect();
       const contentWidth = localRef.current.offsetWidth;
@@ -104,23 +115,17 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
       
-      // Use fixed positioning relative to viewport (no scrollY needed)
-      // Default: position below and aligned to the right edge of the button
-      let top = rect.bottom + 2; // Very close gap, no scroll offset needed for fixed positioning
+      let top = rect.bottom + 2;
       let left = rect.right - contentWidth;
       
-      // Check if it goes off the bottom of the viewport
       if (rect.bottom + contentHeight + 2 > viewportHeight) {
-        // Position above instead
         top = rect.top - contentHeight - 2;
       }
       
-      // Check if it goes off the left edge
       if (left < 0) {
         left = rect.left;
       }
       
-      // Check if it goes off the right edge
       if (left + contentWidth > viewportWidth) {
         left = viewportWidth - contentWidth - 8;
       }
@@ -129,7 +134,6 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
     }
   }, [triggerRef, open]);
 
-  // Combine refs
   React.useEffect(() => {
     if (contentRef) {
       contentRef.current = localRef.current;
@@ -139,7 +143,7 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
   return createPortal(
     <div
       ref={localRef}
-      className={`fixed bg-primary-4 rounded-lg shadow-xl border border-primary-2/40 overflow-hidden ${className}`}
+      className={`fixed bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden ${className}`}
       style={{ 
         top: position.top,
         left: position.left,
@@ -165,30 +169,7 @@ const Button = ({ children, className = "", ...props }) => {
   );
 };
 
-// ✅ dropdowns
-import { MultiselectDropdown, SearchableDropdown } from "./DropDowns.jsx";
-import { AdvancedPagination } from "./Pagination.jsx";
-import { TableGridCard } from "./Cards.jsx";
-import { TableExport } from "./TableExport.jsx";
-
-const ACTIONS_COL_W = 160;
-const MENU_COL_W = 48;
-
-// ✅ default min rows (height)
-const DEFAULT_MIN_ROWS = 10;
-
-/* -------------------------------------------------------------------------- */
-/* Header Filter Sizing                                                       */
-/* -------------------------------------------------------------------------- */
-const HF_POPOVER_W = 230; // small filter popup
-const HF_CONTROL_W = 210; // controls inside popup
-const HF_DATE_POPOVER_W = 480; // ✅ separate bigger date picker popup
-const HF_ZINDEX = 10000;
-const HF_DATE_ZINDEX = 10020;
-
-/* -------------------------------------------------------------------------- */
-/* Portal Popover (prevents clipping inside scroll containers)                */
-/* -------------------------------------------------------------------------- */
+/* Portal Popover (prevents clipping) */
 function PortalPopover({
   open,
   anchorEl,
@@ -196,7 +177,7 @@ function PortalPopover({
   children,
   zIndex = 10000,
   preferredWidth = 280,
-  align = "left", // "left" | "right"
+  align = "left",
   offset = 8,
 }) {
   const popRef = useRef(null);
@@ -248,7 +229,6 @@ function PortalPopover({
 
   return createPortal(
     <>
-      {/* overlay to close */}
       <div
         className="fixed inset-0"
         style={{ zIndex: zIndex - 1 }}
@@ -256,7 +236,7 @@ function PortalPopover({
       />
       <div
         ref={popRef}
-        className="fixed bg-primary-4 border border-primary-2/40 rounded-lg shadow-lg"
+        className="fixed bg-white border border-gray-200 rounded-lg shadow-lg"
         style={{
           top: pos.top,
           left: pos.left,
@@ -273,11 +253,11 @@ function PortalPopover({
   );
 }
 
-/* Consistent filter topbar item */
+/* Filter Topbar Item */
 function TopBarItem({ label, children, widthClass = "" }) {
   return (
     <div className={`flex flex-col gap-1 ${widthClass}`}>
-      <span className="text-xs font-medium text-black/70 h-4">
+      <span className="text-xs font-medium text-gray-500 h-4">
         {label || "\u00A0"}
       </span>
       {children}
@@ -295,6 +275,7 @@ function normalizeOptValue(v) {
   }
   return String(v);
 }
+
 function normalizeRowValue(v) {
   if (v == null) return "";
   if (typeof v === "object") {
@@ -304,6 +285,7 @@ function normalizeRowValue(v) {
   }
   return String(v);
 }
+
 function fmtDate(d) {
   try {
     if (!d) return "";
@@ -325,10 +307,7 @@ const TableGrid = ({
   dateFilter = true,
   limit = 5,
   showAll = false,
-
-  // ✅ default 10 rows height
   minRows = DEFAULT_MIN_ROWS,
-
   rowHeight = 34,
   headerHeight = 34,
   sortOptions = [],
@@ -343,46 +322,32 @@ const TableGrid = ({
   const [sortedData, setSortedData] = useState([]);
   const [sortField, setSortField] = useState(columns[0]?.field || "");
   const [sortOrder, setSortOrder] = useState("asc");
-
   const [openSort, setOpenSort] = useState(false);
   const [sortSelections, setSortSelections] = useState([]);
-
   const [filters, setFilters] = useState({});
   const [filterValues, setFilterValues] = useState({});
   const [filterErrors, setFilterErrors] = useState({});
-
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
-
   const [dateFilters, setDateFilters] = useState({});
   const [rangeFilters, setRangeFilters] = useState({});
-  const [statusFilters, setStatusFilters] = useState({}); // ✅ also used for dropdown option filters
-
+  const [statusFilters, setStatusFilters] = useState({});
   const [visibleColumns, setVisibleColumns] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  // openFilter: "columns" OR a column.field
   const [openFilter, setOpenFilter] = useState(null);
-
   const [selectedRows, setSelectedRows] = useState([]);
   const [isDownloadPopupOpen, setIsDownloadPopupOpen] = useState(false);
-
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [openDatePortal, setOpenDatePortal] = useState(false);
 
   const gridRef = useRef(null);
   const tableContainerRef = useRef(null);
-
-  // portal anchors
   const columnsAnchorRef = useRef(null);
   const colFilterAnchorRef = useRef(null);
-
-  // ✅ separate date picker portal
-  const [openDatePortal, setOpenDatePortal] = useState(false);
   const datePortalAnchorRef = useRef(null);
 
   const downloadOptions = ["Print", "PDF", "EXCEL", "CSV"];
-
   const safeData = Array.isArray(data) ? data : [];
 
   // ✅ Hide Quick Actions column if parent didn't pass it
@@ -395,7 +360,7 @@ const TableGrid = ({
   const { onExportCsv, downloadPdfFromCsv, downloadExcelFromCsv, printTable } =
     TableExport(gridRef, sortedData, selectedRows, visibleColumns);
 
-  /** Initialize default filter values from filterbars */
+  // Initialize default filter values
   useEffect(() => {
     if (filterbars && filterbars.length > 0) {
       const defaults = {};
@@ -410,13 +375,11 @@ const TableGrid = ({
     }
   }, [filterbars]);
 
-  /** Init */
   useEffect(() => {
     setSortedData(safeData);
     setVisibleColumns(columns.map((col) => ({ ...col, visible: true })));
   }, [safeData, columns]);
 
-  /** Comparator */
   const cmpVal = (row, field, type) => {
     const v = row?.[field];
     if (v == null) return "";
@@ -429,11 +392,9 @@ const TableGrid = ({
     return String(v).toLowerCase();
   };
 
-  /** Click sort */
   const handleSort = useCallback(
     (field) => {
-      const nextOrder =
-        sortField === field && sortOrder === "asc" ? "desc" : "asc";
+      const nextOrder = sortField === field && sortOrder === "asc" ? "desc" : "asc";
       setSortField(field);
       setSortOrder(nextOrder);
       setSortSelections([]);
@@ -441,15 +402,11 @@ const TableGrid = ({
     [sortField, sortOrder]
   );
 
-  /** Field exists? */
   const hasField = useCallback(
     (field) => {
       if (!field) return false;
       if (columns.some((c) => c.field === field)) return true;
-      if (
-        safeData.length &&
-        Object.prototype.hasOwnProperty.call(safeData[0], field)
-      )
+      if (safeData.length && Object.prototype.hasOwnProperty.call(safeData[0], field))
         return true;
       return false;
     },
@@ -474,7 +431,6 @@ const TableGrid = ({
     [sortMap, candidates, hasField]
   );
 
-  /** Columns show/hide */
   const handleColumnToggle = useCallback((field) => {
     setVisibleColumns((prev) =>
       prev.map((col) =>
@@ -482,6 +438,7 @@ const TableGrid = ({
       )
     );
   }, []);
+
   const handleToggleAll = useCallback(() => {
     setVisibleColumns((prev) => {
       const allSelected = prev.every((c) => c.visible);
@@ -489,7 +446,6 @@ const TableGrid = ({
     });
   }, []);
 
-  /** Any filter applied for a col? */
   const isFilterApplied = useCallback(
     (columnField) => {
       if (filters[columnField]) return true;
@@ -501,11 +457,7 @@ const TableGrid = ({
       if (Array.isArray(sf) && sf.length > 0) return true;
 
       const topMulti = filterbars?.find((f) => f.key === columnField);
-      if (
-        topMulti &&
-        Array.isArray(filterValues[columnField]) &&
-        filterValues[columnField].length
-      )
+      if (topMulti && Array.isArray(filterValues[columnField]) && filterValues[columnField].length)
         return true;
 
       return false;
@@ -513,7 +465,7 @@ const TableGrid = ({
     [filters, dateFilters, rangeFilters, statusFilters, filterbars, filterValues]
   );
 
-  /** ✅ Apply filters + search + sort */
+  // Apply filters + search + sort
   useEffect(() => {
     let filtered = [...safeData];
 
@@ -528,11 +480,8 @@ const TableGrid = ({
       );
     }
 
-    /* ------------------------------------------------------------------ */
-    /* ✅ TOP BAR FILTERS (FIXED): supports strings OR {label,value} objects */
-    /* ------------------------------------------------------------------ */
+    // Top bar filters
     Object.entries(filterValues).forEach(([key, value]) => {
-      // nothing selected -> do NOT filter
       if (!value || (Array.isArray(value) && value.length === 0)) return;
 
       const selectedArr = Array.isArray(value) ? value : [value];
@@ -541,10 +490,7 @@ const TableGrid = ({
         .map((x) => String(x || "").trim())
         .filter(Boolean);
 
-      // if after uncheck your dropdown still returns objects but empty values -> don't filter
       if (selectedNorm.length === 0) return;
-
-      // contains "All" -> don't filter
       if (selectedNorm.some((x) => x.toUpperCase() === "ALL")) return;
 
       const isRangeFilter = selectedNorm.some(
@@ -554,10 +500,9 @@ const TableGrid = ({
       if (isRangeFilter) {
         filtered = filtered.filter((row) => {
           const raw = row?.[key];
-          const rowVal =
-            typeof raw === "number"
-              ? raw
-              : parseFloat(String(raw ?? "").replace(/[^\d.-]/g, ""));
+          const rowVal = typeof raw === "number"
+            ? raw
+            : parseFloat(String(raw ?? "").replace(/[^\d.-]/g, ""));
           if (Number.isNaN(rowVal)) return false;
 
           return selectedNorm.some((rangeStr) => {
@@ -569,10 +514,7 @@ const TableGrid = ({
           });
         });
       } else {
-        const selectedSet = new Set(
-          selectedNorm.map((x) => String(x).toUpperCase())
-        );
-
+        const selectedSet = new Set(selectedNorm.map((x) => String(x).toUpperCase()));
         filtered = filtered.filter((row) => {
           const rv = normalizeRowValue(row?.[key]);
           if (!rv) return false;
@@ -581,7 +523,7 @@ const TableGrid = ({
       }
     });
 
-    // global created date
+    // Global date filter
     if (startDate && endDate) {
       filtered = filtered.filter((row) => {
         const createdDate = row.createdAt ? new Date(row.createdAt) : null;
@@ -589,14 +531,11 @@ const TableGrid = ({
       });
     }
 
-    // per-column date ranges
+    // Per-column date ranges
     Object.entries(dateFilters).forEach(([key, { start, end }]) => {
       if (start && end) {
         filtered = filtered.filter(
-          (row) =>
-            row[key] &&
-            new Date(row[key]) >= start &&
-            new Date(row[key]) <= end
+          (row) => row[key] && new Date(row[key]) >= start && new Date(row[key]) <= end
         );
       } else if (start && !end) {
         filtered = filtered.filter(
@@ -605,30 +544,26 @@ const TableGrid = ({
       }
     });
 
-    // number/id ranges
+    // Number/id ranges
     Object.entries(rangeFilters).forEach(([key, { start, end }]) => {
       const startNum = start ?? null;
       const endNum = end ?? null;
 
       filtered = filtered.filter((row) => {
         const raw = row[key];
-        const rowValue =
-          typeof raw === "number"
-            ? raw
-            : parseFloat(String(raw ?? "").replace(/[^\d.-]/g, ""));
+        const rowValue = typeof raw === "number"
+          ? raw
+          : parseFloat(String(raw ?? "").replace(/[^\d.-]/g, ""));
         const v = Number.isNaN(rowValue) ? null : rowValue;
 
-        if (startNum !== null && endNum !== null)
-          return v !== null && v >= startNum && v <= endNum;
-        if (startNum !== null && endNum === null)
-          return v !== null && v === startNum;
-        if (endNum !== null && startNum === null)
-          return v !== null && v <= endNum;
+        if (startNum !== null && endNum !== null) return v !== null && v >= startNum && v <= endNum;
+        if (startNum !== null && endNum === null) return v !== null && v === startNum;
+        if (endNum !== null && startNum === null) return v !== null && v <= endNum;
         return true;
       });
     });
 
-    // ✅ dropdown option filters (country/status/etc)
+    // Dropdown option filters
     Object.entries(statusFilters).forEach(([key, selected]) => {
       if (!Array.isArray(selected) || selected.length === 0) return;
 
@@ -646,7 +581,7 @@ const TableGrid = ({
       });
     });
 
-    // free-text per-column filter
+    // Free-text per-column filter
     Object.entries(filters).forEach(([key, value]) => {
       if (value) {
         filtered = filtered.filter((row) =>
@@ -657,7 +592,7 @@ const TableGrid = ({
       }
     });
 
-    // sort
+    // Sort
     if (sortField) {
       const def = columns.find((c) => c?.field === sortField);
       const type = def?.type || "text";
@@ -688,7 +623,6 @@ const TableGrid = ({
     sortOrder,
   ]);
 
-  /** ✅ support preview mode (limit rows) vs showAll mode (paginate all) */
   const baseRows = useMemo(() => {
     return showAll ? sortedData : sortedData.slice(0, limit);
   }, [sortedData, showAll, limit]);
@@ -700,13 +634,9 @@ const TableGrid = ({
 
   const paginatedData = useMemo(() => {
     if (!showAll) return baseRows;
-    return baseRows.slice(
-      (currentPage - 1) * rowsPerPage,
-      currentPage * rowsPerPage
-    );
+    return baseRows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
   }, [baseRows, currentPage, rowsPerPage, showAll]);
 
-  /** ✅ Pad rows to keep table always at least minRows height */
   const paddedRows = useMemo(() => {
     const realCount = paginatedData.length;
     const need = Math.max(0, minRows - realCount);
@@ -729,8 +659,6 @@ const TableGrid = ({
     setOpenFilter(null);
     setSelectedRows([]);
     setCurrentPage(1);
-
-    // ✅ close date portal too
     setOpenDatePortal(false);
   }, []);
 
@@ -767,10 +695,8 @@ const TableGrid = ({
     }
   }, []);
 
-  /** ✅ selection should match paginatedData */
   const handleSelectAll = useCallback(
-    (isChecked) =>
-      setSelectedRows(isChecked ? paginatedData.map((_, idx) => idx) : []),
+    (isChecked) => setSelectedRows(isChecked ? paginatedData.map((_, idx) => idx) : []),
     [paginatedData]
   );
 
@@ -778,9 +704,7 @@ const TableGrid = ({
     (rowIndex) => {
       if (rowIndex >= paginatedData.length) return;
       setSelectedRows((prev) =>
-        prev.includes(rowIndex)
-          ? prev.filter((i) => i !== rowIndex)
-          : [...prev, rowIndex]
+        prev.includes(rowIndex) ? prev.filter((i) => i !== rowIndex) : [...prev, rowIndex]
       );
     },
     [paginatedData.length]
@@ -797,29 +721,18 @@ const TableGrid = ({
     if (action.function && action.param) action.function(rowData[action.param]);
   }, []);
 
-  // totals + overview
-  const totalStats = useMemo(
-    () => calculateTotals(sortedData),
-    [sortedData, calculateTotals]
-  );
-  const OverView = useMemo(
-    () => buildOverView(totalStats),
-    [totalStats, buildOverView]
-  );
+  const totalStats = useMemo(() => calculateTotals(sortedData), [sortedData, calculateTotals]);
+  const OverView = useMemo(() => buildOverView(totalStats), [totalStats, buildOverView]);
 
   const [searchableVal, setSearchableVal] = useState(null);
-
-  // active column config for portal filter
   const activeColumn = useMemo(() => {
     if (!openFilter || openFilter === "columns") return null;
     return visibleColumns.find((c) => c.field === openFilter) || null;
   }, [openFilter, visibleColumns]);
 
-  // close date portal when column filter closes / switches
   useEffect(() => {
     if (!activeColumn) setOpenDatePortal(false);
-    const isDate =
-      activeColumn?.type === "date" || activeColumn?.filterType === "dateRange";
+    const isDate = activeColumn?.type === "date" || activeColumn?.filterType === "dateRange";
     if (!isDate) setOpenDatePortal(false);
   }, [activeColumn]);
 
@@ -833,7 +746,6 @@ const TableGrid = ({
     return `${s} - ${e}`;
   }, [activeColumn, dateFilters]);
 
-  // ✅ helper: set filterbar value and DELETE key when empty (prevents “empty table on uncheck”)
   const setTopFilterValue = useCallback((key, vals) => {
     setFilterValues((p) => {
       const next = { ...p };
@@ -862,8 +774,7 @@ const TableGrid = ({
                   {filter.render ? (
                     filter.render({
                       selected: filterValues[filter.key] || [],
-                      onChange: (selected) =>
-                        setTopFilterValue(filter.key, selected),
+                      onChange: (selected) => setTopFilterValue(filter.key, selected),
                     })
                   ) : filter.type === "multiselect" ? (
                     <TopBarItem label={filter?.label}>
@@ -871,9 +782,7 @@ const TableGrid = ({
                         selected={filterValues[filter.key] || []}
                         onChange={(vals) => setTopFilterValue(filter.key, vals)}
                         options={filter.options || []}
-                        placeholder={
-                          filter.placeholder || filter.label || "Select..."
-                        }
+                        placeholder={filter.placeholder || filter.label || "Select..."}
                         size="md"
                         menuMinWidth={filter.menuMinWidth ?? 220}
                         menuMaxHeight={filter.menuMaxHeight ?? 420}
@@ -887,15 +796,10 @@ const TableGrid = ({
                         selected={filterValues[filter.key] || []}
                         onChange={(vals) => setTopFilterValue(filter.key, vals)}
                         options={(filter.options || []).map((opt) => {
-                          if (typeof opt === "string")
-                            return { label: opt, value: opt };
+                          if (typeof opt === "string") return { label: opt, value: opt };
                           return opt;
                         })}
-                        placeholder={
-                          filter.placeholder ||
-                          filter.label ||
-                          "Select range..."
-                        }
+                        placeholder={filter.placeholder || filter.label || "Select range..."}
                         size="md"
                         menuMinWidth={filter.menuMinWidth ?? 220}
                         menuMaxHeight={filter.menuMaxHeight ?? 420}
@@ -910,31 +814,21 @@ const TableGrid = ({
                         value={searchableVal}
                         onSelect={setSearchableVal}
                         options={filter.options || []}
-                        placeholder={
-                          filter.placeholder || filter.label || "Select..."
-                        }
+                        placeholder={filter.placeholder || filter.label || "Select..."}
                         fullWidth={true}
                       />
                     </TopBarItem>
                   ) : (
                     <TopBarItem label={filter?.label}>
                       <select
-                        className="border border-primary-2/60 bg-primary-4 text-black rounded-md p-2 text-sm h-[34px] focus:outline-none focus:ring-2 focus:ring-primary-1/40"
+                        className="border border-gray-200 bg-white text-gray-700 rounded-md p-2 text-sm h-[34px] focus:outline-none focus:ring-2 focus:ring-primary-1/40"
                         value={filterValues[filter.key] ?? ""}
-                        onChange={(e) =>
-                          setTopFilterValue(filter.key, e.target.value)
-                        }
+                        onChange={(e) => setTopFilterValue(filter.key, e.target.value)}
                       >
                         <option value="">All</option>
                         {(filter.options || []).map((opt) => {
-                          const val =
-                            typeof opt === "string"
-                              ? opt
-                              : opt.value ?? opt.label;
-                          const lbl =
-                            typeof opt === "string"
-                              ? opt
-                              : opt.label ?? opt.value;
+                          const val = typeof opt === "string" ? opt : opt.value ?? opt.label;
+                          const lbl = typeof opt === "string" ? opt : opt.label ?? opt.value;
                           return (
                             <option key={val} value={val}>
                               {lbl}
@@ -980,69 +874,17 @@ const TableGrid = ({
                 <div className="relative w-full sm:w-[320px]">
                   <input
                     type="text"
-                    placeholder=" Search…"
+                    placeholder="Search…"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className={`p-2 pl-8 rounded-md w-full h-[34px] text-sm
-                      ${theme?.input?.bg ?? "bg-primary-4"}
-                      ${theme?.input?.border ?? "border border-primary-2/60"}
-                      ${theme?.input?.text ?? "text-black"}`}
+                    className="p-2 pl-8 rounded-md w-full h-[34px] text-sm border border-gray-200 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-1/40"
                   />
-                  <IoSearchOutline
-                    className={`absolute left-2 top-1/2 -translate-y-1/2 ml-2 ${
-                      theme?.icon?.muted ?? "text-black/50"
-                    }`}
-                  />
+                  <IoSearchOutline className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
                 </div>
               </TopBarItem>
 
               <TopBarItem label=" ">
-                <div className="flex items-center gap-2">
-                  {/* <Popover
-                    placement="bottom-end"
-                    open={openSort}
-                    handler={setOpenSort}
-                  >
-                    <PopoverHandler>
-                      <button
-                        aria-label="Sort By"
-                        className="p-2 rounded hover:bg-primary-3/70"
-                      >
-                        <TbArrowsSort
-                          size={20}
-                          className={
-                            sortSelections.length
-                              ? "text-primary-1"
-                              : "text-black/80"
-                          }
-                        />
-                      </button>
-                    </PopoverHandler>
-                    <PopoverContent className="p-2 w-56 z-[9999]">
-                      <ul>
-                        {sortOptions.map((option) => (
-                          <li key={option}>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setSortSelections([option]);
-                                applySortPreset(option);
-                                setOpenSort(false);
-                              }}
-                              className={`w-full text-left px-3 py-2 rounded hover:bg-primary-3/70 text-sm ${
-                                sortSelections[0] === option
-                                  ? "bg-primary-3 font-medium text-black"
-                                  : ""
-                              }`}
-                            >
-                              {option}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </PopoverContent>
-                  </Popover> */}
-
+                <div className="flex items-center gap-2 h-[34px]">
                   <DownloadPopup
                     isDownloadPopupOpen={isDownloadPopupOpen}
                     downloadOptions={downloadOptions}
@@ -1053,27 +895,21 @@ const TableGrid = ({
                     downloadPdfFromCsv={downloadPdfFromCsv}
                   />
 
-                  {/* Show/Hide (Portal, no clipping) */}
+                  {/* Show/Hide */}
                   <div
-                    className="flex items-center gap-2 cursor-pointer select-none"
+                    className="flex items-center gap-2 cursor-pointer select-none text-gray-600 hover:text-primary-1"
                     onClick={(e) => {
                       columnsAnchorRef.current = e.currentTarget;
-                      setOpenFilter((prev) =>
-                        prev === "columns" ? null : "columns"
-                      );
+                      setOpenFilter((prev) => prev === "columns" ? null : "columns");
                     }}
                   >
                     <BsTable size={20} />
-                    <span className="text-sm sm:text-base text-nowrap">
-                      Show/Hide
-                    </span>
+                    <span className="text-sm sm:text-base">Show/Hide</span>
                   </div>
 
                   {extraFeatures?.map((f, index) => (
                     <div key={index} className="my-auto" onClick={f?.onClick}>
-                      <span className="cursor-pointer hover:underline">
-                        {f?.label}
-                      </span>
+                      <span className="cursor-pointer hover:text-primary-1">{f?.label}</span>
                     </div>
                   ))}
                 </div>
@@ -1082,7 +918,7 @@ const TableGrid = ({
           </div>
         )}
 
-        {/* ✅ Columns portal */}
+        {/* Columns portal */}
         <PortalPopover
           open={openFilter === "columns"}
           anchorEl={columnsAnchorRef.current}
@@ -1092,8 +928,8 @@ const TableGrid = ({
           zIndex={HF_ZINDEX}
         >
           <div className="max-h-96 overflow-y-auto">
-            <ul className="py-1 text-black/80">
-              <li className="flex items-center px-4 py-2 hover:bg-primary-3/70 cursor-pointer">
+            <ul className="py-1 text-gray-700">
+              <li className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={visibleColumns.every((col) => col.visible)}
@@ -1106,7 +942,7 @@ const TableGrid = ({
               {visibleColumns.map((option) => (
                 <li
                   key={option.field}
-                  className="flex items-center px-4 py-2 hover:bg-primary-3/70 cursor-pointer"
+                  className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
                 >
                   <input
                     type="checkbox"
@@ -1124,30 +960,20 @@ const TableGrid = ({
         {/* Table */}
         <div
           ref={tableContainerRef}
-          className="overflow-x-auto border border-primary-2/60 rounded-md"
+          className="overflow-x-auto border border-gray-200 rounded-md bg-white"
           style={{
             minHeight: headerHeight + minRows * rowHeight,
           }}
         >
-          <table
-            ref={gridRef}
-            className="min-w-full text-sm bg-primary-4 table-fixed"
-          >
-            <thead
-              className={`${
-                theme?.table?.headerBg ?? "bg-primary-1"
-              } ${theme?.table?.headerText ?? "text-white"} border-b border-primary-2/60`}
-            >
+          <table ref={gridRef} className="min-w-full text-sm bg-white table-fixed">
+            <thead className="bg-primary-1 text-white border-b border-gray-200">
               <tr style={{ height: headerHeight }}>
                 <th className="px-4 py-2 text-left font-medium cursor-pointer text-nowrap relative w-[100px]">
                   <input
                     type="checkbox"
                     className="my-auto mr-2"
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    checked={
-                      paginatedData.length > 0 &&
-                      selectedRows.length === paginatedData.length
-                    }
+                    checked={paginatedData.length > 0 && selectedRows.length === paginatedData.length}
                   />
                   <span>No</span>
                 </th>
@@ -1161,24 +987,19 @@ const TableGrid = ({
                       className="px-2 py-2 text-left font-medium cursor-pointer text-nowrap relative"
                     >
                       {column.header}{" "}
-                      {sortField === column.field &&
-                        (sortOrder === "asc" ? "↑" : "↓")}
+                      {sortField === column.field && (sortOrder === "asc" ? "↑" : "↓")}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           colFilterAnchorRef.current = e.currentTarget;
-                          setOpenFilter(
-                            openFilter === column.field ? null : column.field
-                          );
+                          setOpenFilter(openFilter === column.field ? null : column.field);
                         }}
-                        className="ml-2 text-gray-300"
+                        className="ml-2"
                       >
                         <FaFilter
                           size={12}
                           className={`my-auto cursor-pointer ${
-                            isFilterApplied(column.field)
-                              ? "text-primary-4"
-                              : "text-primary-2"
+                            isFilterApplied(column.field) ? "text-white" : "text-white/60"
                           }`}
                         />
                       </button>
@@ -1218,11 +1039,8 @@ const TableGrid = ({
                   const isEmpty = row?.__empty === true;
 
                   return (
-                    <tr
-                      key={rowIndex}
-                      style={{ height: rowHeight, minHeight: rowHeight }}
-                    >
-                      <td className="px-4 py-2 border-b">
+                    <tr key={rowIndex} style={{ height: rowHeight, minHeight: rowHeight }}>
+                      <td className="px-4 py-2 border-b border-gray-100">
                         {!isEmpty ? (
                           <div className="flex items-center">
                             <input
@@ -1231,24 +1049,19 @@ const TableGrid = ({
                               checked={selectedRows.includes(rowIndex)}
                               onChange={() => handleRowSelection(rowIndex)}
                             />
-                            <span className="px-4 py-1">
-                              {String(
-                                (currentPage - 1) * rowsPerPage + rowIndex + 1
-                              ).padStart(2, "0")}
+                            <span className="px-4 py-1 text-gray-600">
+                              {String((currentPage - 1) * rowsPerPage + rowIndex + 1).padStart(2, "0")}
                             </span>
                           </div>
                         ) : (
                           <div className="h-[20px]" />
                         )}
-                      </td>
+                       </td>
 
                       {visibleColumns
                         .filter((col) => col.visible)
                         .map((column) => (
-                          <td
-                            key={column.field}
-                            className="px-2 py-2 border-b text-nowrap"
-                          >
+                          <td key={column.field} className="px-2 py-2 border-b border-gray-100 text-nowrap">
                             {isEmpty ? (
                               <span className="opacity-0">—</span>
                             ) : fieldConfig?.[column.field] ? (
@@ -1263,26 +1076,16 @@ const TableGrid = ({
                                       row[item.linkId] || item.linkId
                                     );
                                     return (
-                                      <Link
-                                        to={dynamicLink}
-                                        key={idx}
-                                        className="hover:underline"
-                                      >
+                                      <Link to={dynamicLink} key={idx} className="hover:text-primary-1">
                                         {out}
                                       </Link>
                                     );
                                   }
-                                  return (
-                                    <React.Fragment key={idx}>
-                                      {out}
-                                    </React.Fragment>
-                                  );
+                                  return <React.Fragment key={idx}>{out}</React.Fragment>;
                                 }
 
                                 const dynamicByCondition =
-                                  typeof item.condition === "function"
-                                    ? item.condition(cellValue)
-                                    : "";
+                                  typeof item.condition === "function" ? item.condition(cellValue) : "";
                                 const badgeClass = [
                                   "rounded",
                                   "font-semibold",
@@ -1297,21 +1100,16 @@ const TableGrid = ({
                                 const content = (
                                   <>
                                     {item.icon && (
-                                      <div className="flex items-center text-[#6c8194] relative">
+                                      <div className="flex items-center text-gray-500 relative">
                                         {item.icon}
                                         <span>{cellValue}</span>
                                       </div>
                                     )}
                                     {(item.condition || item.color) && (
-                                      <span className={badgeClass}>
-                                        {cellValue}
-                                      </span>
+                                      <span className={badgeClass}>{cellValue}</span>
                                     )}
                                     {item.image && item.image(cellValue) && (
-                                      <img
-                                        src={item.image(cellValue)}
-                                        alt="cell"
-                                      />
+                                      <img src={item.image(cellValue)} alt="cell" />
                                     )}
                                     {item.img && typeof item.img === "string" && (
                                       <div className="flex space-x-2 mr-8">
@@ -1332,28 +1130,20 @@ const TableGrid = ({
                                     row[item.linkId] || item.linkId
                                   );
                                   return (
-                                    <Link
-                                      to={dynamicLink}
-                                      key={idx}
-                                      className="hover:underline"
-                                    >
+                                    <Link to={dynamicLink} key={idx} className="hover:text-primary-1">
                                       {content}
                                     </Link>
                                   );
                                 }
 
-                                return (
-                                  <React.Fragment key={idx}>
-                                    {content}
-                                  </React.Fragment>
-                                );
+                                return <React.Fragment key={idx}>{content}</React.Fragment>;
                               })
                             ) : column.render ? (
                               column.render(row)
                             ) : (
                               row[column.field] ?? "N/A"
                             )}
-                          </td>
+                           </td>
                         ))}
 
                       {showQuickActions && (
@@ -1368,9 +1158,7 @@ const TableGrid = ({
                             <div className="flex items-center justify-end space-x-4">
                               {quickActions.map((action, index) => {
                                 const Icon = action.icon;
-                                const disabled = action.disabled
-                                  ? action.disabled(row)
-                                  : false;
+                                const disabled = action.disabled ? action.disabled(row) : false;
                                 return (
                                   <div
                                     key={index}
@@ -1379,27 +1167,19 @@ const TableGrid = ({
                                     }`}
                                   >
                                     <button
-                                      onClick={() =>
-                                        action.onClick && action.onClick(row)
-                                      }
+                                      onClick={() => action.onClick && action.onClick(row)}
                                       disabled={disabled}
-                                      className={`p-1 rounded hover:bg-primary-3/80 ${
+                                      className={`p-1 rounded hover:bg-gray-100 ${
                                         action.color || ""
                                       } ${
-                                        action.showName
-                                          ? "flex items-center space-x-2"
-                                          : ""
+                                        action.showName ? "flex items-center space-x-2" : ""
                                       } ${
-                                        disabled
-                                          ? "opacity-50 cursor-not-allowed"
-                                          : ""
+                                        disabled ? "opacity-50 cursor-not-allowed" : ""
                                       }`}
                                     >
                                       <Icon size={20} className="hover:text-primary-1" />
                                       {action.showName && (
-                                        <span className="text-sm text-black/80">
-                                          {action.name}
-                                        </span>
+                                        <span className="text-sm text-gray-600">{action.name}</span>
                                       )}
                                     </button>
 
@@ -1478,9 +1258,7 @@ const TableGrid = ({
                       (showQuickActions ? 1 : 0) +
                       (showMenuActions ? 1 : 0)
                     }
-                    className={`text-center py-4 text-lg p-2 ${
-                      theme?.empty?.text ?? "text-black/60"
-                    }`}
+                    className="text-center py-4 text-lg text-gray-500"
                   >
                     No data available
                   </td>
@@ -1490,7 +1268,7 @@ const TableGrid = ({
           </table>
         </div>
 
-        {/* ✅ Column filter portal (small) */}
+        {/* Column filter portal */}
         <PortalPopover
           open={!!activeColumn}
           anchorEl={colFilterAnchorRef.current}
@@ -1502,18 +1280,12 @@ const TableGrid = ({
           align="right"
           zIndex={HF_ZINDEX}
         >
-          <div
-            className="p-2 space-y-2 overflow-visible"
-            style={{ width: HF_CONTROL_W }}
-          >
-            {/* Title */}
-            <div className="text-[11px] font-semibold text-black/80 truncate">
+          <div className="p-2 space-y-2 overflow-visible" style={{ width: HF_CONTROL_W }}>
+            <div className="text-[11px] font-semibold text-gray-700 truncate">
               {activeColumn?.header}
             </div>
 
-            {/* Date filter */}
-            {(activeColumn?.type === "date" ||
-              activeColumn?.filterType === "dateRange") && (
+            {(activeColumn?.type === "date" || activeColumn?.filterType === "dateRange") && (
               <div className="space-y-2 w-full">
                 <div className="grid grid-cols-2 gap-1.5 w-full">
                   <CommonButton
@@ -1523,39 +1295,32 @@ const TableGrid = ({
                     Today
                   </CommonButton>
                   <CommonButton
-                    onClick={() =>
-                      applyQuickFilter(activeColumn.field, "thisWeek")
-                    }
+                    onClick={() => applyQuickFilter(activeColumn.field, "thisWeek")}
                     className="!h-[24px] !px-2 !text-[11px] !w-full !rounded-md"
                   >
                     This Week
                   </CommonButton>
                   <CommonButton
-                    onClick={() =>
-                      applyQuickFilter(activeColumn.field, "thisMonth")
-                    }
+                    onClick={() => applyQuickFilter(activeColumn.field, "thisMonth")}
                     className="!h-[24px] !px-2 !text-[11px] !w-full !rounded-md"
                   >
                     This Month
                   </CommonButton>
                   <CommonButton
-                    onClick={() =>
-                      applyQuickFilter(activeColumn.field, "nextMonth")
-                    }
+                    onClick={() => applyQuickFilter(activeColumn.field, "nextMonth")}
                     className="!h-[24px] !px-2 !text-[11px] !w-full !rounded-md"
                   >
                     Next Month
                   </CommonButton>
                 </div>
 
-                {/* opener for BIG date portal */}
                 <button
                   type="button"
                   onClick={(e) => {
                     datePortalAnchorRef.current = e.currentTarget;
                     setOpenDatePortal(true);
                   }}
-                  className="w-full border border-primary-2/60 rounded-md px-2 py-1 text-[11px] text-black/80 bg-primary-4 text-left truncate"
+                  className="w-full border border-gray-200 rounded-md px-2 py-1 text-[11px] text-gray-700 bg-white text-left truncate"
                   title={dateLabel}
                 >
                   {dateLabel}
@@ -1589,7 +1354,6 @@ const TableGrid = ({
               </div>
             )}
 
-            {/* Number / id range */}
             {(activeColumn?.type === "id" || activeColumn?.type === "amount") && (
               <div className="space-y-2">
                 <div className="flex flex-col">
@@ -1602,15 +1366,9 @@ const TableGrid = ({
                       if (v === "" || v === "-") {
                         setRangeFilters((prev) => ({
                           ...prev,
-                          [activeColumn.field]: {
-                            ...prev[activeColumn.field],
-                            start: null,
-                          },
+                          [activeColumn.field]: { ...prev[activeColumn.field], start: null },
                         }));
-                        setFilterErrors((prev) => ({
-                          ...prev,
-                          [`${activeColumn.field}-start`]: null,
-                        }));
+                        setFilterErrors((prev) => ({ ...prev, [`${activeColumn.field}-start`]: null }));
                         return;
                       }
 
@@ -1618,30 +1376,22 @@ const TableGrid = ({
                       if (Number.isNaN(num))
                         return setFilterErrors((p) => ({
                           ...p,
-                          [`${activeColumn.field}-start`]:
-                            "Please enter a valid number",
+                          [`${activeColumn.field}-start`]: "Please enter a valid number",
                         }));
                       if (num < 0)
                         return setFilterErrors((p) => ({
                           ...p,
-                          [`${activeColumn.field}-start`]:
-                            "Value cannot be negative",
+                          [`${activeColumn.field}-start`]: "Value cannot be negative",
                         }));
 
                       setRangeFilters((prev) => ({
                         ...prev,
-                        [activeColumn.field]: {
-                          ...prev[activeColumn.field],
-                          start: num,
-                        },
+                        [activeColumn.field]: { ...prev[activeColumn.field], start: num },
                       }));
-                      setFilterErrors((prev) => ({
-                        ...prev,
-                        [`${activeColumn.field}-start`]: null,
-                      }));
+                      setFilterErrors((prev) => ({ ...prev, [`${activeColumn.field}-start`]: null }));
                     }}
                     placeholder={activeColumn.type === "id" ? "Start ID" : "Min"}
-                    className="w-full border border-primary-2/60 rounded-md px-2 py-1 text-[11px] text-black focus:outline-none focus:ring-2 focus:ring-primary-1/40"
+                    className="w-full border border-gray-200 rounded-md px-2 py-1 text-[11px] text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-1/40"
                   />
                   {filterErrors[`${activeColumn.field}-start`] && (
                     <p className="text-red-500 text-[11px] mt-1">
@@ -1650,9 +1400,7 @@ const TableGrid = ({
                   )}
                 </div>
 
-                <div className="text-black/70 text-[11px] font-medium text-center">
-                  to
-                </div>
+                <div className="text-gray-500 text-[11px] font-medium text-center">to</div>
 
                 <div className="flex flex-col">
                   <input
@@ -1664,15 +1412,9 @@ const TableGrid = ({
                       if (v === "" || v === "-") {
                         setRangeFilters((prev) => ({
                           ...prev,
-                          [activeColumn.field]: {
-                            ...prev[activeColumn.field],
-                            end: null,
-                          },
+                          [activeColumn.field]: { ...prev[activeColumn.field], end: null },
                         }));
-                        setFilterErrors((prev) => ({
-                          ...prev,
-                          [`${activeColumn.field}-end`]: null,
-                        }));
+                        setFilterErrors((prev) => ({ ...prev, [`${activeColumn.field}-end`]: null }));
                         return;
                       }
 
@@ -1680,30 +1422,22 @@ const TableGrid = ({
                       if (Number.isNaN(num))
                         return setFilterErrors((p) => ({
                           ...p,
-                          [`${activeColumn.field}-end`]:
-                            "Please enter a valid number",
+                          [`${activeColumn.field}-end`]: "Please enter a valid number",
                         }));
                       if (num < 0)
                         return setFilterErrors((p) => ({
                           ...p,
-                          [`${activeColumn.field}-end`]:
-                            "Value cannot be negative",
+                          [`${activeColumn.field}-end`]: "Value cannot be negative",
                         }));
 
                       setRangeFilters((prev) => ({
                         ...prev,
-                        [activeColumn.field]: {
-                          ...prev[activeColumn.field],
-                          end: num,
-                        },
+                        [activeColumn.field]: { ...prev[activeColumn.field], end: num },
                       }));
-                      setFilterErrors((prev) => ({
-                        ...prev,
-                        [`${activeColumn.field}-end`]: null,
-                      }));
+                      setFilterErrors((prev) => ({ ...prev, [`${activeColumn.field}-end`]: null }));
                     }}
                     placeholder={activeColumn.type === "id" ? "End ID" : "Max"}
-                    className="w-full border border-primary-2/60 rounded-md px-2 py-1 text-[11px] text-black focus:outline-none focus:ring-2 focus:ring-primary-1/40"
+                    className="w-full border border-gray-200 rounded-md px-2 py-1 text-[11px] text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-1/40"
                   />
                   {filterErrors[`${activeColumn.field}-end`] && (
                     <p className="text-red-500 text-[11px] mt-1">
@@ -1739,7 +1473,6 @@ const TableGrid = ({
               </div>
             )}
 
-            {/* ✅ Country/Status/etc: options dropdown */}
             {activeColumn &&
               !["date", "id", "amount"].includes(activeColumn.type) &&
               activeColumn.filterType !== "dateRange" &&
@@ -1786,18 +1519,16 @@ const TableGrid = ({
                 </div>
               )}
 
-            {/* Text filter (fallback) */}
             {activeColumn &&
               !["date", "id", "amount", "status"].includes(activeColumn.type) &&
               activeColumn.filterType !== "dateRange" &&
-              !(Array.isArray(activeColumn.options) &&
-                activeColumn.options.length > 0) && (
+              !(Array.isArray(activeColumn.options) && activeColumn.options.length > 0) && (
                 <div className="space-y-2">
                   <input
                     type="text"
                     value={filters[activeColumn.field] || ""}
                     placeholder={`Filter ${activeColumn.header}`}
-                    className="w-full border border-primary-2/60 rounded-md px-2 py-1 text-[11px] text-black focus:outline-none focus:ring-2 focus:ring-primary-1/40"
+                    className="w-full border border-gray-200 rounded-md px-2 py-1 text-[11px] text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-1/40"
                     onChange={(e) =>
                       setFilters((prev) => ({
                         ...prev,
@@ -1829,7 +1560,7 @@ const TableGrid = ({
           </div>
         </PortalPopover>
 
-        {/* ✅ Separate BIG DateRangePicker PortalPopover */}
+        {/* Date Range Picker Portal */}
         <PortalPopover
           open={openDatePortal}
           anchorEl={datePortalAnchorRef.current}
@@ -1838,23 +1569,15 @@ const TableGrid = ({
           align="right"
           zIndex={HF_DATE_ZINDEX}
         >
-          <div className="p-3 space-y-2">
-            <div className="text-sm font-semibold text-black/80">
+          <div className="p-3 space-y-2 bg-white">
+            <div className="text-sm font-semibold text-gray-800">
               {activeColumn?.header || "Date Range"}
             </div>
 
             <div className="w-full [&_input]:w-full">
               <DateRangePicker
-                startDate={
-                  activeColumn
-                    ? dateFilters?.[activeColumn.field]?.start || null
-                    : null
-                }
-                endDate={
-                  activeColumn
-                    ? dateFilters?.[activeColumn.field]?.end || null
-                    : null
-                }
+                startDate={activeColumn ? dateFilters?.[activeColumn.field]?.start || null : null}
+                endDate={activeColumn ? dateFilters?.[activeColumn.field]?.end || null : null}
                 onChange={(s, e) => {
                   if (!activeColumn) return;
                   setDateFilters((prev) => ({
@@ -1894,7 +1617,7 @@ const TableGrid = ({
           </div>
         </PortalPopover>
 
-        {/* Pagination only when showAll mode */}
+        {/* Pagination */}
         {showAll && baseRows.length >= 10 && (
           <AdvancedPagination
             currentPage={currentPage}
@@ -1902,11 +1625,11 @@ const TableGrid = ({
             defaultEntries={rowsPerPage}
             onPageChange={setCurrentPage}
             onEntriesPerPageChange={setRowsPerPage}
-            entriesOptions={[5, 10, 25, 50, 100,"All"]}
+            entriesOptions={[5, 10, 25, 50, 100, "All"]}
             height={36}
             width={36}
-            bgColor="#F8F6F5"
-            borderColor="#D1D5DB"
+            bgColor="#FFFFFF"
+            borderColor="#E5E7EB"
             totalEntries={baseRows.length}
           />
         )}
