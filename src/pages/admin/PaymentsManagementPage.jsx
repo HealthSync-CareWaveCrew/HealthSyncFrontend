@@ -15,7 +15,6 @@ const defaultForm = {
   cost: "",
   currency: "usd",
   description: "",
-  free_trials: 3,
   isActive: true,
 };
 
@@ -26,7 +25,6 @@ const normalizePlan = (plan) => ({
   cost: plan.cost,
   currency: plan.currency || "usd",
   billing_cycle: plan.feature_limits?.billing_cycle || "month",
-  free_trials: plan.feature_limits?.free_trials ?? 0,
   isActive: plan.isActive,
   stripe_price_id: plan.stripe_price_id,
   stripe_product_id: plan.stripe_product_id,
@@ -57,7 +55,6 @@ const formatDate = (value) => {
 
 const subscriptionStatusStyles = {
   active: "bg-green-100 text-green-700",
-  trialing: "bg-blue-100 text-blue-700",
   past_due: "bg-yellow-100 text-yellow-700",
   canceled: "bg-gray-200 text-gray-700",
   unpaid: "bg-red-100 text-red-700",
@@ -70,7 +67,6 @@ const PaymentsManagementPage = () => {
   const [subscriptionSummary, setSubscriptionSummary] = useState({
     total: 0,
     active: 0,
-    trialing: 0,
     canceled: 0,
     text: 0,
     image: 0,
@@ -103,7 +99,6 @@ const PaymentsManagementPage = () => {
       setSubscriptionSummary(data.summary || {
         total: 0,
         active: 0,
-        trialing: 0,
         canceled: 0,
         text: 0,
         image: 0,
@@ -114,7 +109,6 @@ const PaymentsManagementPage = () => {
       setSubscriptionSummary({
         total: 0,
         active: 0,
-        trialing: 0,
         canceled: 0,
         text: 0,
         image: 0,
@@ -148,7 +142,6 @@ const PaymentsManagementPage = () => {
       cost: plan.cost ?? "",
       currency: plan.currency || "usd",
       description: plan.description || "",
-      free_trials: plan.free_trials ?? 0,
       isActive: plan.isActive,
     });
     setShowModal(true);
@@ -174,7 +167,6 @@ const PaymentsManagementPage = () => {
         cost: Number(formState.cost),
         currency: formState.currency,
         description: formState.description,
-        free_trials: Number(formState.free_trials),
         isActive: Boolean(formState.isActive),
       };
 
@@ -513,21 +505,6 @@ const PaymentsManagementPage = () => {
                       handleChange("currency", event.target.value)
                     }
                     className="mt-2 w-full rounded-xl border border-primary-2/30 bg-white/70 px-4 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary-1"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-semibold text-black/70">
-                    Free trials
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formState.free_trials}
-                    onChange={(event) =>
-                      handleChange("free_trials", event.target.value)
-                    }
-                    disabled={formState.type !== "text"}
-                    className="mt-2 w-full rounded-xl border border-primary-2/30 bg-white/70 px-4 py-2 text-sm text-black focus:outline-none focus:ring-2 focus:ring-primary-1 disabled:cursor-not-allowed"
                   />
                 </div>
                 <div className="flex items-end gap-2">

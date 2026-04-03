@@ -103,13 +103,11 @@ const useSubscription = (feature) => {
 
   const status = subscription?.status || subscription?.subscriptionStatus;
   const isActive = status === "active";
-  const isTrial = status === "trialing";
 
   return {
     subscription,
     subscriptions,
     isActive,
-    isTrial,
     freeTrialsUsed,
     freeTrialsRemaining,
     loading,

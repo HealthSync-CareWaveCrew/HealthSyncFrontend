@@ -196,7 +196,7 @@ const PricingPlans = () => {
   };
 
   const textProCta = (planId) => {
-    if (!hasTextSubscription) return "Start Free Trial";
+    if (!hasTextSubscription) return "Subscribe Now";
     if (isCurrentPlan(planId, "text")) return "Current Plan";
     return "Switch to Pro";
   };

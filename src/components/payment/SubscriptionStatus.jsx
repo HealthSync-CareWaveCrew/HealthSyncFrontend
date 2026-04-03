@@ -18,7 +18,6 @@ const formatDate = (value) => {
 
 const statusStyles = {
   active: "bg-green-100 text-green-700",
-  trialing: "bg-blue-100 text-blue-700",
   canceled: "bg-gray-200 text-gray-700",
   past_due: "bg-yellow-100 text-yellow-700",
 };
@@ -152,12 +151,6 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
                     <span className="text-black/60">Renewal</span>
                     <span className="font-semibold">
                       {formatDate(subscription?.current_period_end)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-black/60">Trial End</span>
-                    <span className="font-semibold">
-                      {formatDate(subscription?.trial_end)}
                     </span>
                   </div>
                 </div>

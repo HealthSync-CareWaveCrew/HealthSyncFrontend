@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 
 const statusStyles = {
   active: "bg-green-100 text-green-700",
-  trialing: "bg-blue-100 text-blue-700",
   past_due: "bg-yellow-100 text-yellow-700",
   canceled: "bg-gray-200 text-gray-700",
   unpaid: "bg-red-100 text-red-700",
@@ -27,7 +26,6 @@ const AdminDashboardPage = () => {
   const [summary, setSummary] = useState({
     total: 0,
     active: 0,
-    trialing: 0,
     canceled: 0,
     text: 0,
     image: 0,
@@ -48,7 +46,6 @@ const AdminDashboardPage = () => {
         setSummary({
           total: 0,
           active: 0,
-          trialing: 0,
           canceled: 0,
           text: 0,
           image: 0,

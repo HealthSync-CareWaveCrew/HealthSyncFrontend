@@ -177,7 +177,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      if (status === "trialing" || status === "active") {
+      if (status === "active") {
         toast.success("Subscription activated.");
         navigate("/dashboard");
         return;

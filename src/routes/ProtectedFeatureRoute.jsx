@@ -22,8 +22,7 @@ const ProtectedFeatureRoute = ({ children, feature = "text" }) => {
   }
 
   const status = subscription?.status || subscription?.subscriptionStatus;
-  const hasTextSubscription =
-    status === "active" || status === "trialing" || status === "past_due";
+  const hasTextSubscription = status === "active" || status === "past_due";
   const hasImageSubscription =
     status === "active" && subscription?.plan?.type === "image";
 
