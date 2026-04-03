@@ -58,11 +58,11 @@ const chartColors = {
   noMatch: '#F59E0B',
   disease: '#8B5CF6',
   revenue: '#F59E0B',
-  review: '#2563EB',
-  accent: '#0EA5E9',
+  review: '#FFB2B2',
+  accent: '#E36A6A',
 };
 
-const diseaseColors = ['#0EA5E9', '#2563EB', '#60A5FA', '#7C3AED', '#38BDF8', '#A78BFA'];
+const diseaseColors = ['#8f0d27','#E36A6A', '#FFB2B2',  '#7C3AED', '#38BDF8', '#A78BFA'];
 
 function AdminDashboardPage() {
   const dispatch = useDispatch();
