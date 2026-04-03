@@ -13,7 +13,7 @@ import {
   getPaymentMethods,
   savePaymentMethod,
   setDefaultPaymentMethod,
-} from "../../libraries/paymentApi";
+} from "../../Redux/Api/api";
 import { getStripeErrorMessage } from "../../libraries/stripeErrors";
 
 const cardElementOptions = {

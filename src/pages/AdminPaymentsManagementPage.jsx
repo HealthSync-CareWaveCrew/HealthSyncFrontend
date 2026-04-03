@@ -7,8 +7,8 @@ import {
   getAdminPaymentPlans,
   getAdminSubscriptions,
   updatePaymentPlan,
-} from "../../Redux/Api/api";
-import TableGrid from "../../libraries/TableGrid";
+} from "../Redux/Api/api.js";
+import TableGrid from "../libraries/TableGrid";
 import { toast } from "react-toastify";
 
 const defaultForm = {
@@ -73,7 +73,7 @@ const subscriptionStatusStyles = {
   incomplete: "bg-orange-100 text-orange-700",
 };
 
-const PaymentsManagementPage = () => {
+const AdminPaymentsManagementPage = () => {
   const [plans, setPlans] = useState([]);
   const [subscriptions, setSubscriptions] = useState([]);
   const [subscriptionSummary, setSubscriptionSummary] = useState({
@@ -106,11 +106,11 @@ const PaymentsManagementPage = () => {
       const data = response?.data?.data || {};
       setSubscriptions(Array.isArray(data.items) ? data.items : []);
       setSubscriptionSummary(data.summary || {
-        total: 0,
-        active: 0,
-        canceled: 0,
-        text: 0,
-        image: 0,
+          total: 0,
+          active: 0,
+          canceled: 0,
+          text: 0,
+          image: 0,
       });
     } catch (error) {
       toast.error("Failed to load subscriptions.");
@@ -705,4 +705,4 @@ const PaymentsManagementPage = () => {
   );
 };
 
-export default PaymentsManagementPage;
+export default AdminPaymentsManagementPage;
