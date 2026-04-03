@@ -18,9 +18,12 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
   const { historyList, historyLoading, historyError, deleteLoading } = useSelector(
     (state) => state.analysis
   );
-  
+
   const [actionMessage, setActionMessage] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 640 : false
+  );
 
   const pageTitle = useMemo(
     () => (isAdmin ? 'Analysis Management' : 'My Analysis History'),
@@ -55,6 +58,15 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
 
   useEffect(() => {
     fetchAnalysisHistory();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleDelete = (rowData) => {
@@ -109,11 +121,10 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         width: 100,
         options: ["image", "clinical"],
         render: (row) => (
-          <span className={`px-2 py-1 rounded text-xs font-medium ${
-            row.type === 'image' 
-              ? 'bg-primary-1/10 text-primary-1' 
-              : 'bg-primary-2/10 text-primary-2'
-          }`}>
+          <span className={`px-2 py-1 rounded text-xs font-medium ${row.type === 'image'
+            ? 'bg-primary-1/10 text-primary-1'
+            : 'bg-primary-2/10 text-primary-2'
+            }`}>
             {row.type === 'image' ? 'Image' : 'Clinical'}
           </span>
         ),
@@ -134,11 +145,10 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
         width: 100,
         render: (row) => (
           <span
-            className={`px-2 py-1 rounded text-xs font-semibold ${
-              row.match
-                ? 'bg-green-100 text-green-700'
-                : 'bg-red-100 text-red-700'
-            }`}
+            className={`px-2 py-1 rounded text-xs font-semibold ${row.match
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+              }`}
           >
             {row.matchStatus}
           </span>
@@ -200,25 +210,29 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
   const filterbars = useMemo(() => {
     const bars = [
       {
-        field: 'type',
+        key: 'type',
         label: 'Type',
-        type: 'dropdown',
         options: [
-          { label: 'Image', value: 'image' },
-          { label: 'Clinical', value: 'clinical' },
+          "Image",
+          "Clinical"
         ],
+        // type: "multiselect",
+        width: "fit-content",
+        menuMinWidth: 0,
+        menuMaxHeight: 420,
+        menuClassName: "inline-block w-fit min-w-0",
       },
     ];
 
     if (isAdmin) {
       bars.push({
-        field: 'matchStatus',
+        key: 'matchStatus',
         label: 'Match Status',
-        type: 'dropdown',
-        options: [
-          { label: 'Match', value: 'Match' },
-          { label: 'No Match', value: 'No Match' },
-        ],
+        options: ["Match","No Match"],
+        width: "fit-content",
+        menuMinWidth: 0,
+        menuMaxHeight: 420,
+        menuClassName: "inline-block w-fit min-w-0",
       });
     }
 
@@ -288,7 +302,7 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
           <TableGrid
             columns={columns}
             data={analyses}
-            quickActions={quickActions}
+            quickActions={isMobile ? [] : quickActions}
             actions={rowMenuActions}
             filterbars={filterbars}
             dateFilter={true}
