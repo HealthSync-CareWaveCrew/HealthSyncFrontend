@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { FaBan } from "react-icons/fa";
+import { MdEdit } from "react-icons/md";
 import {
   createPaymentPlan,
   deactivatePaymentPlan,
@@ -6,6 +8,7 @@ import {
   getAdminSubscriptions,
   updatePaymentPlan,
 } from "../../Redux/Api/api";
+import TableGrid from "../../libraries/TableGrid";
 import { toast } from "react-toastify";
 
 const defaultForm = {
@@ -18,14 +21,23 @@ const defaultForm = {
   isActive: true,
 };
 
+const normalizeBillingCycle = (value, fallback = "monthly") => {
+  if (!value) return fallback;
+  return value === "year" || value === "yearly" ? "yearly" : "monthly";
+};
+
 const normalizePlan = (plan) => ({
   id: plan._id,
   name: plan.plan_name,
   type: plan.type,
   cost: plan.cost,
   currency: plan.currency || "usd",
-  billing_cycle: plan.feature_limits?.billing_cycle || "month",
+  billing_cycle: normalizeBillingCycle(
+    plan.feature_limits?.billing_cycle,
+    "monthly",
+  ),
   isActive: plan.isActive,
+  status: plan.isActive ? "active" : "inactive",
   stripe_price_id: plan.stripe_price_id,
   stripe_product_id: plan.stripe_product_id,
   description: plan.description || "",
@@ -78,7 +90,6 @@ const PaymentsManagementPage = () => {
   const [processing, setProcessing] = useState(false);
 
   const loadPlans = async () => {
-    setLoading(true);
     try {
       const response = await getAdminPaymentPlans(true);
       const data = response?.data?.data || [];
@@ -86,14 +97,12 @@ const PaymentsManagementPage = () => {
     } catch (error) {
       toast.error("Failed to load payment plans.");
       setPlans([]);
-    } finally {
-      setLoading(false);
     }
   };
 
   const loadSubscriptions = async () => {
     try {
-      const response = await getAdminSubscriptions({ page: 1, limit: 8 });
+      const response = await getAdminSubscriptions({ page: 1, limit: 100 });
       const data = response?.data?.data || {};
       setSubscriptions(Array.isArray(data.items) ? data.items : []);
       setSubscriptionSummary(data.summary || {
@@ -118,7 +127,12 @@ const PaymentsManagementPage = () => {
 
   useEffect(() => {
     const loadPageData = async () => {
-      await Promise.all([loadPlans(), loadSubscriptions()]);
+      setLoading(true);
+      try {
+        await Promise.all([loadPlans(), loadSubscriptions()]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadPageData();
@@ -203,6 +217,243 @@ const PaymentsManagementPage = () => {
     () => plans.filter((plan) => plan.isActive),
     [plans],
   );
+
+  const planColumns = useMemo(
+    () => [
+      {
+        field: "name",
+        header: "Plan",
+        type: "text",
+        render: (row) => (
+          <div>
+            <div className="font-semibold text-black">{row.name}</div>
+            <div className="text-xs text-black/60">
+              {row.description || "No description"}
+            </div>
+          </div>
+        ),
+      },
+      {
+        field: "type",
+        header: "Type",
+        type: "text",
+        options: ["text", "image"],
+        render: (row) => (
+          <span className="capitalize text-black/70">{row.type}</span>
+        ),
+      },
+      {
+        field: "billing_cycle",
+        header: "Billing",
+        type: "text",
+        options: ["monthly", "yearly"],
+        render: (row) => (
+          <span className="capitalize text-black/70">{row.billing_cycle}</span>
+        ),
+      },
+      {
+        field: "cost",
+        header: "Price",
+        type: "amount",
+        render: (row) => (
+          <span className="text-black/70">
+            {formatPrice(row.cost, row.currency)}
+          </span>
+        ),
+      },
+      {
+        field: "status",
+        header: "Status",
+        type: "text",
+        options: ["active", "inactive"],
+        render: (row) => (
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold ${
+              row.isActive
+                ? "bg-green-100 text-green-700"
+                : "bg-gray-200 text-gray-700"
+            }`}
+          >
+            {row.isActive ? "Active" : "Inactive"}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const planFilterbars = useMemo(
+    () => [
+      {
+        key: "type",
+        label: "Type",
+        type: "dropdown",
+        options: [
+          { label: "Text", value: "text" },
+          { label: "Image", value: "image" },
+        ],
+      },
+      {
+        key: "billing_cycle",
+        label: "Billing",
+        type: "dropdown",
+        options: [
+          { label: "Monthly", value: "monthly" },
+          { label: "Yearly", value: "yearly" },
+        ],
+      },
+      {
+        key: "status",
+        label: "Status",
+        type: "dropdown",
+        options: [
+          { label: "Active", value: "active" },
+          { label: "Inactive", value: "inactive" },
+        ],
+      },
+    ],
+    [],
+  );
+
+  const planQuickActions = [
+    {
+      name: "Edit",
+      icon: MdEdit,
+      onClick: (row) => openEdit(row),
+      showName: true,
+    },
+    {
+      name: "Deactivate",
+      icon: FaBan,
+      onClick: (row) => handleDeactivate(row.id),
+      showName: true,
+      color: "text-red-600",
+      disabled: (row) => processing || !row.isActive,
+    },
+  ];
+
+  const subscriptionRows = useMemo(
+    () =>
+      subscriptions.map((subscription) => ({
+        ...subscription,
+        customerName: subscription.user?.name || "Unknown User",
+        customerEmail: subscription.user?.email || "-",
+        planName: subscription.plan?.name || "-",
+        planType: subscription.plan?.type || "-",
+        billing_cycle: normalizeBillingCycle(
+          subscription.plan?.billing_cycle,
+          "-",
+        ),
+        status: subscription.status || "inactive",
+      })),
+    [subscriptions],
+  );
+
+  const subscriptionColumns = useMemo(
+    () => [
+      {
+        field: "customerName",
+        header: "Customer",
+        type: "text",
+        render: (row) => (
+          <div>
+            <div className="font-semibold text-black">{row.customerName}</div>
+            <div className="text-xs text-black/60">{row.customerEmail}</div>
+          </div>
+        ),
+      },
+      {
+        field: "planName",
+        header: "Plan",
+        type: "text",
+        render: (row) => <span className="text-black/80">{row.planName}</span>,
+      },
+      {
+        field: "planType",
+        header: "Type",
+        type: "text",
+        options: ["text", "image"],
+        render: (row) => (
+          <span className="capitalize text-black/70">{row.planType}</span>
+        ),
+      },
+      {
+        field: "billing_cycle",
+        header: "Billing",
+        type: "text",
+        options: ["monthly", "yearly"],
+        render: (row) => (
+          <span className="capitalize text-black/70">{row.billing_cycle}</span>
+        ),
+      },
+      {
+        field: "status",
+        header: "Status",
+        type: "text",
+        options: ["active", "past_due", "canceled", "unpaid", "incomplete"],
+        render: (row) => {
+          const badgeClass =
+            subscriptionStatusStyles[row.status] || "bg-gray-100 text-gray-700";
+
+          return (
+            <span
+              className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${badgeClass}`}
+            >
+              {row.status}
+            </span>
+          );
+        },
+      },
+      {
+        field: "current_period_end",
+        header: "Renews",
+        type: "date",
+        render: (row) => (
+          <span className="text-black/70">
+            {formatDate(row.current_period_end)}
+          </span>
+        ),
+      },
+    ],
+    [],
+  );
+
+  const subscriptionFilterbars = useMemo(
+    () => [
+      {
+        key: "planType",
+        label: "Type",
+        type: "dropdown",
+        options: [
+          { label: "Text", value: "text" },
+          { label: "Image", value: "image" },
+        ],
+      },
+      {
+        key: "billing_cycle",
+        label: "Billing",
+        type: "dropdown",
+        options: [
+          { label: "Monthly", value: "monthly" },
+          { label: "Yearly", value: "yearly" },
+        ],
+      },
+      {
+        key: "status",
+        label: "Status",
+        type: "dropdown",
+        options: [
+          { label: "Active", value: "active" },
+          { label: "Past Due", value: "past_due" },
+          { label: "Canceled", value: "canceled" },
+          { label: "Unpaid", value: "unpaid" },
+          { label: "Incomplete", value: "incomplete" },
+        ],
+      },
+    ],
+    [],
+  );
+
   const subscriptionCards = [
     { label: "Total Subscriptions", value: subscriptionSummary.total ?? 0 },
     { label: "Active", value: subscriptionSummary.active ?? 0 },
@@ -237,82 +488,22 @@ const PaymentsManagementPage = () => {
           <div className="flex items-center justify-center py-12">
             <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-2 border-t-transparent" />
           </div>
-        ) : plans.length === 0 ? (
-          <p className="text-sm text-black/60">No payment plans found.</p>
         ) : (
           <div className="space-y-4">
             <div className="text-sm text-black/60">
               Active plans: {activePlans.length} / {plans.length}
             </div>
-            <div className="overflow-hidden rounded-xl border border-primary-2/20">
-              <table className="min-w-full text-left text-sm">
-                <thead className="bg-primary-4/80 text-xs uppercase tracking-wide text-black/60">
-                  <tr>
-                    <th className="px-4 py-3">Plan</th>
-                    <th className="px-4 py-3">Type</th>
-                    <th className="px-4 py-3">Billing</th>
-                    <th className="px-4 py-3">Price</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-primary-2/10 bg-primary-4/40">
-                  {plans.map((plan) => (
-                    <tr key={plan.id}>
-                      <td className="px-4 py-3">
-                        <div className="font-semibold text-black">
-                          {plan.name}
-                        </div>
-                        <div className="text-xs text-black/60">
-                          {plan.description || "No description"}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-black/70 capitalize">
-                        {plan.type}
-                      </td>
-                      <td className="px-4 py-3 text-black/70 capitalize">
-                        {plan.billing_cycle === "year" ? "Yearly" : "Monthly"}
-                      </td>
-                      <td className="px-4 py-3 text-black/70">
-                        {formatPrice(plan.cost, plan.currency)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                            plan.isActive
-                              ? "bg-green-100 text-green-700"
-                              : "bg-gray-200 text-gray-700"
-                          }`}
-                        >
-                          {plan.isActive ? "Active" : "Inactive"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => openEdit(plan)}
-                            className="rounded-full border border-primary-2/40 px-3 py-1 text-xs font-semibold text-black/70 hover:border-primary-2"
-                          >
-                            Edit
-                          </button>
-                          {plan.isActive && (
-                            <button
-                              type="button"
-                              onClick={() => handleDeactivate(plan.id)}
-                              disabled={processing}
-                              className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
-                            >
-                              Deactivate
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <TableGrid
+              columns={planColumns}
+              data={plans}
+              quickActions={planQuickActions}
+              filterbars={planFilterbars}
+              dateFilter={false}
+              showAll={true}
+              minRows={0}
+              rowHeight={56}
+              headerHeight={42}
+            />
           </div>
         )}
       </div>
@@ -342,76 +533,22 @@ const PaymentsManagementPage = () => {
             ))}
           </div>
 
-          <div className="overflow-hidden rounded-xl border border-primary-2/20">
-            <table className="min-w-full text-left text-sm">
-              <thead className="bg-primary-4/80 text-xs uppercase tracking-wide text-black/60">
-                <tr>
-                  <th className="px-4 py-3">Customer</th>
-                  <th className="px-4 py-3">Plan</th>
-                  <th className="px-4 py-3">Type</th>
-                  <th className="px-4 py-3">Status</th>
-                  <th className="px-4 py-3">Renews</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-primary-2/10 bg-primary-4/40">
-                {loading ? (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="px-4 py-8 text-center text-sm text-black/60"
-                    >
-                      Loading subscriptions...
-                    </td>
-                  </tr>
-                ) : subscriptions.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan="5"
-                      className="px-4 py-8 text-center text-sm text-black/60"
-                    >
-                      No subscriptions found.
-                    </td>
-                  </tr>
-                ) : (
-                  subscriptions.map((subscription) => {
-                    const status = subscription.status || "inactive";
-                    const badgeClass =
-                      subscriptionStatusStyles[status] ||
-                      "bg-gray-100 text-gray-700";
-
-                    return (
-                      <tr key={subscription.id}>
-                        <td className="px-4 py-3">
-                          <div className="font-semibold text-black">
-                            {subscription.user?.name || "Unknown User"}
-                          </div>
-                          <div className="text-xs text-black/60">
-                            {subscription.user?.email || "-"}
-                          </div>
-                        </td>
-                        <td className="px-4 py-3 text-black/80">
-                          {subscription.plan?.name || "-"}
-                        </td>
-                        <td className="px-4 py-3 text-black/70 capitalize">
-                          {subscription.plan?.type || "-"}
-                        </td>
-                        <td className="px-4 py-3">
-                          <span
-                            className={`rounded-full px-3 py-1 text-xs font-semibold capitalize ${badgeClass}`}
-                          >
-                            {status}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-black/70">
-                          {formatDate(subscription.current_period_end)}
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="h-10 w-10 animate-spin rounded-full border-4 border-primary-2 border-t-transparent" />
+            </div>
+          ) : (
+            <TableGrid
+              columns={subscriptionColumns}
+              data={subscriptionRows}
+              filterbars={subscriptionFilterbars}
+              dateFilter={false}
+              showAll={true}
+              minRows={0}
+              rowHeight={56}
+              headerHeight={42}
+            />
+          )}
         </div>
       </div>
 

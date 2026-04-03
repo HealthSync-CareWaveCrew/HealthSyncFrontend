@@ -388,6 +388,9 @@ const TableGrid = ({
   // ✅ Hide Quick Actions column if parent didn't pass it
   const showQuickActions =
     Array.isArray(quickActions) && quickActions.length > 0;
+  const showMenuActions =
+    typeof actions === "function" ||
+    (Array.isArray(actions) && actions.length > 0);
 
   const { onExportCsv, downloadPdfFromCsv, downloadExcelFromCsv, printTable } =
     TableExport(gridRef, sortedData, selectedRows, visibleColumns);
@@ -1186,7 +1189,7 @@ const TableGrid = ({
                   <th
                     className="px-4 py-2 text-left font-medium text-nowrap sticky z-20"
                     style={{
-                      right: MENU_COL_W,
+                      right: showMenuActions ? MENU_COL_W : 0,
                       width: ACTIONS_COL_W,
                       background: theme?.table?.headerBgHex ?? "#E36A6A",
                       color: theme?.table?.headerTextHex ?? "#fff",
@@ -1196,14 +1199,16 @@ const TableGrid = ({
                   </th>
                 )}
 
-                <th
-                  className="px-4 py-2 sticky z-20"
-                  style={{
-                    right: 0,
-                    width: MENU_COL_W,
-                    background: theme?.table?.headerBgHex ?? "#E36A6A",
-                  }}
-                />
+                {showMenuActions && (
+                  <th
+                    className="px-4 py-2 sticky z-20"
+                    style={{
+                      right: 0,
+                      width: MENU_COL_W,
+                      background: theme?.table?.headerBgHex ?? "#E36A6A",
+                    }}
+                  />
+                )}
               </tr>
             </thead>
 
@@ -1354,7 +1359,10 @@ const TableGrid = ({
                       {showQuickActions && (
                         <td
                           className="px-6 py-2 border-b sticky z-10 bg-primary-4"
-                          style={{ right: MENU_COL_W, width: ACTIONS_COL_W }}
+                          style={{
+                            right: showMenuActions ? MENU_COL_W : 0,
+                            width: ACTIONS_COL_W,
+                          }}
                         >
                           {!isEmpty && (
                             <div className="flex items-center justify-end space-x-4">
@@ -1408,54 +1416,56 @@ const TableGrid = ({
                         </td>
                       )}
 
-                      <td
-                        className="pl-3 pr-4 py-2 border-b sticky right-0 z-10 bg-primary-4"
-                        style={{ width: MENU_COL_W }}
-                      >
-                        {!isEmpty && (
-                          <Popover placement="bottom-end">
-                            <PopoverHandler>
-                              <Button className="p-1 bg-transparent shadow-none hover:shadow-none min-w-0">
-                                <MdMoreHoriz
-                                  size={20}
-                                  className="text-black/80 hover:text-primary-1"
-                                />
-                              </Button>
-                            </PopoverHandler>
-                            <PopoverContent className="p-1 w-fit z-[9999]">
-                              {(
-                                typeof actions === "function"
-                                  ? actions(row)
-                                  : actions || []
-                              ).map((action, idx) => {
-                                const disabled =
-                                  action.disabled === true ||
-                                  (typeof action.disabled === "function" &&
-                                    action.disabled(row));
-                                return (
-                                  <div
-                                    key={idx}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (!disabled) {
-                                        handleActionClick(action, row);
-                                      }
-                                    }}
-                                    className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-primary-3/70 rounded transition-colors text-nowrap ${
-                                      disabled
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : "cursor-pointer"
-                                    }`}
-                                  >
-                                    {action.icon}
-                                    <span>{action.label}</span>
-                                  </div>
-                                );
-                              })}
-                            </PopoverContent>
-                          </Popover>
-                        )}
-                      </td>
+                      {showMenuActions && (
+                        <td
+                          className="pl-3 pr-4 py-2 border-b sticky right-0 z-10 bg-primary-4"
+                          style={{ width: MENU_COL_W }}
+                        >
+                          {!isEmpty && (
+                            <Popover placement="bottom-end">
+                              <PopoverHandler>
+                                <Button className="p-1 bg-transparent shadow-none hover:shadow-none min-w-0">
+                                  <MdMoreHoriz
+                                    size={20}
+                                    className="text-black/80 hover:text-primary-1"
+                                  />
+                                </Button>
+                              </PopoverHandler>
+                              <PopoverContent className="p-1 w-fit z-[9999]">
+                                {(
+                                  typeof actions === "function"
+                                    ? actions(row)
+                                    : actions || []
+                                ).map((action, idx) => {
+                                  const disabled =
+                                    action.disabled === true ||
+                                    (typeof action.disabled === "function" &&
+                                      action.disabled(row));
+                                  return (
+                                    <div
+                                      key={idx}
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!disabled) {
+                                          handleActionClick(action, row);
+                                        }
+                                      }}
+                                      className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-primary-3/70 rounded transition-colors text-nowrap ${
+                                        disabled
+                                          ? "opacity-50 cursor-not-allowed"
+                                          : "cursor-pointer"
+                                      }`}
+                                    >
+                                      {action.icon}
+                                      <span>{action.label}</span>
+                                    </div>
+                                  );
+                                })}
+                              </PopoverContent>
+                            </Popover>
+                          )}
+                        </td>
+                      )}
                     </tr>
                   );
                 })
@@ -1466,7 +1476,7 @@ const TableGrid = ({
                       1 +
                       visibleColumns.filter((c) => c.visible).length +
                       (showQuickActions ? 1 : 0) +
-                      1
+                      (showMenuActions ? 1 : 0)
                     }
                     className={`text-center py-4 text-lg p-2 ${
                       theme?.empty?.text ?? "text-black/60"
