@@ -2,7 +2,7 @@
 import {
   cancelSubscription,
   getSubscriptionStatus,
-} from "../../libraries/paymentApi";
+} from "../../Redux/Api/api";
 import { toast } from "react-toastify";
 
 const formatDate = (value) => {

@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPaymentPlans } from "../../libraries/paymentApi";
+import { getPaymentPlans } from "../../Redux/Api/api";
 import useSubscription from "../../hooks/useSubscription";
 
 const defaultFeatures = {

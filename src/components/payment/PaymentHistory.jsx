@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from "react";
-import { getPaymentHistory } from "../../libraries/paymentApi";
+import { getPaymentHistory } from "../../Redux/Api/api";
 
 const statusStyles = {
   active: "bg-green-100 text-green-700",

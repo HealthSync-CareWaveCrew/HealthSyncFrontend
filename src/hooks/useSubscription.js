@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSubscriptionStatus } from "../libraries/paymentApi";
+import { getSubscriptionStatus } from "../Redux/Api/api";
 
 const normalizeNumber = (value, fallback = 0) => {
   const parsed = Number(value);
