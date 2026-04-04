@@ -122,7 +122,7 @@ const PaymentMethodsManager = () => {
   };
 
   return (
-    <section className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+    <section className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-black">Payment Methods</h3>
@@ -131,7 +131,7 @@ const PaymentMethodsManager = () => {
         <button
           type="button"
           onClick={() => setShowModal(true)}
-          className="rounded-full bg-primary-1 px-4 py-2 text-xs font-semibold text-white transition hover:bg-primary-2"
+          className="rounded-lg bg-primary-1 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary-2"
         >
           Add new card
         </button>
@@ -150,7 +150,7 @@ const PaymentMethodsManager = () => {
           {methods.map((method) => (
             <div
               key={method.id}
-              className="flex flex-col gap-3 rounded-xl border border-primary-2/20 bg-primary-4/60 p-4 md:flex-row md:items-center md:justify-between"
+              className="flex flex-col gap-3 rounded-lg border border-gray-100 bg-gray-50 p-4 md:flex-row md:items-center md:justify-between"
             >
               <div className="flex items-center gap-3">
                 <div className="text-2xl">{brandIcon(method.brand)}</div>
@@ -174,7 +174,7 @@ const PaymentMethodsManager = () => {
                     type="button"
                     onClick={() => handleSetDefault(method.id)}
                     disabled={processing}
-                    className="rounded-full border border-primary-2/40 px-3 py-1 text-xs font-semibold text-black/60 hover:border-primary-2"
+                    className="rounded-lg border border-gray-200 px-3 py-1 text-xs font-semibold text-gray-600 transition-colors hover:border-primary-2 hover:text-gray-800"
                   >
                     Set default
                   </button>
@@ -183,7 +183,7 @@ const PaymentMethodsManager = () => {
                   type="button"
                   onClick={() => handleDelete(method.id)}
                   disabled={processing}
-                  className="rounded-full border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 hover:bg-red-50"
+                  className="rounded-lg border border-red-200 px-3 py-1 text-xs font-semibold text-red-600 transition-colors hover:bg-red-50"
                 >
                   Delete
                 </button>
@@ -195,16 +195,16 @@ const PaymentMethodsManager = () => {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <h4 className="text-lg font-bold text-black">Add new card</h4>
-            <div className="mt-4 rounded-xl border border-primary-2/30 bg-white/70 p-3">
+            <div className="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-3">
               <CardElement options={cardElementOptions} />
             </div>
             <div className="mt-6 flex gap-3">
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="flex-1 rounded-xl border border-primary-2/40 px-4 py-2 text-sm font-semibold text-black/60"
+                className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600"
               >
                 Cancel
               </button>
@@ -212,7 +212,7 @@ const PaymentMethodsManager = () => {
                 type="button"
                 onClick={handleAddCard}
                 disabled={processing || !stripe}
-                className={`flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white ${
+                className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-white ${
                   processing || !stripe
                     ? "bg-primary-2/60"
                     : "bg-primary-1 hover:bg-primary-2"

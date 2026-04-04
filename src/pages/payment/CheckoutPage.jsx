@@ -206,7 +206,7 @@ const CheckoutPage = () => {
 
   if (!planId) {
     return (
-      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 text-center text-sm text-black/60 shadow-2xl backdrop-blur-md">
+      <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100 text-center text-sm text-gray-500">
         Select a plan to continue.
       </div>
     );
@@ -214,29 +214,29 @@ const CheckoutPage = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
-        <h2 className="text-2xl font-bold text-black">Checkout</h2>
-        <p className="text-sm text-black/60">
+      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
+        <h2 className="text-2xl font-bold text-gray-800">Checkout</h2>
+        <p className="text-sm text-gray-500">
           Confirm your plan and payment method.
         </p>
 
-        <div className="mt-4 rounded-xl border border-primary-2/20 bg-primary-4/60 p-4">
+        <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 p-4">
           {loadingPlans ? (
             <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-2 border-t-transparent" />
           ) : selectedPlan ? (
             <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="text-sm text-black/60">Plan</p>
-                <p className="text-lg font-semibold text-black">
+                <p className="text-sm text-gray-500">Plan</p>
+                <p className="text-lg font-semibold text-gray-800">
                   {selectedPlan.name}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-sm text-black/60">Billing</p>
-                <p className="text-lg font-semibold text-black">
+                <p className="text-sm text-gray-500">Billing</p>
+                <p className="text-lg font-semibold text-gray-800">
                   {formatPrice(selectedPlan.amount, selectedPlan.currency)}
                   {selectedPlan.interval && (
-                    <span className="text-xs text-black/60">
+                    <span className="text-xs text-gray-500">
                       {selectedPlan.interval === "one_time"
                         ? " one-time"
                         : ` / ${selectedPlan.interval}`}
@@ -246,18 +246,18 @@ const CheckoutPage = () => {
               </div>
             </div>
           ) : (
-            <p className="text-sm text-black/60">Plan details unavailable.</p>
+            <p className="text-sm text-gray-500">Plan details unavailable.</p>
           )}
         </div>
       </div>
 
-      <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
-        <h3 className="text-lg font-bold text-black">Payment Method</h3>
+      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
+        <h3 className="text-lg font-semibold text-gray-800">Payment Method</h3>
 
         {loadingMethods ? (
           <div className="mt-4 h-8 w-8 animate-spin rounded-full border-2 border-primary-2 border-t-transparent" />
         ) : methods.length === 0 ? (
-          <p className="mt-4 text-sm text-black/60">
+          <p className="mt-4 text-sm text-gray-500">
             No saved payment methods.
           </p>
         ) : (
@@ -265,17 +265,17 @@ const CheckoutPage = () => {
             {methods.map((method) => (
               <label
                 key={method.id}
-                className={`flex cursor-pointer items-center justify-between rounded-xl border px-4 py-3 text-sm ${
+                className={`flex cursor-pointer items-center justify-between rounded-lg border px-4 py-3 text-sm transition-colors ${
                   selectedMethod === method.id
-                    ? "border-primary-2 bg-primary-4"
-                    : "border-primary-2/20 bg-primary-4/40"
+                    ? "border-primary-2 bg-primary-3/40"
+                    : "border-gray-100 bg-gray-50"
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-black">
+                  <p className="font-semibold text-gray-800">
                     {method.brand?.toUpperCase() || "Card"} •••• {method.last4}
                   </p>
-                  <p className="text-xs text-black/60">
+                  <p className="text-xs text-gray-500">
                     Expires {method.exp_month}/{method.exp_year}
                   </p>
                 </div>
@@ -295,20 +295,20 @@ const CheckoutPage = () => {
           <button
             type="button"
             onClick={() => setShowNewCard((prev) => !prev)}
-            className="text-sm font-semibold text-primary-1 underline"
+            className="text-sm font-medium text-primary-1 underline"
           >
             {showNewCard ? "Cancel new card" : "Add new card"}
           </button>
           {showNewCard && (
             <div className="mt-4 space-y-3">
-              <div className="rounded-xl border border-primary-2/30 bg-white/70 p-3">
+              <div className="rounded-lg border border-gray-200 bg-gray-50 p-3">
                 <CardElement options={cardElementOptions} />
               </div>
               <button
                 type="button"
                 onClick={handleAddCard}
                 disabled={processing || !stripe}
-                className={`rounded-xl px-4 py-2 text-sm font-semibold text-white ${
+                className={`rounded-lg px-4 py-2 text-sm font-semibold text-white ${
                   processing || !stripe
                     ? "bg-primary-2/60"
                     : "bg-primary-1 hover:bg-primary-2"
@@ -325,7 +325,7 @@ const CheckoutPage = () => {
         type="button"
         onClick={handleSubscribe}
         disabled={processing || loadingMethods || loadingPlans}
-        className={`w-full rounded-2xl px-6 py-4 text-sm font-semibold text-white transition ${
+        className={`w-full rounded-xl px-6 py-4 text-sm font-semibold text-white transition-colors ${
           processing || loadingMethods || loadingPlans
             ? "bg-primary-2/60"
             : "bg-primary-1 hover:bg-primary-2"

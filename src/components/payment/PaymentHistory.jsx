@@ -125,15 +125,15 @@ const PaymentHistory = () => {
   }, []);
 
   return (
-    <section className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+    <section className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
       <div>
         <h3 className="text-lg font-bold text-black">Payment History</h3>
         <p className="text-sm text-black/60">Recent billing activity.</p>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-primary-2/30 bg-primary-4/40">
+      <div className="mt-4 overflow-hidden rounded-xl border border-gray-100 bg-white">
         <table className="min-w-full text-left text-sm">
-          <thead className="bg-primary-4/80 text-xs uppercase tracking-wide text-black/60">
+          <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
             <tr>
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Plan</th>
@@ -196,7 +196,7 @@ const PaymentHistory = () => {
             <button
               type="button"
               onClick={() => loadHistory(page + 1)}
-              className="rounded-full border border-primary-1 px-4 py-2 text-xs font-semibold text-primary-1 hover:bg-primary-4/80"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-xs font-semibold text-primary-1 transition-colors hover:bg-gray-50"
             >
               Load more
             </button>

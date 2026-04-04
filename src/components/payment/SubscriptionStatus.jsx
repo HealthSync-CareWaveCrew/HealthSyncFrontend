@@ -87,7 +87,7 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
   };
 
   return (
-    <section className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+    <section className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-black">
@@ -128,7 +128,7 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
             return (
               <div
                 key={subscription.subscription_id || typeLabel}
-                className="rounded-xl border border-primary-2/20 bg-primary-4/40 p-4"
+                className="rounded-lg border border-gray-100 bg-gray-50 p-4"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
@@ -178,7 +178,7 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
 
       {showConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-md rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+          <div className="w-full max-w-md bg-white rounded-xl shadow-md p-6 border border-gray-100">
             <h4 className="text-lg font-bold text-black">
               Cancel Subscription?
             </h4>
@@ -197,7 +197,7 @@ const SubscriptionStatus = ({ onSubscriptionChange }) => {
                   setShowConfirm(false);
                   setSelectedSubscription(null);
                 }}
-                className="flex-1 rounded-xl border border-primary-2/40 px-4 py-2 text-sm font-semibold text-black/60"
+                className="flex-1 rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600"
               >
                 Keep Plan
               </button>

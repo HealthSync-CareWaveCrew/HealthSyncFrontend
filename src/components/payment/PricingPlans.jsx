@@ -224,7 +224,7 @@ const PricingPlans = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
               TEXT BASIC
@@ -252,7 +252,7 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
@@ -270,14 +270,14 @@ const PricingPlans = () => {
                 For users who want full access to AI health insights, every day.
               </p>
             </div>
-            <div className="flex rounded-full bg-primary-4 p-1 text-xs">
+            <div className="flex rounded-lg bg-gray-100 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "monthly"
-                    ? "bg-white text-black shadow"
-                    : "text-black/60"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Monthly
@@ -287,8 +287,8 @@ const PricingPlans = () => {
                 onClick={() => setBillingCycle("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "yearly"
-                    ? "bg-white text-black shadow"
-                    : "text-black/60"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Yearly
@@ -356,7 +356,7 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
@@ -370,14 +370,14 @@ const PricingPlans = () => {
                 insights.
               </p>
             </div>
-            <div className="flex rounded-full bg-primary-4 p-1 text-xs">
+            <div className="flex rounded-lg bg-gray-100 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setImageBilling("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "monthly"
-                    ? "bg-white text-black shadow"
-                    : "text-black/60"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Monthly
@@ -387,8 +387,8 @@ const PricingPlans = () => {
                 onClick={() => setImageBilling("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "yearly"
-                    ? "bg-white text-black shadow"
-                    : "text-black/60"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Yearly
