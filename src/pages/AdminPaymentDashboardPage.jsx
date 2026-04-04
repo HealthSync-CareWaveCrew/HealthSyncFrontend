@@ -21,7 +21,7 @@ const formatDate = (value) => {
   });
 };
 
-const AdminDashboardPage = () => {
+const AdminPaymentDashboardPage = () => {
   const [items, setItems] = useState([]);
   const [summary, setSummary] = useState({
     total: 0,
@@ -165,4 +165,4 @@ const AdminDashboardPage = () => {
   );
 };
 
-export default AdminDashboardPage;
+export default AdminPaymentDashboardPage;

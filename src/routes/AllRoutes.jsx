@@ -39,8 +39,8 @@ const CheckoutPage = lazy(() => import("../pages/payment/CheckoutPage"));
 const AdminUserManagementPage = lazy(
   () => import("../pages/AdminUserManagementPage")
 );
-const PaymentsManagementPage = lazy(
-  () => import("../pages/admin/PaymentsManagementPage")
+const AdminPaymentsManagementPage = lazy(
+  () => import("../pages/AdminPaymentsManagementPage"),
 );
 
 function AllRoutes() {
@@ -117,7 +117,7 @@ function AllRoutes() {
               />
               <Route
                 path="payments-management"
-                element={<PaymentsManagementPage />}
+                element={<AdminPaymentsManagementPage />}
               />
             </Route>
 
