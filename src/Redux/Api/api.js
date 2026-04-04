@@ -138,27 +138,27 @@ export const getAllUsers = async () => {
 };
 
 export const getUserById = async (id) => {
-  const response = await api.get(`/api/admin/users/${id}`);
+  const response = await api.get(`/api/users/${id}`);
   return response;
 };
 
 export const updateUserRole = async (id, role) => {
-  const response = await api.patch(`/api/admin/users/${id}/role`, { role });
+  const response = await api.patch(`/api/users/${id}/role`, { role });
   return response;
 };
 
 export const toggleUserStatus = async (id) => {
-  const response = await api.patch(`/api/admin/users/${id}/toggle-status`);
+  const response = await api.patch(`/api/users/${id}/toggle-status`);
   return response;
 };
 
 export const deleteUser = async (id) => {
-  const response = await api.delete(`/api/admin/users/${id}`);
+  const response = await api.delete(`/api/users/${id}`);
   return response;
 };
 
 export const createUserByAdmin = async (userData) => {
-  const response = await api.post('/api/admin/users', userData);
+  const response = await api.post('/api/users', userData);
   return response;
 };
 
