@@ -52,47 +52,53 @@ function Header() {
   };
 
   const handleLogout = async () => {
-    if (isLoggingOut) return;
-    
-    setIsLoggingOut(true);
+  if (isLoggingOut) return;
+  
+  setIsLoggingOut(true);
+  
+  try {
+    toast.loading('Logging out...', { id: 'header-logout' });
     
     try {
-      toast.loading('Logging out...', { id: 'header-logout' });
-      
-      try {
-        await logoutApi();
-      } catch (error) {
-        console.log('Logout API error, continuing with local logout');
-      }
-      
-      dispatch(forceLogout());
-      setUser(null);
-      setIsMenuOpen(false);
-      
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('refreshToken');
-      sessionStorage.clear();
-      
-      toast.dismiss('header-logout');
-      toast.success('Logged out successfully!', { duration: 1500, icon: '👋' });
-      
+      await logoutApi();
     } catch (error) {
-      console.error('Logout failed:', error);
-      dispatch(forceLogout());
-      setUser(null);
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      toast.dismiss('header-logout');
-      toast.error('Logged out', { duration: 1500 });
-      
-      window.location.href = '/login';
-      
-    } finally {
-      setIsLoggingOut(false);
+      console.log('Logout API error, continuing with local logout');
     }
-  };
+    
+    dispatch(forceLogout());
+    setUser(null);
+    setIsMenuOpen(false);
+    
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('refreshToken');
+    sessionStorage.clear();
+    
+    toast.dismiss('header-logout');
+    toast.success('Logged out successfully!', { duration: 1500, icon: '👋' });
+    
+    // Redirect to login page
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 1000);
+    
+  } catch (error) {
+    console.error('Logout failed:', error);
+    dispatch(forceLogout());
+    setUser(null);
+    localStorage.clear();
+    sessionStorage.clear();
+    
+    toast.dismiss('header-logout');
+    toast.error('Logged out', { duration: 1500 });
+    
+    // Redirect to login page immediately on error
+    window.location.href = '/login';
+    
+  } finally {
+    setIsLoggingOut(false);
+  }
+};
 
   const handleEditProfile = () => {
     setIsMenuOpen(false);
