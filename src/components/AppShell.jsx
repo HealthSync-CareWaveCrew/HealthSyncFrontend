@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 
 const customerMenu = [
   { label: 'Dashboard', to: '/dashboard', icon: <MdDashboard /> },
-  { label: 'Home', to: '/', icon: <FaHeartbeat /> },
+  { label: 'Prediction', to: '/prediction', icon: <FaHeartbeat /> },
   { label: 'Reviews', to: '/reviews', icon: <MdRateReview /> },
   { label: 'My Analysis', to: '/analysis-history', icon: <FaHistory /> },
   { label: 'Payment', to: '/payment', icon: <FaMoneyCheck /> },

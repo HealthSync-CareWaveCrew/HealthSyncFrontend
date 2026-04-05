@@ -29,10 +29,12 @@ const AuthPage = () => {
 
   const [activeTab, setActiveTab] = useState('login');
   const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotPasswordStep, setForgotPasswordStep] = useState('email'); // 'email', 'otp', 'success'
+  const [forgotPasswordStep, setForgotPasswordStep] = useState('email');
   const [showOtpInput, setShowOtpInput] = useState(false);
   const [otpType, setOtpType] = useState('login');
   const [tempData, setTempData] = useState({}); 
+  const [isGoogleLogin, setIsGoogleLogin] = useState(false);
+  const [googleToastShown, setGoogleToastShown] = useState(false); // Track if Google toast has been shown
   
   const [formData, setFormData] = useState({
     name: '',
@@ -72,21 +74,17 @@ const AuthPage = () => {
   // Google login handler
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      toast.loading('Signing in with Google...', { id: 'google' });
+      setIsGoogleLogin(true);
+      // toast.loading('Signing in with Google...', { id: 'google' });
       
-      // Dispatch Google login action
       await dispatch(googleLogin({
         credential: credentialResponse.credential
       })).unwrap();
       
-      toast.success('Google sign-in successful! Redirecting...', {
-        id: 'google',
-        duration: 2000
-      });
-      
-      // The redirect will be handled by the isAuthenticated useEffect
+      // Don't show any success toast here - will be handled by useEffect
     } catch (error) {
       toast.error(error || 'Google sign-in failed', { id: 'google' });
+      setIsGoogleLogin(false);
     }
   };
 
@@ -96,6 +94,7 @@ const AuthPage = () => {
       position: 'top-right'
     });
   };
+  
   // Set activeTab based on route
   useEffect(() => {
     if (location.pathname === '/login') {
@@ -140,23 +139,50 @@ const AuthPage = () => {
   // Show success message when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      toast.success('Successfully logged in! Redirecting...', {
-        duration: 2000,
-        position: 'top-right',
-        icon: '🎉',
-        style: {
-          background: '#DEF7EC',
-          color: '#03543F',
-          border: '1px solid #BCF0DA'
-        }
-      });
-      setTimeout(() => {
-        // window.location.href = '/';
-        // window.location.href = '/dashboard';
-        navigate('/');
-      }, 2000);
+      if (isGoogleLogin && !googleToastShown) {
+        // Show Google-specific success message only once
+        setGoogleToastShown(true);
+        toast.success('Google sign-in successful! Redirecting...', {
+          id: 'google-success',
+          duration: 2000,
+          position: 'top-right',
+          icon: '🎉',
+          style: {
+            background: '#DEF7EC',
+            color: '#03543F',
+            border: '1px solid #BCF0DA'
+          }
+        });
+        setTimeout(() => {
+          setIsGoogleLogin(false);
+          navigate('/');
+        }, 2000);
+      } else if (!isGoogleLogin) {
+        // Show regular login success message
+        toast.success('Successfully logged in! Redirecting...', {
+          duration: 2000,
+          position: 'top-right',
+          icon: '🎉',
+          style: {
+            background: '#DEF7EC',
+            color: '#03543F',
+            border: '1px solid #BCF0DA'
+          }
+        });
+        setTimeout(() => {
+          navigate('/');
+        }, 2000);
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, isGoogleLogin, googleToastShown, navigate]);
+
+  // Reset Google login state when component unmounts or when needed
+  useEffect(() => {
+    return () => {
+      setIsGoogleLogin(false);
+      setGoogleToastShown(false);
+    };
+  }, []);
 
   // Password strength checker
   useEffect(() => {

@@ -65,20 +65,43 @@ export const verifyRegistrationOTP = createAsyncThunk(
 export const sendLoginOTP = createAsyncThunk(
   'auth/sendLoginOTP',
   async (credentials, { rejectWithValue }) => {
-    try {
-      const response = await API.sendLoginOTP(credentials);
-      return { 
-        message: response.data.message,
-        email: credentials.email 
-      };
-    } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.message ||
-        error.response?.data?.errors?.[0]?.msg ||
-        error.message ||
-        'Failed to send login OTP'
-      );
+    const maxRetries = 2;
+    let lastError = null;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`📤 Attempt ${attempt} to send login OTP`);
+        
+        const response = await API.sendLoginOTP(credentials);
+        
+        console.log(`✅ Success on attempt ${attempt}`);
+        return { 
+          message: response.data.message,
+          email: credentials.email 
+        };
+        
+      } catch (error) {
+        lastError = error;
+        console.log(`❌ Attempt ${attempt} failed:`, error.message);
+        
+        // If it's the first attempt and likely a network error, retry
+        if (attempt === 1 && error.message === 'Network Error') {
+          console.log('🔄 Retrying due to network error...');
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          continue;
+        }
+        
+        // If it's not a network error or retries exhausted, break
+        break;
+      }
     }
+    
+    return rejectWithValue(
+      lastError.response?.data?.message ||
+      lastError.response?.data?.errors?.[0]?.msg ||
+      lastError.message ||
+      'Failed to send login OTP'
+    );
   }
 );
 
