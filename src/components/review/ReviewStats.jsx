@@ -42,7 +42,7 @@ function ReviewStats() {
           {/* Overall Rating */}
           <div className="text-center mb-6">
             <div className="text-5xl font-bold text-primary-1 mb-2">
-              {averageRating}
+              {parseFloat(averageRating).toFixed(2)}
             </div>
             <StarRating rating={Math.round(averageRating)} readonly size="lg" />
             <p className="text-gray-500 mt-2">
