@@ -205,6 +205,26 @@ const reviewSlice = createSlice({
       .addCase(createReview.fulfilled, (state, action) => {
         state.loading = false;
         state.reviews.unshift(action.payload);
+        
+        // Update stats immediately
+        if (state.stats) {
+          const newRating = action.payload.rating;
+          const oldTotal = state.stats.totalReviews;
+          const oldAverage = state.stats.averageRating;
+          
+          state.stats.totalReviews = oldTotal + 1;
+          state.stats.averageRating = ((oldAverage * oldTotal) + newRating) / (oldTotal + 1);
+          
+          // Update rating distribution
+          const starKey = 
+            newRating === 5 ? 'fiveStar' :
+            newRating === 4 ? 'fourStar' :
+            newRating === 3 ? 'threeStar' :
+            newRating === 2 ? 'twoStar' : 'oneStar';
+          
+          state.stats.ratingDistribution[starKey] = (state.stats.ratingDistribution[starKey] || 0) + 1;
+        }
+        
         state.success = 'Review submitted successfully!';
       })
       .addCase(createReview.rejected, (state, action) => {
@@ -220,6 +240,37 @@ const reviewSlice = createSlice({
       })
       .addCase(updateReview.fulfilled, (state, action) => {
         state.loading = false;
+        const oldReview = state.reviews.find(r => r._id === action.payload._id);
+        
+        // Update stats if rating changed
+        if (state.stats && oldReview && oldReview.rating !== action.payload.rating) {
+          const oldRating = oldReview.rating;
+          const newRating = action.payload.rating;
+          const total = state.stats.totalReviews;
+          const oldAverage = state.stats.averageRating;
+          
+          // Recalculate average rating
+          state.stats.averageRating = ((oldAverage * total) - oldRating + newRating) / total;
+          
+          // Update rating distribution
+          const oldStarKey = 
+            oldRating === 5 ? 'fiveStar' :
+            oldRating === 4 ? 'fourStar' :
+            oldRating === 3 ? 'threeStar' :
+            oldRating === 2 ? 'twoStar' : 'oneStar';
+          
+          const newStarKey = 
+            newRating === 5 ? 'fiveStar' :
+            newRating === 4 ? 'fourStar' :
+            newRating === 3 ? 'threeStar' :
+            newRating === 2 ? 'twoStar' : 'oneStar';
+          
+          if (state.stats.ratingDistribution[oldStarKey] > 0) {
+            state.stats.ratingDistribution[oldStarKey] -= 1;
+          }
+          state.stats.ratingDistribution[newStarKey] = (state.stats.ratingDistribution[newStarKey] || 0) + 1;
+        }
+        
         const index = state.reviews.findIndex(r => r._id === action.payload._id);
         if (index !== -1) {
           state.reviews[index] = action.payload;
@@ -243,6 +294,35 @@ const reviewSlice = createSlice({
       })
       .addCase(deleteReview.fulfilled, (state, action) => {
         state.loading = false;
+        const deletedReview = state.reviews.find(r => r._id === action.payload);
+        
+        // Update stats immediately if review was found
+        if (state.stats && deletedReview) {
+          const deletedRating = deletedReview.rating;
+          const oldTotal = state.stats.totalReviews;
+          
+          if (oldTotal > 1) {
+            const oldAverage = state.stats.averageRating;
+            state.stats.totalReviews = oldTotal - 1;
+            state.stats.averageRating = ((oldAverage * oldTotal) - deletedRating) / (oldTotal - 1);
+          } else {
+            // If this was the last review, reset stats
+            state.stats.totalReviews = 0;
+            state.stats.averageRating = 0;
+          }
+          
+          // Update rating distribution
+          const starKey = 
+            deletedRating === 5 ? 'fiveStar' :
+            deletedRating === 4 ? 'fourStar' :
+            deletedRating === 3 ? 'threeStar' :
+            deletedRating === 2 ? 'twoStar' : 'oneStar';
+          
+          if (state.stats.ratingDistribution[starKey] > 0) {
+            state.stats.ratingDistribution[starKey] -= 1;
+          }
+        }
+        
         state.reviews = state.reviews.filter(r => r._id !== action.payload);
         state.userReviews = state.userReviews.filter(r => r._id !== action.payload);
         state.success = 'Review deleted successfully!';
