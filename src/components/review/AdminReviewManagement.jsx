@@ -203,7 +203,10 @@ console.log("reviewssssssssssssssssssssssss",reviews);
           { label: 'Visible', value: true },
           { label: 'Hidden', value: false },
         ],
-        defaultSelected: ['all'],
+            width: "fit-content",
+        menuMinWidth: 0,
+        menuMaxHeight: 420,
+        menuClassName: "inline-block w-fit min-w-0",
       },
     ],
     []
