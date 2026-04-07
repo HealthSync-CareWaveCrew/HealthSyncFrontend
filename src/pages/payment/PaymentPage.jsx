@@ -19,7 +19,7 @@ const PaymentPage = () => {
   return (
     <div className="space-y-8">
       {message && (
-        <div className="rounded-2xl border border-primary-2/40 bg-primary-4 p-4 text-sm font-semibold text-gray-700">
+        <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-700">
           {message}
         </div>
       )}

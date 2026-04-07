@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getPaymentPlans } from "../../libraries/paymentApi";
+import { getPaymentPlans } from "../../Redux/Api/api";
 import useSubscription from "../../hooks/useSubscription";
 
 const defaultFeatures = {
@@ -81,7 +81,7 @@ const formatPrice = (amount, currency = "usd", options = {}) => {
 
 const PricingPlans = () => {
   const navigate = useNavigate();
-  const { subscription } = useSubscription();
+  const { subscriptions } = useSubscription();
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
   const [billingCycle, setBillingCycle] = useState("monthly");
@@ -151,16 +151,33 @@ const PricingPlans = () => {
     };
   }, [plans]);
 
-  const activeStatus = subscription?.status;
-  const hasSubscription = subscription && activeStatus !== "canceled";
-  const currentPlanId =
-    subscription?.plan_id ||
-    subscription?.planId ||
-    subscription?.plan?.id ||
-    subscription?.plan?.plan_id;
+  const textSubscription = subscriptions?.text;
+  const imageSubscription = subscriptions?.image;
+  const hasTextSubscription =
+    textSubscription &&
+    textSubscription.status !== "canceled" &&
+    textSubscription.status !== "inactive";
+  const hasImageSubscription =
+    imageSubscription &&
+    imageSubscription.status !== "canceled" &&
+    imageSubscription.status !== "inactive";
+  const currentTextPlanId =
+    textSubscription?.plan_id ||
+    textSubscription?.planId ||
+    textSubscription?.plan?._id ||
+    textSubscription?.plan?.id ||
+    textSubscription?.plan?.plan_id;
+  const currentImagePlanId =
+    imageSubscription?.plan_id ||
+    imageSubscription?.planId ||
+    imageSubscription?.plan?._id ||
+    imageSubscription?.plan?.id ||
+    imageSubscription?.plan?.plan_id;
 
-  const isCurrentPlan = (planId) =>
-    planId && currentPlanId && planId === currentPlanId;
+  const isCurrentPlan = (planId, type) => {
+    const currentPlanId = type === "image" ? currentImagePlanId : currentTextPlanId;
+    return planId && currentPlanId && planId === currentPlanId;
+  };
 
   const handleNavigate = (planId) => {
     if (!planId) return;
@@ -173,20 +190,20 @@ const PricingPlans = () => {
   };
 
   const textBasicCta = (planId) => {
-    if (!hasSubscription) return "Start for Free";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasTextSubscription) return "Start for Free";
+    if (isCurrentPlan(planId, "text")) return "Current Plan";
     return "Switch Plan";
   };
 
   const textProCta = (planId) => {
-    if (!hasSubscription) return "Start Free Trial";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasTextSubscription) return "Subscribe Now";
+    if (isCurrentPlan(planId, "text")) return "Current Plan";
     return "Switch to Pro";
   };
 
   const imageCta = (planId) => {
-    if (!hasSubscription) return "Subscribe Now";
-    if (isCurrentPlan(planId)) return "Current Plan";
+    if (!hasImageSubscription) return "Subscribe Now";
+    if (isCurrentPlan(planId, "image")) return "Current Plan";
     return "Switch Plan";
   };
 
@@ -199,27 +216,27 @@ const PricingPlans = () => {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Pricing Plans</h2>
-          <p className="text-sm text-gray-600">
+          <h2 className="text-2xl font-bold text-black">Pricing Plans</h2>
+          <p className="text-sm text-black/60">
             Choose the plan that fits you.
           </p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
               TEXT BASIC
             </p>
-            <h3 className="text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-black">
               Get Started Free
             </h3>
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-black/60">
               Perfect for trying out HealthSync. No credit card required.
             </p>
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(catalog.textBasic?.features || defaultFeatures.textBasic).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -235,32 +252,32 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
                   TEXT PRO
                 </p>
-                <span className="rounded-full bg-primary-1/10 px-2 py-1 text-[10px] font-semibold uppercase text-primary-1">
+                <span className="rounded-full bg-primary-1/15 px-2 py-1 text-[10px] font-semibold uppercase text-primary-1">
                   Most Popular
                 </span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-black">
                 Unlimited Predictions
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black/60">
                 For users who want full access to AI health insights, every day.
               </p>
             </div>
-            <div className="flex rounded-full bg-primary-4 p-1 text-xs">
+            <div className="flex rounded-lg bg-gray-100 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setBillingCycle("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "monthly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Monthly
@@ -270,8 +287,8 @@ const PricingPlans = () => {
                 onClick={() => setBillingCycle("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   billingCycle === "yearly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Yearly
@@ -280,24 +297,24 @@ const PricingPlans = () => {
           </div>
           <div className="mt-4 space-y-2">
             {loading ? (
-              <p className="text-2xl font-bold text-gray-900 animate-pulse">
+              <p className="text-2xl font-bold text-black animate-pulse">
                 Loading...
               </p>
             ) : !selectedTextProPlan ? (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 -
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {billingCycle === "yearly" ? " / year" : " / month"}
                 </span>
               </p>
             ) : (
               <div className="flex flex-wrap items-center gap-2">
-                <p className="text-2xl font-bold text-gray-900">
+                <p className="text-2xl font-bold text-black">
                   {formatPrice(
                     selectedTextProPlan?.amount ?? 0,
                     selectedTextProPlan?.currency,
                   ) || "-"}
-                  <span className="text-sm font-medium text-gray-500">
+                  <span className="text-sm font-medium text-black/60">
                     {billingCycle === "yearly" ? " / year" : " / month"}
                   </span>
                 </p>
@@ -309,12 +326,12 @@ const PricingPlans = () => {
               </div>
             )}
             {selectedTextProPlan?.raw?.secondary_price && !loading && (
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-black/60">
                 Also available monthly or yearly.
               </p>
             )}
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(selectedTextProPlan?.features || defaultFeatures.textPro).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -325,11 +342,13 @@ const PricingPlans = () => {
             type="button"
             onClick={() => handleNavigate(selectedTextProPlan?.id)}
             disabled={
-              !selectedTextProPlan?.id || isCurrentPlan(selectedTextProPlan?.id)
+              !selectedTextProPlan?.id ||
+              isCurrentPlan(selectedTextProPlan?.id, "text")
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
-              !selectedTextProPlan?.id || isCurrentPlan(selectedTextProPlan?.id)
-                ? "cursor-not-allowed bg-gray-200 text-gray-500"
+              !selectedTextProPlan?.id ||
+              isCurrentPlan(selectedTextProPlan?.id, "text")
+                ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
           >
@@ -337,28 +356,28 @@ const PricingPlans = () => {
           </button>
         </div>
 
-        <div className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+        <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
           <div className="flex items-start justify-between">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-wide text-primary-1">
                 IMAGE ANALYSIS
               </p>
-              <h3 className="text-xl font-bold text-gray-900">
+              <h3 className="text-xl font-bold text-black">
                 Advanced Imaging AI
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black/60">
                 Upload medical images and get instant AI-powered analysis and
                 insights.
               </p>
             </div>
-            <div className="flex rounded-full bg-primary-4 p-1 text-xs">
+            <div className="flex rounded-lg bg-gray-100 p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setImageBilling("monthly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "monthly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Monthly
@@ -368,8 +387,8 @@ const PricingPlans = () => {
                 onClick={() => setImageBilling("yearly")}
                 className={`rounded-full px-3 py-1 font-semibold ${
                   imageBilling === "yearly"
-                    ? "bg-white text-gray-900 shadow"
-                    : "text-gray-600"
+                    ? "bg-white text-gray-800 shadow-sm"
+                    : "text-gray-500"
                 }`}
               >
                 Yearly
@@ -378,29 +397,29 @@ const PricingPlans = () => {
           </div>
           <div className="mt-4 space-y-2">
             {loading ? (
-              <p className="text-2xl font-bold text-gray-900 animate-pulse">
+              <p className="text-2xl font-bold text-black animate-pulse">
                 Loading...
               </p>
             ) : !selectedImagePlan ? (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 -
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {imageBilling === "monthly" ? " / month" : " / year"}
                 </span>
               </p>
             ) : (
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-black">
                 {formatPrice(
                   selectedImagePlan?.amount ?? 0,
                   selectedImagePlan?.currency,
                 ) || "-"}
-                <span className="text-sm font-medium text-gray-500">
+                <span className="text-sm font-medium text-black/60">
                   {imageBilling === "monthly" ? " / month" : " / year"}
                 </span>
               </p>
             )}
           </div>
-          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-gray-700">
+          <ul className="mt-4 list-disc space-y-2 pl-5 text-sm text-black/70">
             {(selectedImagePlan?.features || defaultFeatures.image).map(
               (feature) => (
                 <li key={feature}>{feature}</li>
@@ -411,11 +430,13 @@ const PricingPlans = () => {
             type="button"
             onClick={() => handleNavigate(selectedImagePlan?.id)}
             disabled={
-              !selectedImagePlan?.id || isCurrentPlan(selectedImagePlan?.id)
+              !selectedImagePlan?.id ||
+              isCurrentPlan(selectedImagePlan?.id, "image")
             }
             className={`mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition ${
-              !selectedImagePlan?.id || isCurrentPlan(selectedImagePlan?.id)
-                ? "cursor-not-allowed bg-gray-200 text-gray-500"
+              !selectedImagePlan?.id ||
+              isCurrentPlan(selectedImagePlan?.id, "image")
+                ? "cursor-not-allowed bg-primary-2/30 text-black/60"
                 : "bg-primary-1 text-white hover:bg-primary-2"
             }`}
           >

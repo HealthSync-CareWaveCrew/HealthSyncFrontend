@@ -1,5 +1,5 @@
 ﻿import { useEffect, useState } from "react";
-import { getPaymentHistory } from "../../libraries/paymentApi";
+import { getPaymentHistory } from "../../Redux/Api/api";
 
 const statusStyles = {
   active: "bg-green-100 text-green-700",
@@ -125,13 +125,13 @@ const PaymentHistory = () => {
   }, []);
 
   return (
-    <section className="rounded-2xl border border-primary-2/40 bg-white p-6 shadow-lg">
+    <section className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 p-6 border border-gray-100">
       <div>
-        <h3 className="text-lg font-bold text-gray-900">Payment History</h3>
-        <p className="text-sm text-gray-600">Recent billing activity.</p>
+        <h3 className="text-lg font-bold text-black">Payment History</h3>
+        <p className="text-sm text-black/60">Recent billing activity.</p>
       </div>
 
-      <div className="mt-4 overflow-hidden rounded-xl border border-gray-100">
+      <div className="mt-4 overflow-hidden rounded-xl border border-gray-100 bg-white">
         <table className="min-w-full text-left text-sm">
           <thead className="bg-gray-50 text-xs uppercase tracking-wide text-gray-500">
             <tr>
@@ -141,7 +141,7 @@ const PaymentHistory = () => {
               <th className="px-4 py-3">Status</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-primary-2/20">
             {items.map((entry) => {
               const status = (entry.status || "—").toLowerCase();
               const badge = statusStyles[status] || "bg-gray-100 text-gray-700";
@@ -155,13 +155,13 @@ const PaymentHistory = () => {
                 "—";
               return (
                 <tr key={entry.id}>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-black/60">
                     {formatDate(entry.date || entry.created_at)}
                   </td>
-                  <td className="px-4 py-3 font-semibold text-gray-800">
+                  <td className="px-4 py-3 font-semibold text-black">
                     {planLabel}
                   </td>
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3 text-black/60">
                     {formatAmount(amount, currency)}
                   </td>
                   <td className="px-4 py-3">
@@ -178,7 +178,7 @@ const PaymentHistory = () => {
               <tr>
                 <td
                   colSpan="4"
-                  className="px-4 py-8 text-center text-sm text-gray-500"
+                  className="px-4 py-8 text-center text-sm text-black/60"
                 >
                   No payment history yet.
                 </td>
@@ -196,7 +196,7 @@ const PaymentHistory = () => {
             <button
               type="button"
               onClick={() => loadHistory(page + 1)}
-              className="rounded-full border border-primary-1 px-4 py-2 text-xs font-semibold text-primary-1 hover:bg-primary-4"
+              className="rounded-lg border border-gray-200 px-4 py-2 text-xs font-semibold text-primary-1 transition-colors hover:bg-gray-50"
             >
               Load more
             </button>

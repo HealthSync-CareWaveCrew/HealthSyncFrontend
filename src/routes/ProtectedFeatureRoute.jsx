@@ -5,8 +5,9 @@ import useSubscription from "../hooks/useSubscription";
 const ProtectedFeatureRoute = ({ children, feature = "text" }) => {
   const location = useLocation();
   const token = localStorage.getItem("token");
-  const { isActive, isTrial, freeTrialsRemaining, loading, subscription } =
-    useSubscription();
+  const { freeTrialsRemaining, loading, subscription } = useSubscription(
+    feature,
+  );
 
   if (!token) {
     return <Navigate to="/login" state={{ from: location }} replace />;
@@ -20,16 +21,13 @@ const ProtectedFeatureRoute = ({ children, feature = "text" }) => {
     );
   }
 
-  const isPaidActive = isActive && !isTrial;
-  const hasPaidSubscription =
-    subscription?.isPaid ??
-    subscription?.plan?.isPaid ??
-    subscription?.plan?.amount > 0 ??
-    subscription?.plan?.price > 0 ??
-    isPaidActive;
+  const status = subscription?.status || subscription?.subscriptionStatus;
+  const hasTextSubscription = status === "active" || status === "past_due";
+  const hasImageSubscription =
+    status === "active" && subscription?.plan?.type === "image";
 
   if (feature === "image") {
-    if (!isPaidActive || !hasPaidSubscription) {
+    if (!hasImageSubscription) {
       return (
         <Navigate
           to="/pricing"
@@ -41,7 +39,7 @@ const ProtectedFeatureRoute = ({ children, feature = "text" }) => {
     return children;
   }
 
-  const hasTextAccess = freeTrialsRemaining > 0 || isActive || isTrial;
+  const hasTextAccess = freeTrialsRemaining > 0 || hasTextSubscription;
   if (!hasTextAccess) {
     return (
       <Navigate

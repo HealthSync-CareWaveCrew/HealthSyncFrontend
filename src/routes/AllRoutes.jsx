@@ -39,6 +39,9 @@ const CheckoutPage = lazy(() => import("../pages/payment/CheckoutPage"));
 const AdminUserManagementPage = lazy(
   () => import("../pages/AdminUserManagementPage")
 );
+const AdminPaymentsManagementPage = lazy(
+  () => import("../pages/AdminPaymentsManagementPage"),
+);
 
 function AllRoutes() {
   return (
@@ -48,29 +51,11 @@ function AllRoutes() {
       >
         <Routes>
           <Route path="/landingPage" element={<LandingPage />} />
-
-          {/* Auth Routes */}
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/auth" element={<AuthPage />} />
 
           <Route element={<AppShell />}>
-            {/* <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <UserDashboard />
-                </ProtectedRoute>
-              }
-            /> */}
-            {/* <Route
-              path="/prediction"
-              element={
-                <ProtectedRoute>
-                  <HomePage />
-                </ProtectedRoute>
-              }
-            /> */}
             <Route
               path="/"
               element={
@@ -79,43 +64,23 @@ function AllRoutes() {
                 </ProtectedRoute>
               }
             >
-              <Route
-                index
-                element={<Navigate to="dashboard" replace />}
-              />
-              <Route
-                path="dashboard"
-                element={<UserDashboard />}
-              />
-              <Route
-                path="prediction"
-                element={<HomePage />}
-              />
-              <Route
-                path="reviews"
-                element={<ReviewsPage />}
-              />
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<UserDashboard />} />
+              <Route path="prediction" element={<HomePage />} />
+              <Route path="reviews" element={<ReviewsPage />} />
               <Route
                 path="analysis-history"
-                element={<CustomerAnalysisHistoryPage />
-                }
+                element={<CustomerAnalysisHistoryPage />}
               />
               <Route
                 path="customer/analysis/:id"
                 element={<CustomerAnalysisDetailsPage />}
               />
-              <Route
-                path="payment"
-                element={<PaymentLayout />
-                }
-              >
+              <Route path="payment" element={<PaymentLayout />}>
                 <Route index element={<PaymentPage />} />
                 <Route path="checkout" element={<CheckoutPage />} />
               </Route>
-              <Route
-                path="pricing"
-                element={<PaymentLayout />}
-              >
+              <Route path="pricing" element={<PaymentLayout />}>
                 <Route index element={<PaymentPage />} />
               </Route>
             </Route>
@@ -128,90 +93,42 @@ function AllRoutes() {
                 </ProtectedRoute>
               }
             >
-              <Route
-                index
-                element={<Navigate to="dashboard" replace />}
-              />
-
-              {/* ✅ USER MANAGEMENT (FINAL CORRECT ONE) */}
-              <Route
-                path="dashboard"
-                element={<AdminDashboardPage />}
-              />
-
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboardPage />} />
               <Route
                 path="user-management"
                 element={<AdminUserManagementPage />}
               />
-
               <Route
                 path="disease-management"
                 element={<AdminDiseaseManagementPage />}
               />
-
               <Route
                 path="analysis-history"
                 element={<AdminAnalysisHistoryPage />}
               />
-
               <Route
                 path="analysis/:id"
                 element={<AdminAnalysisDetailsPage />}
               />
-
               <Route
                 path="reviews-management"
                 element={<AdminReviewsPage />}
               />
+              <Route
+                path="payments-management"
+                element={<AdminPaymentsManagementPage />}
+              />
             </Route>
 
-            {/* Customer Routes */}
-            {/* <Route
-              path="/reviews"
+            <Route
+              path="/payments-management"
               element={
-                <ProtectedRoute>
-                  <ReviewsPage />
+                <ProtectedRoute requireAdmin={true}>
+                  <Navigate to="/admin/payments-management" replace />
                 </ProtectedRoute>
               }
-            /> */}
-            {/* <Route
-              path="/analysis-history"
-              element={
-                <ProtectedRoute>
-                  <CustomerAnalysisHistoryPage />
-                </ProtectedRoute>
-              }
-            /> */}
-
-            {/* <Route
-              path="/customer/analysis/:id"
-              element={
-                <ProtectedRoute>
-                  <CustomerAnalysisDetailsPage />
-                </ProtectedRoute>
-              }
-            /> */}
-            {/* <Route
-              path="/payment"
-              element={
-                <ProtectedRoute>
-                  <PaymentLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<PaymentPage />} />
-              <Route path="checkout" element={<CheckoutPage />} />
-            </Route> */}
-            {/* <Route
-              path="/pricing"
-              element={
-                <ProtectedRoute>
-                  <PaymentLayout />
-                </ProtectedRoute>
-              }
-            >
-              <Route index element={<PaymentPage />} />
-            </Route> */}
+            />
           </Route>
         </Routes>
       </Suspense>
