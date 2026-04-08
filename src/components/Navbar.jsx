@@ -25,10 +25,10 @@ function Navbar() {
       {/* Search + Contact + CTA */}
       <div className="nav-actions">
         
-        <div className="search-box">
+        {/* <div className="search-box">
           <FaSearch className="search-icon" />
           <input type="text" placeholder="Search health topics..." />
-        </div>
+        </div> */}
 
         <div className="call-info">
           <FaPhoneAlt />
