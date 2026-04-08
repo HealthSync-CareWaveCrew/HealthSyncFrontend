@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { FaBan } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 import {
@@ -552,9 +553,9 @@ const AdminPaymentsManagementPage = () => {
         </div>
       </div>
 
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-xl rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
+      {showModal && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 px-4 p-4">
+          <div className="w-full max-w-xl max-h-[90vh] overflow-y-auto rounded-2xl border border-primary-2/30 bg-primary-4 p-6 shadow-2xl backdrop-blur-md">
             <h3 className="text-xl font-bold text-black">
               {editingPlan ? "Edit Plan" : "Create Plan"}
             </h3>
@@ -699,7 +700,8 @@ const AdminPaymentsManagementPage = () => {
               </div>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
