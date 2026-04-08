@@ -2,20 +2,43 @@
 import React from "react";
 
 function WhyChooseUs() {
+  // const features = [
+  //   { 
+  //     title: "High Quality Data", 
+  //     desc: "Trained using validated medical datasets for accurate results." 
+  //   },
+  //   { 
+  //     title: "Secure & Private", 
+  //     desc: "End-to-end encrypted user data protection with strict privacy policies." 
+  //   },
+  //   { 
+  //     title: "AI Precision", 
+  //     desc: "Advanced machine learning models with high accuracy rates." 
+  //   }
+  // ];
+
   const features = [
-    { 
-      title: "High Quality Data", 
-      desc: "Trained using validated medical datasets for accurate results." 
-    },
-    { 
-      title: "Secure & Private", 
-      desc: "End-to-end encrypted user data protection with strict privacy policies." 
-    },
-    { 
-      title: "AI Precision", 
-      desc: "Advanced machine learning models with high accuracy rates." 
-    }
-  ];
+  { 
+    title: "Smart Health Assistance", 
+    desc: "Provides intelligent health insights by analyzing user inputs and medical data in real time." 
+  },
+  // { 
+  //   title: "Secure & Private", 
+  //   desc: "Protects user data with strong security measures and strict privacy standards." 
+  // },
+  { 
+    title: "Fast Results", 
+    desc: "Delivers quick analysis and responses without long waiting times." 
+  },
+  { 
+    title: "All-in-One Platform", 
+    desc: "Combines data analysis, image analysis, chatbot support, and reports in one place." 
+  },
+  // { 
+  //   title: "Easy Tracking", 
+  //   desc: "Lets users view past analyses and monitor their health over time." 
+  // }
+];
 
   return (
     <section className="py-20 px-4 bg-white">
