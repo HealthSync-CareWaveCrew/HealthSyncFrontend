@@ -65,7 +65,7 @@ function ReviewForm({ onSuccess }) {
     try {
       await dispatch(createReview(formData)).unwrap();
 
-      dispatch(fetchReviewStats());
+      // dispatch(fetchReviewStats());
     } catch (err) {
       console.error('Review creation failed:', err);
     }
