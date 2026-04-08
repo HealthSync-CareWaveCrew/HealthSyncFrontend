@@ -35,6 +35,16 @@ export default function AdminUserManagementPage() {
         width: 250,
       },
       {
+        field: 'createdAt',
+        header: 'Created At',
+        type: 'date',
+        filterType: 'date',
+        width: 200,
+        render: (row) => (
+          <span className="text-sm text-gray-500">{new Date(row.createdAt).toLocaleString()}</span>
+        ),
+      },
+      {
         field: "role",
         header: "Role",
         type: "status",
@@ -85,13 +95,25 @@ export default function AdminUserManagementPage() {
 
   return (
     <div className="p-4">
-      <TableGrid
+      {/* <TableGrid
         title="User Management"
         description="View and manage all registered users, roles, and account statuses."
         data={users}
         columns={columns}
         loading={loading}
         fetchHistory={() => dispatch(getAllUsers())}
+      /> */}
+      <TableGrid
+        columns={columns}
+        data={users}
+        // quickActions={isMobile ? [] : quickActions}
+        // actions={rowMenuActions}
+        // filterbars={filterbars}
+        // dateFilter={true}
+        showAll={true}
+        minRows={10}
+        rowHeight={48}
+        headerHeight={40}
       />
 
       <PopupModal

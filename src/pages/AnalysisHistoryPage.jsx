@@ -56,6 +56,23 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
     }));
   }, [historyList]);
 
+//   const analyses = useMemo(() => {
+//   return historyList
+//     .map((item) => ({
+//       ...item,
+//       match: item.results?.match,
+//       matchStatus: item.results?.match ? 'Match' : 'No Match',
+//       predictedDisease: item.results?.disease || '-',
+//       confidence: item.results?.confidence || '-',
+//       userName: item.user?.name || '-',
+//       userEmail: item.user?.email || '',
+//     }))
+//     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)); // 👈 sorting
+// }, [historyList]);
+
+  console.log("ddddddddddddddddddddddddddddddddddddddddd",analyses);
+  
+
   useEffect(() => {
     fetchAnalysisHistory();
   }, []);
