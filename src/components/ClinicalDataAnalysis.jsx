@@ -99,7 +99,7 @@ IMPORTANT RULES:
         </div>
 
         {selectedDisease && selectedDisease.fields?.length > 0 && (
-          <div className="max-h-96 overflow-y-auto">
+          <div className="max-h-96 p-2 overflow-y-auto">
             <DynamicFormFields
               fields={selectedDisease.fields}
               formData={formData}
