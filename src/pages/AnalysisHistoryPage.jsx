@@ -98,7 +98,7 @@ export default function AnalysisHistoryPage({ isAdmin = false }) {
 
   const handleViewDetails = (rowData) => {
     if (!rowData?._id) return;
-    const basePath = isAdmin ? '/admin' : '/customer';
+    const basePath = isAdmin ? '/admin' : '/user';
     navigate(`${basePath}/analysis/${rowData._id}`);
   };
 
