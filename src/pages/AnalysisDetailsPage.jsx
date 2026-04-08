@@ -16,7 +16,7 @@ export default function AnalysisDetailsPage({ isAdmin = false }) {
   );
 
   const backPath = useMemo(
-    () => (isAdmin ? '/admin/analysis-history' : '/analysis-history'),
+    () => (isAdmin ? '/admin/analysis-history' : '/user/analysis-history'),
     [isAdmin]
   );
 

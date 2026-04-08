@@ -123,7 +123,7 @@ function UserDashboard() {
               <p className="text-sm text-gray-500">Last 6 months of image and clinical analyses</p>
             </div>
             <button
-              onClick={() => navigate('/analysis-history')}
+              onClick={() => navigate('/user/analysis-history')}
               className="px-3 py-1.5 text-sm text-primary-1 hover:text-primary-2 transition-colors font-medium"
             >
               View More →
@@ -236,7 +236,7 @@ function UserDashboard() {
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg font-semibold text-gray-800">Your Reviews</h3>
             <button
-              onClick={() => navigate('/reviews')}
+              onClick={() => navigate('/user/reviews')}
               className="px-3 py-1.5 text-sm text-primary-1 hover:text-primary-2 transition-colors font-medium"
             >
               View More →

@@ -186,7 +186,7 @@ const PricingPlans = () => {
 
   const handleTextBasicNavigate = () => {
     // Free text access (3 predictions) does not require a plan id.
-    navigate("/analysis-history");
+    navigate("/user/prediction");
   };
 
   const textBasicCta = (planId) => {
