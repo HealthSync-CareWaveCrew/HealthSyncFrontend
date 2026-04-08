@@ -62,7 +62,7 @@ function Footer() {
         )}
       </div>
 
-      <div className="footer-container">
+      {/* <div className="footer-container">
         <div className="footer-grid">
           <div className="footer-col brand-col">
             <h2 className="footer-logo">Health<span>Sync</span></h2>
@@ -113,7 +113,7 @@ function Footer() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
       <div className="footer-bottom-bar">
         <div className="bottom-content">

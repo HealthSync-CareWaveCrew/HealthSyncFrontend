@@ -9,7 +9,7 @@ function AboutSection() {
           About HealthSync
         </h2>
         <div className="space-y-4 text-gray-700 text-lg">
-          <p>
+          {/* <p>
             HealthSync is an AI-driven healthcare platform designed
             to assist individuals in early disease detection using
             machine learning and intelligent health data analysis.
@@ -18,7 +18,15 @@ function AboutSection() {
             Our system leverages quality datasets, secure processing,
             and predictive analytics to empower users with actionable
             health insights.
+          </p> */}
+          <p>HealthSync is an intelligent healthcare platform designed
+            to support early disease detection through
+            advanced data analysis and AI-powered insights.
           </p>
+          <p>
+            Our system combines clinical data evaluation,
+            medical image analysis, and interactive assistance to help
+            users better understand their health and take timely action.</p>
         </div>
       </div>
     </section>
