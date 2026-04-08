@@ -5,11 +5,11 @@ import { FaHeartbeat, FaHistory, FaMoneyCheck, FaUsers } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 
 const customerMenu = [
-  { label: 'Dashboard', to: '/dashboard', icon: <MdDashboard /> },
-  { label: 'Prediction', to: '/prediction', icon: <FaHeartbeat /> },
-  { label: 'Reviews', to: '/reviews', icon: <MdRateReview /> },
-  { label: 'My Analysis', to: '/analysis-history', icon: <FaHistory /> },
-  { label: 'Payment', to: '/payment', icon: <FaMoneyCheck /> },
+  { label: 'Dashboard', to: '/user/dashboard', icon: <MdDashboard /> },
+  { label: 'Prediction', to: '/user/prediction', icon: <FaHeartbeat /> },
+  { label: 'Reviews', to: '/user/reviews', icon: <MdRateReview /> },
+  { label: 'My Analysis', to: '/user/analysis-history', icon: <FaHistory /> },
+  { label: 'Payment', to: '/user/payment', icon: <FaMoneyCheck /> },
 ];
 
 const adminMenu = [ 

@@ -53,7 +53,7 @@ function ReviewForm({ onSuccess }) {
     }
   }, [error, dispatch]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (formData.rating === 0) {
@@ -61,7 +61,14 @@ function ReviewForm({ onSuccess }) {
       return;
     }
 
-    dispatch(createReview(formData));
+    // dispatch(createReview(formData));
+    try {
+      await dispatch(createReview(formData)).unwrap();
+
+      // dispatch(fetchReviewStats());
+    } catch (err) {
+      console.error('Review creation failed:', err);
+    }
   };
 
   const handleChange = (e) => {

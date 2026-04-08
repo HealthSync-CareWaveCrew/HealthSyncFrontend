@@ -50,14 +50,14 @@ function AllRoutes() {
         fallback={<SpinnerLoading fullscreen={true} message="Loading page..." />}
       >
         <Routes>
-          <Route path="/landingPage" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<AuthPage />} />
           <Route path="/register" element={<AuthPage />} />
           <Route path="/auth" element={<AuthPage />} />
 
           <Route element={<AppShell />}>
             <Route
-              path="/"
+              path="/user"
               element={
                 <ProtectedRoute>
                   <CustomerLayoutPage />
@@ -73,7 +73,7 @@ function AllRoutes() {
                 element={<CustomerAnalysisHistoryPage />}
               />
               <Route
-                path="customer/analysis/:id"
+                path="analysis/:id"
                 element={<CustomerAnalysisDetailsPage />}
               />
               <Route path="payment" element={<PaymentLayout />}>

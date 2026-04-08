@@ -170,7 +170,7 @@ const AuthPage = () => {
           }
         });
         setTimeout(() => {
-          navigate('/');
+          navigate('/user');
         }, 2000);
       }
     }

@@ -30,6 +30,13 @@ const ProtectedRoute = ({ children, requireAdmin = false }) => {
       }
     }
 
+    if (!requireAdmin) {
+      const userRole = decoded.role || decoded.userRole; 
+      if (!userRole || userRole.toLowerCase() == "admin") {
+        return <Navigate to="/admin" state={{ from: location }} replace />;
+      }
+    }
+
     return children;
   } catch (err) {
     console.error("Token validation error:", err);

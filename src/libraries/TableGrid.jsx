@@ -57,7 +57,7 @@ const Popover = ({ children, placement = "bottom" }) => {
   React.useEffect(() => {
     const handleClickOutside = (event) => {
       if (
-        wrapperRef.current && 
+        wrapperRef.current &&
         !wrapperRef.current.contains(event.target) &&
         contentRef.current &&
         !contentRef.current.contains(event.target)
@@ -111,25 +111,25 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
       const rect = buttonElement.getBoundingClientRect();
       const contentWidth = localRef.current.offsetWidth;
       const contentHeight = localRef.current.offsetHeight;
-      
+
       const viewportHeight = window.innerHeight;
       const viewportWidth = window.innerWidth;
-      
+
       let top = rect.bottom + 2;
       let left = rect.right - contentWidth;
-      
+
       if (rect.bottom + contentHeight + 2 > viewportHeight) {
         top = rect.top - contentHeight - 2;
       }
-      
+
       if (left < 0) {
         left = rect.left;
       }
-      
+
       if (left + contentWidth > viewportWidth) {
         left = viewportWidth - contentWidth - 8;
       }
-      
+
       setPosition({ top, left });
     }
   }, [triggerRef, open]);
@@ -144,7 +144,7 @@ const PopoverContent = ({ children, className = "", triggerRef, contentRef, open
     <div
       ref={localRef}
       className={`fixed bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden ${className}`}
-      style={{ 
+      style={{
         top: position.top,
         left: position.left,
         zIndex: 9999,
@@ -314,13 +314,17 @@ const TableGrid = ({
   sortMap = {},
   theme = {},
   candidates = [],
-  calculateTotals = () => {},
-  buildOverView = () => {},
+  calculateTotals = () => { },
+  buildOverView = () => { },
   showHeadSection = true,
   extraFeatures = [],
 }) => {
   const [sortedData, setSortedData] = useState([]);
-  const [sortField, setSortField] = useState(columns[0]?.field || "");
+  // const [sortField, setSortField] = useState("");
+  const [sortField, setSortField] = useState(() => {
+    const createdAtColumn = columns.find(col => col.field === "createdAt");
+    return createdAtColumn ? "createdAt" : (columns[0]?.field || "");
+  });
   const [sortOrder, setSortOrder] = useState("asc");
   const [openSort, setOpenSort] = useState(false);
   const [sortSelections, setSortSelections] = useState([]);
@@ -349,6 +353,7 @@ const TableGrid = ({
 
   const downloadOptions = ["Print", "PDF", "EXCEL", "CSV"];
   const safeData = Array.isArray(data) ? data : [];
+  // .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)) 
 
   // ✅ Hide Quick Actions column if parent didn't pass it
   const showQuickActions =
@@ -593,18 +598,30 @@ const TableGrid = ({
     });
 
     // Sort
-    if (sortField) {
+    // if (sortField) {
+    //   const def = columns.find((c) => c?.field === sortField);
+    //   const type = def?.type || "text";
+    //   filtered.sort((a, b) => {
+    //     const av = cmpVal(a, sortField, type);
+    //     const bv = cmpVal(b, sortField, type);
+    //     if (av < bv) return sortOrder === "asc" ? -1 : 1;
+    //     if (av > bv) return sortOrder === "asc" ? 1 : -1;
+    //     return 0;
+    //   });
+    // }
+    if (sortField && sortField !== "createdAt") {
       const def = columns.find((c) => c?.field === sortField);
       const type = def?.type || "text";
+
       filtered.sort((a, b) => {
         const av = cmpVal(a, sortField, type);
         const bv = cmpVal(b, sortField, type);
+
         if (av < bv) return sortOrder === "asc" ? -1 : 1;
         if (av > bv) return sortOrder === "asc" ? 1 : -1;
         return 0;
       });
     }
-
     setSortedData(filtered);
     setCurrentPage(1);
     setSelectedRows([]);
@@ -998,9 +1015,8 @@ const TableGrid = ({
                       >
                         <FaFilter
                           size={12}
-                          className={`my-auto cursor-pointer ${
-                            isFilterApplied(column.field) ? "text-white" : "text-white/60"
-                          }`}
+                          className={`my-auto cursor-pointer ${isFilterApplied(column.field) ? "text-white" : "text-white/60"
+                            }`}
                         />
                       </button>
                     </th>
@@ -1056,7 +1072,7 @@ const TableGrid = ({
                         ) : (
                           <div className="h-[20px]" />
                         )}
-                       </td>
+                      </td>
 
                       {visibleColumns
                         .filter((col) => col.visible)
@@ -1143,7 +1159,7 @@ const TableGrid = ({
                             ) : (
                               row[column.field] ?? "N/A"
                             )}
-                           </td>
+                          </td>
                         ))}
 
                       {showQuickActions && (
@@ -1162,20 +1178,16 @@ const TableGrid = ({
                                 return (
                                   <div
                                     key={index}
-                                    className={`relative group flex items-center ${
-                                      action.showName ? "space-x-2" : ""
-                                    }`}
+                                    className={`relative group flex items-center ${action.showName ? "space-x-2" : ""
+                                      }`}
                                   >
                                     <button
                                       onClick={() => action.onClick && action.onClick(row)}
                                       disabled={disabled}
-                                      className={`p-1 rounded hover:bg-gray-100 ${
-                                        action.color || ""
-                                      } ${
-                                        action.showName ? "flex items-center space-x-2" : ""
-                                      } ${
-                                        disabled ? "opacity-50 cursor-not-allowed" : ""
-                                      }`}
+                                      className={`p-1 rounded hover:bg-gray-100 ${action.color || ""
+                                        } ${action.showName ? "flex items-center space-x-2" : ""
+                                        } ${disabled ? "opacity-50 cursor-not-allowed" : ""
+                                        }`}
                                     >
                                       <Icon size={20} className="hover:text-primary-1" />
                                       {action.showName && (
@@ -1230,11 +1242,10 @@ const TableGrid = ({
                                           handleActionClick(action, row);
                                         }
                                       }}
-                                      className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-primary-3/70 rounded transition-colors text-nowrap ${
-                                        disabled
-                                          ? "opacity-50 cursor-not-allowed"
-                                          : "cursor-pointer"
-                                      }`}
+                                      className={`flex items-center gap-2 px-3 py-2 text-sm hover:bg-primary-3/70 rounded transition-colors text-nowrap ${disabled
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : "cursor-pointer"
+                                        }`}
                                     >
                                       {action.icon}
                                       <span>{action.label}</span>
