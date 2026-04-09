@@ -70,7 +70,8 @@ const chatSlice = createSlice({
         state.error = action.payload.message;
         const errorMessage = {
           role: 'model',
-          parts: [{ text: `Error: ${action.payload.message}` }],
+          // parts: [{ text: `Error: ${action.payload.message}` }],
+           parts: [{ text: `Something went wrong. Please try again.` }],
         };
         state.messages.push(errorMessage);
       });
