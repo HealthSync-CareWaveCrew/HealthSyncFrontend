@@ -75,7 +75,6 @@ const AuthPage = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       setIsGoogleLogin(true);
-      // toast.loading('Signing in with Google...', { id: 'google' });
       
       await dispatch(googleLogin({
         credential: credentialResponse.credential
@@ -1307,22 +1306,35 @@ const AuthPage = () => {
                       </div>
                     </div>
 
-                    {/* Google Login Button */}
-                    <div className="w-full flex justify-center">
-                      <GoogleLogin
-                        onSuccess={handleGoogleSuccess}
-                        onError={handleGoogleError}
-                        useOneTap
-                        theme="filled_black"
-                        size="large"
-                        text="continue_with"
-                        shape="pill"
-                        width="full"
-                        containerProps={{
-                          className: "w-full max-w-md"
-                        }}
-                        locale="en"
-                      />
+                    {/* Google Login Button - MODIFIED TO TAKE FULL WIDTH */}
+                    <div className="w-full">
+                      <style jsx global>{`
+                        /* Force Google button to take full width */
+                        [data-credential-picker-container],
+                        .google-login-button-container,
+                        div[role="button"][aria-label*="Google"] {
+                          width: 100% !important;
+                          max-width: 100% !important;
+                        }
+                      `}</style>
+                      <div className="w-full flex justify-center">
+                        <div className="w-full" style={{ minWidth: '100%' }}>
+                          <GoogleLogin
+                            onSuccess={handleGoogleSuccess}
+                            onError={handleGoogleError}
+                            useOneTap
+                            theme="filled_black"
+                            size="large"
+                            text="continue_with"
+                            shape="pill"
+                            width="100%"
+                            containerProps={{
+                              style: { width: '100%', minWidth: '100%' }
+                            }}
+                            locale="en"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </>
