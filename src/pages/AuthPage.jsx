@@ -1322,7 +1322,7 @@ const AuthPage = () => {
                           <GoogleLogin
                             onSuccess={handleGoogleSuccess}
                             onError={handleGoogleError}
-                            useOneTap
+                            useOneTap={false}
                             theme="filled_black"
                             size="large"
                             text="continue_with"
