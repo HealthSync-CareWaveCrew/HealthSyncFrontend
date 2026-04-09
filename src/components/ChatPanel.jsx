@@ -54,16 +54,14 @@ function ChatPanel() {
           messages.map((message, index) => (
             <div
               key={index}
-              className={`flex ${
-                message.role === 'user' ? 'justify-end' : 'justify-start'
-              }`}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'
+                }`}
             >
               <div
-                className={`max-w-[80%] p-3 rounded-xl ${
-                  message.role === 'user'
+                className={`max-w-[80%] p-3 rounded-xl ${message.role === 'user'
                     ? 'bg-primary-1 text-white'
                     : 'bg-primary-3 text-black'
-                }`}
+                  }`}
               >
                 {message.role === 'user' ? (
                   <p className="whitespace-pre-wrap">{message.parts[0].text}</p>
@@ -142,7 +140,10 @@ function ChatPanel() {
                         ),
                       }}
                     >
-                      {message.parts[0].text =='undefined' ? 'Sorry, Something went wrong, Try again.' : message.parts[0].text }
+                      {!message?.parts?.[0]?.text || message.parts[0].text === 'undefined'
+                        ? 'Sorry, something went wrong. Please try again.'
+                        : message.parts[0].text}
+                      {/* {message.parts[0].text =='undefined' ? 'Sorry, Something went wrong, Try again.' : message.parts[0].text } */}
                     </ReactMarkdown>
                   </div>
                 )}
