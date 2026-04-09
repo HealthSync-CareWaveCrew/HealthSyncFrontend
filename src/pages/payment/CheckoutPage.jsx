@@ -173,13 +173,13 @@ const CheckoutPage = () => {
           return;
         }
         toast.success("Subscription confirmed.");
-        navigate("/dashboard");
+        navigate("/user/payment");
         return;
       }
 
       if (status === "active") {
         toast.success("Subscription activated.");
-        navigate("/dashboard");
+        navigate("/user/payment");
         return;
       }
 
@@ -192,7 +192,7 @@ const CheckoutPage = () => {
           return;
         }
         toast.success("Subscription confirmed.");
-        navigate("/dashboard");
+        navigate("user/payment");
         return;
       }
 
