@@ -142,7 +142,7 @@ function ChatPanel() {
                         ),
                       }}
                     >
-                      {message.parts[0].text =='Undefined' ? 'Sorry, Something went wrong, Try again.' : message.parts[0].text }
+                      {message.parts[0].text =='undefined' ? 'Sorry, Something went wrong, Try again.' : message.parts[0].text }
                     </ReactMarkdown>
                   </div>
                 )}
