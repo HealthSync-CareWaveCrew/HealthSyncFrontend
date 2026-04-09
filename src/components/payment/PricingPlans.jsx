@@ -181,7 +181,7 @@ const PricingPlans = () => {
 
   const handleNavigate = (planId) => {
     if (!planId) return;
-    navigate(`/payment/checkout?plan_id=${planId}`);
+    navigate(`/user/payment/checkout?plan_id=${planId}`);
   };
 
   const handleTextBasicNavigate = () => {
